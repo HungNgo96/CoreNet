@@ -20,4 +20,12 @@
     <ProjectReference Include="..\Presentation\Presentation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <EditorConfigFiles Remove="D:\HungNgo\GitHub\Private\.Net\BaseCore\CoreNet\WebApi\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="D:\HungNgo\GitHub\Private\.Net\BaseCore\CoreNet\WebApi\.editorconfig" />
+  </ItemGroup>
+
 </Project>
