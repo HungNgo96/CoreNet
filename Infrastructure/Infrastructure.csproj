@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -12,7 +12,6 @@
 
   <ItemGroup>
     <Folder Include="BackgroundJobs\" />
-    <Folder Include="NewFolder\" />
     <Folder Include="Persistence\EntityConfigurations\" />
     <Folder Include="Persistence\Migrations\" />
     <Folder Include="Persistence\Repositories\" />
