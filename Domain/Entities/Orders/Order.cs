@@ -6,9 +6,9 @@ namespace Domain.Entities.Orders;
 public class Order
 {
     private readonly HashSet<LineItem> _lineItems = new();
-    public OrderId Id { get; private set; }
-    public CustomerId CustomerId { get; private set; }
-
+    public OrderId? Id { get; private set; }
+    public CustomerId? CustomerId { get; private set; }
+    public IReadOnlyList<LineItem> LineItems => [.. _lineItems];
     public static Order Create(Customer customer)
     {
         var order = new Order()
@@ -24,7 +24,7 @@ public class Order
     {
         var lineItem = new LineItem(
             new LineItemId(Guid.NewGuid()),
-            Id,
+            Id!,
             product.Id,
             product.Price);
         _lineItems.Add(lineItem);

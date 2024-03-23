@@ -11,5 +11,3 @@ public class Product
 
     public Sku Sku { get; private set; }
 }
-
-public record ProductId(Guid Id);
