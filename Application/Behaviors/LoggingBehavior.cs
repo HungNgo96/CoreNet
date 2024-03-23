@@ -3,6 +3,7 @@ using Application.Extensions;
 using Domain.Shared;
 using MediatR;
 using Microsoft.Extensions.Logging;
+using Serilog.Context;
 
 namespace Application.Behaviors
 {
@@ -20,16 +21,20 @@ namespace Application.Behaviors
                                             RequestHandlerDelegate<TResponse> next,
                                             CancellationToken cancellationToken)
         {
-            _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Starting request {typeof(TRequest).Name}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
+            string requestName = typeof(TRequest).Name;
+            _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Starting request {requestName}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
 
             var result = await next();
 
             if (result is { Succeeded: false })
             {
-                _logger.ErrorMediatrResult(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Request failure {typeof(TRequest).Name}, {result.Message} , {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
+                using (LogContext.PushProperty("Error", result.Message, true))
+                {
+                    _logger.ErrorMediatrResult(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Request failure {requestName} with error, {result.Message} , {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
+                }
             }
 
-            _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Completed request {typeof(TRequest).Name}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
+            _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Completed request {requestName}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
 
             return result;
         }
