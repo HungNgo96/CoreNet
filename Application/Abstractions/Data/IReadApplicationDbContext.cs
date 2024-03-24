@@ -1,6 +1,6 @@
 ﻿namespace Application.Abstractions.Data
 {
-    public interface IApplicationContext
+    public interface IReadApplicationDbContext
     {
     }
 }

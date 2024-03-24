@@ -29,4 +29,18 @@ public class Order
             product.Price);
         _lineItems.Add(lineItem);
     }
+
+    public bool RemoveLineItem(LineItemId lineItemId)
+    {
+        var lineItem = _lineItems.FirstOrDefault(x => x.Id == lineItemId);
+
+        if (lineItem is null)
+        {
+            return false;
+        }
+
+        _lineItems.Remove(lineItem);
+
+        return true;
+    }
 }

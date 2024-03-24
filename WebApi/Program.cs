@@ -1,4 +1,5 @@
-﻿using Application.Extensions;
+﻿using Application.Abstractions.Data;
+using Application.Extensions;
 using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Presentation;
@@ -33,6 +34,9 @@ builder.Services.AddDbContext<WriteApplicationDbContext>(op =>
 {
     op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Presentation"));
 }, contextLifetime: ServiceLifetime.Scoped);
+
+builder.Services.AddScoped<IReadApplicationDbContext>(s => s.GetRequiredService<ReadApplicationDbContext>());
+builder.Services.AddScoped<IWriteApplicationDbContext>(s => s.GetRequiredService<WriteApplicationDbContext>());
 
 builder.Host.UseSerilog();
 

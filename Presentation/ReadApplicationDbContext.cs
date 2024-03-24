@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Application.Abstractions.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Presentation
 {
-    public class ReadApplicationDbContext : DbContext
+    public class ReadApplicationDbContext : DbContext, IReadApplicationDbContext
     {
         public ReadApplicationDbContext(DbContextOptions options) : base(options)
         {
