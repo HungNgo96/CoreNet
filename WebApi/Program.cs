@@ -1,9 +1,8 @@
 ﻿using Application.Abstractions.Data;
 using Application.Extensions;
 using Infrastructure.Extensions;
+using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
-using Presentation;
-using Presentation.Extensions;
 using Serilog;
 
 IConfiguration config = new ConfigurationBuilder()
@@ -21,18 +20,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplication()
-    .AddInfrastructure()
-    .AddPresentation();
+    .AddInfrastructure();
 
 builder.Services.AddDbContext<ReadApplicationDbContext>(op =>
 {
-    op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x => x.MigrationsAssembly("Presentation"));
+    op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
     op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 }, contextLifetime: ServiceLifetime.Scoped);
 
 builder.Services.AddDbContext<WriteApplicationDbContext>(op =>
 {
-    op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Presentation"));
+    op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
 }, contextLifetime: ServiceLifetime.Scoped);
 
 builder.Services.AddScoped<IReadApplicationDbContext>(s => s.GetRequiredService<ReadApplicationDbContext>());

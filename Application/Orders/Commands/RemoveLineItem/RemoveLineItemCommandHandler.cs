@@ -6,7 +6,7 @@ using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Entity1.Commands.Orders.RemoveLineItem
+namespace Application.Orders.Commands.RemoveLineItem
 {
     public sealed class RemoveLineItemCommandHandler : ICommandHandler<RemoveLineItemCommand, bool>
     {
@@ -29,7 +29,7 @@ namespace Application.Entity1.Commands.Orders.RemoveLineItem
                 return false;
             }
 
-             order.RemoveLineItem(request.LineItemId);
+            order.RemoveLineItem(request.LineItemId);
 
             return await _context.SaveChangesAsync(cancellationToken) > 0;
 

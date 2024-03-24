@@ -8,7 +8,7 @@ using Domain.Entities.Orders;
 using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 
-namespace Presentation
+namespace Infrastructure.Persistence
 {
     public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext
     {

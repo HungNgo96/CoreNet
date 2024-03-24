@@ -5,7 +5,7 @@
 using Application.Abstractions.Messaging;
 using Domain.Entities.Orders;
 
-namespace Application.Entity1.Commands.Orders.RemoveLineItem
+namespace Application.Orders.Commands.RemoveLineItem
 {
     public record RemoveLineItemCommand(OrderId OrderId, LineItemId LineItemId) : ICommand<bool>;
 

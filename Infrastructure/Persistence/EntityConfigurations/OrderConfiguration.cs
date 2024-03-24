@@ -7,7 +7,7 @@ using Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Presentation.Configurations
+namespace Infrastructure.Persistence.EntityConfigurations
 {
     public class OrderConfiguration : IEntityTypeConfiguration<Order>
     {

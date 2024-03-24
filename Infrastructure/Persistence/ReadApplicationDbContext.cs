@@ -1,7 +1,7 @@
 ﻿using Application.Abstractions.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Presentation
+namespace Infrastructure.Persistence
 {
     public class ReadApplicationDbContext : DbContext, IReadApplicationDbContext
     {
