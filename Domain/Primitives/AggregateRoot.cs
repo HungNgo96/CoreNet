@@ -18,12 +18,12 @@ namespace Domain.Primitives
         //{
         //}
 
-        public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents.ToList();
-        public void ClearDomainEvents() => _domainEvents.Clear();
-        protected void RaiseDomainEvent(IDomainEvent domainEvent)
-        {
-            _domainEvents.Add(domainEvent);
-        }
+        //public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents.ToList();
+        //public void ClearDomainEvents() => _domainEvents.Clear();
+        //protected void RaiseDomainEvent(IDomainEvent domainEvent)
+        //{
+        //    _domainEvents.Add(domainEvent);
+        //}
 
     }
 }
