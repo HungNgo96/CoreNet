@@ -11,6 +11,11 @@ namespace Domain.Primitives
             Id = id;
         }
 
+        protected Entity()
+        {
+
+        }
+
         public Guid Id { get; private init; }
 
         public override bool Equals(object? obj)

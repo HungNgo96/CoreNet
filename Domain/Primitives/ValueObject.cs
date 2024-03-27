@@ -1,4 +1,4 @@
-﻿namespace Domain.ValueObjects
+﻿namespace Domain.Primitives
 {
     public abstract class ValueObject : IEquatable<ValueObject>
     {
