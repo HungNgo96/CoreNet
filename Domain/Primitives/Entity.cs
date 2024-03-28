@@ -2,45 +2,99 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Domain.Core.Utility;
+
 namespace Domain.Primitives
 {
-    public abstract class Entity
+    public abstract class Entity : IEquatable<Entity>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// </summary>
+        /// <param name="id">The entity identifier.</param>
         protected Entity(Guid id)
+            : this()
         {
+            Ensure.NotEmpty(id, "The identifier is required.", nameof(id));
+
             Id = id;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// </summary>
+        /// <remarks>
+        /// Required by EF Core.
+        /// </remarks>
         protected Entity()
         {
-
         }
 
-        public Guid Id { get; private init; }
+        /// <summary>
+        /// Gets or sets the entity identifier.
+        /// </summary>
+        public Guid Id { get; private set; }
 
-        public override bool Equals(object? obj)
+        public static bool operator ==(Entity a, Entity b)
+        {
+            if (a is null && b is null)
+            {
+                return true;
+            }
+
+            if (a is null || b is null)
+            {
+                return false;
+            }
+
+            return a.Equals(b);
+        }
+
+        public static bool operator !=(Entity a, Entity b) => !(a == b);
+
+        /// <inheritdoc />
+        public bool Equals(Entity other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            return ReferenceEquals(this, other) || Id == other.Id;
+        }
+
+        /// <inheritdoc />
+        public override bool Equals(object obj)
         {
             if (obj is null)
             {
                 return false;
             }
 
-            if (obj.GetType() != typeof(Entity))
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
+
+            if (obj.GetType() != GetType())
             {
                 return false;
             }
 
-            if (obj is not Entity entity)
+            if (!(obj is Entity other))
             {
                 return false;
             }
 
-            return entity.Id == Id;
+            if (Id == Guid.Empty || other.Id == Guid.Empty)
+            {
+                return false;
+            }
+
+            return Id == other.Id;
         }
 
-        public override int GetHashCode()
-        {
-            return Id.GetHashCode() * 41;
-        }
+        /// <inheritdoc />
+        public override int GetHashCode() => Id.GetHashCode() * 41;
     }
 }
