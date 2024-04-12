@@ -15,13 +15,14 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using MediatR;
+using Domain.Entities;
 
 namespace Infrastructure.Persistence
 {
     public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext
     {
         private readonly IMediator _mediator;
-        public WriteApplicationDbContext(DbContextOptions options, IMediator mediator) : base(options)
+        public WriteApplicationDbContext(DbContextOptions<WriteApplicationDbContext> options, IMediator mediator) : base(options)
         {
             _mediator = mediator;
         }
@@ -29,7 +30,7 @@ namespace Infrastructure.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(WriteApplicationDbContext).Assembly);
-            modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
         public DbSet<Customer> Customers { get; set; }
@@ -37,6 +38,7 @@ namespace Infrastructure.Persistence
         public DbSet<OrderSummary> OrderSummaries { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
+        public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
         /// <summary>
         /// Saves all of the pending changes in the unit of work.
@@ -115,9 +117,11 @@ namespace Infrastructure.Persistence
                 return;
             }
 
-            foreach (ReferenceEntry referenceEntry in entityEntry.References.Where(r => r.TargetEntry.State == EntityState.Deleted))
+            foreach (ReferenceEntry referenceEntry in entityEntry.References.Where(r => r.TargetEntry!.State == EntityState.Deleted))
             {
-                referenceEntry.TargetEntry.State = EntityState.Unchanged;
+                referenceEntry
+                    .TargetEntry
+                    !.State = EntityState.Unchanged;
 
                 UpdateDeletedEntityEntryReferencesToUnchanged(referenceEntry.TargetEntry);
             }

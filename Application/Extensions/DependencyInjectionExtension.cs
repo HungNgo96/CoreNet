@@ -15,8 +15,8 @@ namespace Application.Extensions
             {
                 configuration.NotificationPublisher = new TaskWhenAllPublisher();
                 configuration.RegisterServicesFromAssembly(assembly);
-                configuration.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
-                configuration.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
+                //configuration.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
+                //configuration.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
             });
 
             services.AddValidatorsFromAssembly(assembly);

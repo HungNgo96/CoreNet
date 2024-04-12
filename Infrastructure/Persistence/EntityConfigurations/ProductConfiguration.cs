@@ -22,7 +22,7 @@ namespace Infrastructure.Persistence.EntityConfigurations
 
             _ = builder.Property(p => p.Sku).HasConversion(
                skuId => skuId.Value,
-               value => Sku.Create(value)!);
+               value => Sku.Create(value));
 
             builder.OwnsOne(p => p.Price, priceBuilder =>
             {

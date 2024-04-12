@@ -39,5 +39,10 @@ namespace Domain.Shared
         {
             return new Result<T> { Succeeded = true, Message = message, Code = code };
         }
+
+        public static Result<T> Success(T data, string message = "", int code = (int)HttpStatusCode.OK)
+        {
+            return new Result<T> { Data = data, Succeeded = true, Message = message, Code = code };
+        }
     }
 }
