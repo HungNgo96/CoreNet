@@ -2,26 +2,25 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
 using Domain.Entities.Products;
+using Domain.Repositories;
 using Domain.Shared;
-using Microsoft.EntityFrameworkCore;
 
-namespace Application.Orders.Queries.GetProduct
+namespace Application.Products.Queries.GetProduct
 {
     public sealed class GetProductByIdQueryHandler : IQueryHandler<GetProductByIdQuery, IResult<Product?>>
     {
-        private readonly IReadApplicationDbContext _context;
+        private readonly IProductRepository _productRepository;
 
-        public GetProductByIdQueryHandler(IReadApplicationDbContext context)
+        public GetProductByIdQueryHandler(IProductRepository productRepository)
         {
-            _context = context;
-        }   
+            _productRepository = productRepository;
+        }
 
         public async Task<IResult<Product?>> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _context.Products.FirstOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+            var product = await _productRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
 
             if (product is null)
             {

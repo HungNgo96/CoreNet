@@ -1,4 +1,4 @@
-﻿using Domain.Services;
+﻿using Infrastructure.Services;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Extensions
@@ -14,7 +14,7 @@ namespace Infrastructure.Extensions
             return services;
         }
 
-        internal static IServiceCollection AddTransientServices(this IServiceCollection services)
+        public static IServiceCollection AddTransientServices(this IServiceCollection services)
         {
             var managers = typeof(ITransientService);
 
@@ -38,7 +38,7 @@ namespace Infrastructure.Extensions
             return services;
         }
 
-        internal static IServiceCollection AddScopeServices(this IServiceCollection services)
+        public static IServiceCollection AddScopeServices(this IServiceCollection services)
         {
             var managers = typeof(IScopeService);
 
@@ -53,7 +53,7 @@ namespace Infrastructure.Extensions
                 })
                 .Where(t => t.Service != null);
 
-            foreach (var type in types.Where(type => managers.IsAssignableFrom(type.Service)))
+            foreach (var type in types.Where(type => managers.IsAssignableFrom(type.Implementation)))
             {
                 services.AddScoped(type.Service!, type.Implementation);
             }

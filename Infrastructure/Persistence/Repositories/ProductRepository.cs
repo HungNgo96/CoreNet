@@ -2,31 +2,42 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq.Expressions;
+using Application.Abstractions.Data;
 using Domain.Entities.Products;
 using Domain.Repositories;
+using Infrastructure.Services;
+using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public class ProductRepository : IProductRepository
+    public sealed class ProductRepository : IProductRepository, IScopeService
     {
+        private readonly IReadApplicationDbContext _readDbContext;
+        private readonly IWriteApplicationDbContext _writeDbContext;
+
+        public ProductRepository(IReadApplicationDbContext readDbContext,
+                                 IWriteApplicationDbContext writeDbContext)
+        {
+            _readDbContext = readDbContext;
+            _writeDbContext = writeDbContext;
+        }
+
         public Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Product> GetByIdAsync(int id, CancellationToken cancellationToken)
+        public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Expression<Func<Product, bool>> condition = p => p.Id == id;
+
+            return await _readDbContext.Products.FirstOrDefaultAsync(condition, cancellationToken).ConfigureAwait(false);
         }
 
-        public Task<bool> InsertAsync(Product product, CancellationToken cancellationToken)
+        public async Task InsertAsync(Product product, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _writeDbContext.Products.AddAsync(product, cancellationToken);
         }
     }
 }

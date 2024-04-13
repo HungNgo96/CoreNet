@@ -3,14 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Domain.Entities.Products;
-using Domain.Services;
 
 namespace Domain.Repositories
 {
-    public interface IProductRepository : IScopeService
+    public interface IProductRepository
     {
-        public Task<Product> GetByIdAsync(int id, CancellationToken cancellationToken);
+        public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
         public Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken);
-        public Task<bool> InsertAsync(Product product, CancellationToken cancellationToken);
+        public Task InsertAsync(Product product, CancellationToken cancellationToken);
     }
 }

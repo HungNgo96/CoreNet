@@ -23,7 +23,10 @@ namespace Infrastructure.Persistence.EntityConfigurations
                     .WithMany()
                     .HasForeignKey(li => li.ProductId);
 
-            builder.OwnsOne(li => li.Price);
+            builder.OwnsOne(li => li.Price, priceBuilder =>
+            {
+                priceBuilder.Property(m => m.Amount).HasColumnType(nameof(Decimal));
+            });
         }
     }
 }

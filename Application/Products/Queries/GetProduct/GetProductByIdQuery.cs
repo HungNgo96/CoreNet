@@ -6,7 +6,7 @@ using Application.Abstractions.Messaging;
 using Domain.Entities.Products;
 using Domain.Shared;
 
-namespace Application.Orders.Queries.GetProduct
+namespace Application.Products.Queries.GetProduct
 {
     public record GetProductByIdQuery(Guid Id) : IQuery<IResult<Product?>>;
 

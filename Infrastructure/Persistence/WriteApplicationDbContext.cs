@@ -16,10 +16,11 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using MediatR;
 using Domain.Entities;
+using Application.Data;
 
 namespace Infrastructure.Persistence
 {
-    public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext
+    public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext, IUnitOfWork
     {
         private readonly IMediator _mediator;
         public WriteApplicationDbContext(DbContextOptions<WriteApplicationDbContext> options, IMediator mediator) : base(options)
@@ -45,18 +46,18 @@ namespace Infrastructure.Persistence
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The number of entities that have been saved.</returns>
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        {
-            DateTime utcNow = DateTime.UtcNow;
+        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        //{
+        //    //DateTime utcNow = DateTime.UtcNow;
 
-            UpdateAuditableEntities(utcNow);
+        //    //UpdateAuditableEntities(utcNow);
 
-            UpdateSoftDeletableEntities(utcNow);
+        //    //UpdateSoftDeletableEntities(utcNow);
 
-            await PublishDomainEvents(cancellationToken);
+        //    //await PublishDomainEvents(cancellationToken);
 
-            return await base.SaveChangesAsync(cancellationToken);
-        }
+        //    return await base.SaveChangesAsync(cancellationToken);
+        //}
 
         /// <inheritdoc />
         public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)

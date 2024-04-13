@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions.Data;
+using Application.Data;
 using Application.Extensions;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using WebApi.Extensions;
+using WebApi.Middlewares;
 
 IConfiguration config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -19,29 +21,17 @@ var configuration = builder.Configuration;
 // Add services to the container.
 builder.UseSerilog();
 
-builder.Services.AddControllers();
+services.AddControllers();
 
-builder.Services.AddRegisterSwagger(env);
+services.AddRegisterSwagger(env);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddApiVersion();
+services.AddApiVersion();
 
-builder.Services.AddApplication()
+services.AddApplication()
     .AddInfrastructure();
 
-builder.Services.AddDbContext<ReadApplicationDbContext>(op =>
-{
-    op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
-    op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-}, contextLifetime: ServiceLifetime.Scoped);
-
-builder.Services.AddDbContext<WriteApplicationDbContext>(op =>
-{
-    op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
-}, contextLifetime: ServiceLifetime.Scoped);
-
-builder.Services.AddScoped<IReadApplicationDbContext>(s => s.GetRequiredService<ReadApplicationDbContext>());
-builder.Services.AddScoped<IWriteApplicationDbContext>(s => s.GetRequiredService<WriteApplicationDbContext>());
+services.AddConfigDbContext(configuration);
 
 
 var app = builder.Build();
@@ -52,6 +42,8 @@ var app = builder.Build();
 //    app.UseSwagger();
 //    app.UseSwaggerUI();
 //}
+
+app.UseErrorHandler();
 
 app.UseAuthorization();
 

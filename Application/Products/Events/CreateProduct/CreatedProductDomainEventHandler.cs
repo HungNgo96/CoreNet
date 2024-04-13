@@ -1,0 +1,19 @@
+﻿// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using Domain.Core.Events;
+using Domain.Events;
+
+namespace Application.Products.Events.CreateProduct
+{
+    public class CreatedProductDomainEventHandler : IDomainEventHandler<CreatedProductDomainEvent>
+    {
+        public Task Handle(CreatedProductDomainEvent notification, CancellationToken cancellationToken)
+        {
+            Console.WriteLine("message create domain event");
+
+            return Task.CompletedTask;
+        }
+    }
+}

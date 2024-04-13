@@ -2,7 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Application.Abstractions.Data;
+using Application.Data;
 using Asp.Versioning;
+using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace WebApi.Extensions
@@ -104,6 +108,26 @@ namespace WebApi.Extensions
                 opts.GroupNameFormat = "'v'VVV";
                 opts.SubstituteApiVersionInUrl = true;
             });
+
+            return services;
+        }
+
+        internal static IServiceCollection AddConfigDbContext(this IServiceCollection services, ConfigurationManager config)
+        {
+            services.AddDbContext<ReadApplicationDbContext>(op =>
+            {
+                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
+                op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+            }, contextLifetime: ServiceLifetime.Scoped);
+
+            services.AddDbContext<WriteApplicationDbContext>(op =>
+            {
+                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
+            }, contextLifetime: ServiceLifetime.Scoped);
+
+            services.AddScoped<IReadApplicationDbContext>(s => s.GetRequiredService<ReadApplicationDbContext>());
+            services.AddScoped<IWriteApplicationDbContext>(s => s.GetRequiredService<WriteApplicationDbContext>());
+            services.AddScoped<IUnitOfWork>(s => s.GetRequiredService<WriteApplicationDbContext>());
 
             return services;
         }
