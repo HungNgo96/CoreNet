@@ -23,7 +23,8 @@ namespace Infrastructure.Persistence
     public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext, IUnitOfWork
     {
         private readonly IMediator _mediator;
-        public WriteApplicationDbContext(DbContextOptions<WriteApplicationDbContext> options, IMediator mediator) : base(options)
+        public WriteApplicationDbContext(DbContextOptions<WriteApplicationDbContext> options,
+                                         IMediator mediator) : base(options)
         {
             _mediator = mediator;
         }
@@ -46,18 +47,18 @@ namespace Infrastructure.Persistence
         /// </summary>
         /// <param name="cancellationToken">The cancellation token.</param>
         /// <returns>The number of entities that have been saved.</returns>
-        //public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
-        //{
-        //    //DateTime utcNow = DateTime.UtcNow;
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+        {
+            //DateTime utcNow = DateTime.UtcNow;
 
-        //    //UpdateAuditableEntities(utcNow);
+            //UpdateAuditableEntities(utcNow);
 
-        //    //UpdateSoftDeletableEntities(utcNow);
+            //UpdateSoftDeletableEntities(utcNow);
 
-        //    //await PublishDomainEvents(cancellationToken);
+            //await PublishDomainEvents(cancellationToken);
 
-        //    return await base.SaveChangesAsync(cancellationToken);
-        //}
+            return await base.SaveChangesAsync(cancellationToken);
+        }
 
         /// <inheritdoc />
         public Task<IDbContextTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
@@ -136,10 +137,10 @@ namespace Infrastructure.Persistence
         {
             List<EntityEntry<AggregateRoot>> aggregateRoots = ChangeTracker
                 .Entries<AggregateRoot>()
-                .Where(entityEntry => entityEntry.Entity.DomainEvents.Any())
+                .Where(entityEntry => entityEntry.Entity.GetDomainEvents().Any())
                 .ToList();
 
-            List<IDomainEvent> domainEvents = aggregateRoots.SelectMany(entityEntry => entityEntry.Entity.DomainEvents).ToList();
+            List<IDomainEvent> domainEvents = aggregateRoots.SelectMany(entityEntry => entityEntry.Entity.GetDomainEvents()).ToList();
 
             aggregateRoots.ForEach(entityEntry => entityEntry.Entity.ClearDomainEvents());
 

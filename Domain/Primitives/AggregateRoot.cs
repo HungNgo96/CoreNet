@@ -31,7 +31,7 @@ namespace Domain.Primitives
         /// <summary>
         /// Gets the domain events. This collection is readonly.
         /// </summary>
-        public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
+        public IReadOnlyCollection<IDomainEvent> GetDomainEvents() => _domainEvents.AsReadOnly();
 
         /// <summary>
         /// Clears all the domain events from the <see cref="AggregateRoot"/>.

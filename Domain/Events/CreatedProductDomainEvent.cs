@@ -7,7 +7,7 @@ using Domain.Entities.Products;
 
 namespace Domain.Events
 {
-    public record CreatedProductDomainEvent : IDomainEvent
+    public sealed record CreatedProductDomainEvent : IDomainEvent
     {
         public CreatedProductDomainEvent(Product product)
         {

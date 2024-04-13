@@ -4,6 +4,7 @@
 
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
+using Application.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Orders.Commands.RemoveLineItem
@@ -11,10 +12,13 @@ namespace Application.Orders.Commands.RemoveLineItem
     public sealed class RemoveLineItemCommandHandler : ICommandHandler<RemoveLineItemCommand, bool>
     {
         private readonly IWriteApplicationDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public RemoveLineItemCommandHandler(IWriteApplicationDbContext context)
+        public RemoveLineItemCommandHandler(IWriteApplicationDbContext context,
+                                            IUnitOfWork unitOfWork)
         {
             _context = context;
+            _unitOfWork= unitOfWork;
         }
 
         public async Task<bool> Handle(RemoveLineItemCommand request, CancellationToken cancellationToken)
@@ -31,7 +35,7 @@ namespace Application.Orders.Commands.RemoveLineItem
 
             order.RemoveLineItem(request.LineItemId);
 
-            return await _context.SaveChangesAsync(cancellationToken) > 0;
+            return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
 
         }
     }

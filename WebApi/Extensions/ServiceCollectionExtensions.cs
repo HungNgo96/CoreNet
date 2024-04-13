@@ -6,6 +6,7 @@ using Application.Abstractions.Data;
 using Application.Data;
 using Asp.Versioning;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -114,15 +115,18 @@ namespace WebApi.Extensions
 
         internal static IServiceCollection AddConfigDbContext(this IServiceCollection services, ConfigurationManager config)
         {
+            services.AddSingleton<InsertOutboxMessageInterceptor>();
+
             services.AddDbContext<ReadApplicationDbContext>(op =>
             {
                 op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
                 op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             }, contextLifetime: ServiceLifetime.Scoped);
 
-            services.AddDbContext<WriteApplicationDbContext>(op =>
+            services.AddDbContext<WriteApplicationDbContext>((sp,op) =>
             {
                 op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
+                op.AddInterceptors(sp.GetRequiredService<InsertOutboxMessageInterceptor>());
             }, contextLifetime: ServiceLifetime.Scoped);
 
             services.AddScoped<IReadApplicationDbContext>(s => s.GetRequiredService<ReadApplicationDbContext>());

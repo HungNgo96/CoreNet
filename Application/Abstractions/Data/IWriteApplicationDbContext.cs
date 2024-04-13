@@ -19,6 +19,5 @@ namespace Application.Abstractions.Data
         public DbSet<LineItem> LineItems { get; set; }
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
-        public Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
     }
 }

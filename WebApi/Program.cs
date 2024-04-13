@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions.Data;
 using Application.Data;
 using Application.Extensions;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
+using Quartz;
 using WebApi.Extensions;
 using WebApi.Middlewares;
 
@@ -33,6 +35,25 @@ services.AddApplication()
 
 services.AddConfigDbContext(configuration);
 
+services.AddQuartz(config =>
+{
+    var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
+
+    config.
+    AddJob<ProcessOutboxMessageJob>(jobKey)
+    .AddTrigger(trigger =>
+    {
+        trigger.ForJob(jobKey)
+        .WithSimpleSchedule(schedule =>
+        {
+            schedule.WithIntervalInSeconds(60).RepeatForever();
+        });
+    });
+
+    //_ = config.UseMicrosoftDependencyInjectionJobFactory();
+});
+
+services.AddQuartzHostedService();
 
 var app = builder.Build();
 
