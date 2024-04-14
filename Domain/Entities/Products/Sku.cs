@@ -6,10 +6,6 @@ public record Sku
 {
     private const int DefaultLength = 15;
     private Sku(string value) => Value = value;
-    private Sku()
-    {
-
-    }
 
     public string Value { get; init; }
 

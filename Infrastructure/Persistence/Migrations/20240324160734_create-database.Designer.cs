@@ -13,7 +13,7 @@ namespace Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(WriteApplicationDbContext))]
     [Migration("20240324160734_create-database")]
-    partial class createdatabase
+    partial class Createdatabase
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

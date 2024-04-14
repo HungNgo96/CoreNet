@@ -12,7 +12,7 @@ namespace Domain.Shared
         public int Code { get; set; }
     }
 
-    public class Result<T> : IResult<T>
+    public class Result<T> : IResult<T?>
     {
         public T? Data { get; set; }
 
