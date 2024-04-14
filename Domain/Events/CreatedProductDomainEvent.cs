@@ -9,11 +9,18 @@ namespace Domain.Events
 {
     public sealed record CreatedProductDomainEvent : IDomainEvent
     {
-        public CreatedProductDomainEvent(Product product)
+        public CreatedProductDomainEvent(Guid id, string name, Money? price, Sku? sku)
         {
-            Product = product;
+            Id = id;
+            Name = name;
+            Price = price;
+            Sku = sku;
         }
 
-        public Product Product { get; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
+        public Money? Price { get; set; }
+
+        public Sku? Sku { get; set; }
     }
 }

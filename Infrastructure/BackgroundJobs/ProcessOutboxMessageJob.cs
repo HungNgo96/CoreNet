@@ -35,10 +35,10 @@ namespace Infrastructure.BackgroundJobs
         public async Task Execute(IJobExecutionContext context)
         {
             List<OutboxMessage> outboxMessages = await _context
-                .OutboxMessages
-                .Where(x => x.ProcessedOnUtc == null)
-                .Take(20)
-                .ToListAsync(context.CancellationToken);
+               .OutboxMessages
+               .Where(x => x.ProcessedOnUtc == null)
+               .Take(20)
+               .ToListAsync(context.CancellationToken);
 
             foreach (OutboxMessage outboxMessage in outboxMessages)
             {

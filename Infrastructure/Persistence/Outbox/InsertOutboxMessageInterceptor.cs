@@ -30,7 +30,7 @@ namespace Infrastructure.Persistence.Outbox
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        private async void InsertOutboxMessage(DbContext context)
+        private void InsertOutboxMessage(DbContext context)
         {
             DateTime utcNow = DateTime.UtcNow;
 

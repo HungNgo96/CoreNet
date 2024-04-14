@@ -29,7 +29,7 @@ public class Product : AggregateRoot
     {
         var product = new Product(id, name, price, sku);
 
-        product.AddDomainEvent(new CreatedProductDomainEvent(product));
+        product.AddDomainEvent(new CreatedProductDomainEvent(id, name, price, sku));
 
         return product;
     }
