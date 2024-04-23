@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Application.Products.Commands.CreateProduct;
+using Application.Products.Queries;
 using Application.Products.Queries.GetProduct;
 using Microsoft.AspNetCore.Mvc;
 
@@ -11,6 +12,12 @@ namespace WebApi.Controllers
     [ApiController]
     public class ProductController : BaseController
     {
+        [HttpGet]
+        public async Task<IActionResult> GetAllProductAsync([FromQuery] GetAllProduct.Query request, CancellationToken cancellationToken)
+        {
+            return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
+        }
+
         [HttpGet]
         public async Task<IActionResult> GetProductByIdAsync([FromQuery] GetProductByIdQuery request, CancellationToken cancellationToken)
         {

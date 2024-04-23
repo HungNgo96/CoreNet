@@ -8,6 +8,7 @@ using Domain.Entities.Products;
 using Domain.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Persistence.Repositories
 {
@@ -23,9 +24,14 @@ namespace Infrastructure.Persistence.Repositories
             _writeDbContext = writeDbContext;
         }
 
-        public Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken)
+        public async Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            IQueryable<Product> iqueryAble = _readDbContext.Products.Where(x => !string.IsNullOrEmpty(x.Id.ToString()));
+
+            IQueryable<Product> orderBy = iqueryAble.OrderBy(x => x.Name);
+            IQueryable<Product> iqueryAble2 = orderBy.Skip(3).Take(2);
+
+            return await iqueryAble2.ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)

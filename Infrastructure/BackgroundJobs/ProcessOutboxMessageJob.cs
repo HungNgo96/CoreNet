@@ -37,6 +37,7 @@ namespace Infrastructure.BackgroundJobs
             List<OutboxMessage> outboxMessages = await _context
                .OutboxMessages
                .Where(x => x.ProcessedOnUtc == null)
+               .OrderBy(x => x.Id)
                .Take(20)
                .ToListAsync(context.CancellationToken);
 

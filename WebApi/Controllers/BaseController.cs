@@ -11,7 +11,7 @@ namespace WebApi.Controllers
     [Route("/api/v{version:apiVersion}/[controller]/[action]")]
     public class BaseController : Controller
     {
-        private IMediator _mapper;
+        private IMediator? _mapper;
         protected IMediator Mediator => _mapper ??= HttpContext.RequestServices.GetRequiredService<IMediator>();
     }
 }
