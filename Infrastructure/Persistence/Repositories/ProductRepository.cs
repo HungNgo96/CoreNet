@@ -30,7 +30,8 @@ namespace Infrastructure.Persistence.Repositories
 
             IQueryable<Product> orderBy = iqueryAble.OrderBy(x => x.Name);
             IQueryable<Product> iqueryAble2 = orderBy.Skip(3).Take(2);
-
+            //Func<Product, bool> d = (x) => !string.IsNullOrEmpty(x.Name);
+            //IReadOnlyCollection<Product> result = _readDbContext.Products.Where(d).ToList().AsReadOnly();
             return await iqueryAble2.ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
