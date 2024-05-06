@@ -8,7 +8,6 @@ using Domain.Entities.Products;
 using Domain.Repositories;
 using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Infrastructure.Persistence.Repositories
 {

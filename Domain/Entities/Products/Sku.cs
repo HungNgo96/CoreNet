@@ -2,25 +2,29 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 //Stock Keeping Unit
-public record Sku
+namespace Domain.Entities.Products
 {
-    private const int DefaultLength = 15;
-    private Sku(string value) => Value = value;
-
-    public string Value { get; init; }
-
-    public static Sku? Create(string value)
+    public record Sku
     {
-        if (string.IsNullOrEmpty(value))
-        {
-            return null;
-        }
+        private const int DefaultLength = 15;
+        private Sku(string value) => Value = value;
+        private Sku() { }
 
-        if (value.Length == DefaultLength)
-        {
-            return null;
-        }
+        public string Value { get; init; }
 
-        return new Sku(value);
+        public static Sku? Create(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                return null;
+            }
+
+            if (value.Length == DefaultLength)
+            {
+                return null;
+            }
+
+            return new Sku(value);
+        }
     }
 }

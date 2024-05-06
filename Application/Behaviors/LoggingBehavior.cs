@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System.Diagnostics;
+using System.Globalization;
 using Application.Extensions;
 using Domain.Shared;
 using MediatR;
@@ -24,7 +25,11 @@ namespace Application.Behaviors
             string requestName = typeof(TRequest).Name;
             _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Starting request {requestName}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
 
+            var timer = new Stopwatch();
+            timer.Start();
             var result = await next();
+            timer.Stop();
+            var timeTaken = timer.Elapsed.TotalSeconds;
 
             if (result is { Succeeded: false })
             {
@@ -34,7 +39,7 @@ namespace Application.Behaviors
                 }
             }
 
-            _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Completed request {requestName}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
+            _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Completed request {requestName}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)} handled ({timeTaken} seconds)");
 
             return result;
         }

@@ -30,6 +30,16 @@ namespace Domain.Shared
             return new Result<T> { Succeeded = false, Message = message, Code = code };
         }
 
+        public static Result<T> Error(int code = (int)HttpStatusCode.InternalServerError)
+        {
+            return new Result<T> { Succeeded = false, Code = code };
+        }
+
+        public static Result<T> Error(string message, int code = (int)HttpStatusCode.InternalServerError)
+        {
+            return new Result<T> { Succeeded = false, Message = message, Code = code };
+        }
+
         public static Result<T> Success(int code = (int)HttpStatusCode.OK)
         {
             return new Result<T> { Succeeded = true, Code = code };

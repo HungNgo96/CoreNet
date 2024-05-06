@@ -2,23 +2,19 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Domain.Core;
+using Domain.Core.Events;
 using Domain.Core.Utility;
 
 namespace Domain.Primitives
 {
-    public abstract class Entity : IEquatable<Entity>
+    public abstract class BaseEntity : IEntity<Guid>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
         /// </summary>
         /// <param name="id">The entity identifier.</param>
-        protected Entity(Guid id)
-            : this()
-        {
-            Ensure.NotEmpty(id, "The identifier is required.", nameof(id));
-
-            Id = id;
-        }
+        protected BaseEntity() => Id = Guid.NewGuid();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Entity"/> class.
@@ -26,75 +22,29 @@ namespace Domain.Primitives
         /// <remarks>
         /// Required by EF Core.
         /// </remarks>
-        protected Entity()
-        {
-        }
-
+        protected BaseEntity(Guid id) => Id = id;
         /// <summary>
         /// Gets or sets the entity identifier.
         /// </summary>
         public Guid Id { get; private set; }
 
-        public static bool operator ==(Entity a, Entity b)
-        {
-            if (a is null && b is null)
-            {
-                return true;
-            }
+        private readonly List<IDomainEvent> _domainEvents = new List<IDomainEvent>();
 
-            if (a is null || b is null)
-            {
-                return false;
-            }
+        /// <summary>
+        /// Gets the domain events. This collection is readonly.
+        /// </summary>
+        public IReadOnlyCollection<IDomainEvent> GetDomainEvents => _domainEvents.AsReadOnly();
 
-            return a.Equals(b);
-        }
+        /// <summary>
+        /// Clears all the domain events from the <see cref="AggregateRoot"/>.
+        /// </summary>
+        public void ClearDomainEvents() => _domainEvents.Clear();
 
-        public static bool operator !=(Entity a, Entity b) => !(a == b);
+        /// <summary>
+        /// Adds the specified <see cref="IDomainEvent"/> to the <see cref="AggregateRoot"/>.
+        /// </summary>
+        /// <param name="domainEvent">The domain event.</param>
+        protected void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
 
-        /// <inheritdoc />
-        public bool Equals(Entity? other)
-        {
-            if (other is null)
-            {
-                return false;
-            }
-
-            return ReferenceEquals(this, other) || Id == other.Id;
-        }
-
-        /// <inheritdoc />
-        public override bool Equals(object? obj)
-        {
-            if (obj is null)
-            {
-                return false;
-            }
-
-            if (ReferenceEquals(this, obj))
-            {
-                return true;
-            }
-
-            if (obj.GetType() != GetType())
-            {
-                return false;
-            }
-
-            if (!(obj is Entity other))
-            {
-                return false;
-            }
-
-            if (Id == Guid.Empty || other.Id == Guid.Empty)
-            {
-                return false;
-            }
-
-            return Id == other.Id;
-        }
-
-        /// <inheritdoc />
-        public override int GetHashCode() => Id.GetHashCode() * 41;
     }
 }

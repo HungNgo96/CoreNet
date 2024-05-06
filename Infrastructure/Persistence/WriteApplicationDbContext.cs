@@ -23,6 +23,7 @@ namespace Infrastructure.Persistence
     public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext, IUnitOfWork
     {
         private readonly IMediator _mediator;
+
         public WriteApplicationDbContext(DbContextOptions<WriteApplicationDbContext> options,
                                          IMediator mediator) : base(options)
         {
@@ -135,12 +136,12 @@ namespace Infrastructure.Persistence
         /// <param name="cancellationToken">The cancellation token.</param>
         private async Task PublishDomainEvents(CancellationToken cancellationToken)
         {
-            List<EntityEntry<AggregateRoot>> aggregateRoots = ChangeTracker
-                .Entries<AggregateRoot>()
-                .Where(entityEntry => entityEntry.Entity.GetDomainEvents().Any())
+            List<EntityEntry<BaseEntity>> aggregateRoots = ChangeTracker
+                .Entries<BaseEntity>()
+                .Where(entityEntry => entityEntry.Entity.GetDomainEvents.Any())
                 .ToList();
 
-            List<IDomainEvent> domainEvents = aggregateRoots.SelectMany(entityEntry => entityEntry.Entity.GetDomainEvents()).ToList();
+            List<IDomainEvent> domainEvents = aggregateRoots.SelectMany(entityEntry => entityEntry.Entity.GetDomainEvents).ToList();
 
             aggregateRoots.ForEach(entityEntry => entityEntry.Entity.ClearDomainEvents());
 

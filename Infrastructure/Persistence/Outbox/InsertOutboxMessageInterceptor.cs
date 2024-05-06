@@ -36,12 +36,12 @@ namespace Infrastructure.Persistence.Outbox
 
             var outboxMessage = context
                 .ChangeTracker
-                .Entries<AggregateRoot>()
-                .Where(entityEntry => entityEntry.Entity.GetDomainEvents().Any())
+                .Entries<BaseEntity>()
+                .Where(entityEntry => entityEntry.Entity.GetDomainEvents.Any())
                 .Select(entry => entry.Entity)
                 .SelectMany(entity =>
                 {
-                    List<IDomainEvent> domainEvents = entity.GetDomainEvents().ToList();
+                    List<IDomainEvent> domainEvents = entity.GetDomainEvents.ToList();
 
                     entity.ClearDomainEvents();
 

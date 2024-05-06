@@ -2,12 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Xml.Linq;
+using Domain.Core;
 using Domain.Events;
 using Domain.Primitives;
 
 namespace Domain.Entities.Products;
 
-public class Product : AggregateRoot
+public class Product : BaseEntity, IAggregateRoot
 {
     public string Name { get; private set; } = string.Empty;
     public Money? Price { get; private set; }

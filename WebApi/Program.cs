@@ -1,9 +1,11 @@
 ﻿using Application.Abstractions.Data;
 using Application.Data;
 using Application.Extensions;
+using Domain.Core.SharedKernel.Correlation;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Extensions;
 using Infrastructure.Persistence;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using WebApi.Extensions;
@@ -35,6 +37,14 @@ services.AddApplication()
 
 services.AddConfigDbContext(configuration);
 
+services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+
+builder.Services.Configure<ForwardedHeadersOptions>(options =>
+{
+    options.ForwardedHeaders =
+        ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+});
+
 services.AddQuartz(config =>
 {
     var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
@@ -57,18 +67,19 @@ services.AddQuartzHostedService();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-//if (app.Environment.IsDevelopment())
-//{
-//    app.UseSwagger();
-//    app.UseSwaggerUI();
-//}
+app.UseForwardedHeaders();
+
+app.UseCorrelationId();
 
 app.UseErrorHandler();
 
 app.UseAuthorization();
 
-app.UseConfigureSwagger();
+if (app.Environment.IsDevelopment())
+{
+
+    app.UseConfigureSwagger();
+}
 
 app.MapControllers();
 
