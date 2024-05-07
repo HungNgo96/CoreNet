@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.IO.Compression;
 using Application.Abstractions.Data;
 using Application.Abstractions.EventBus;
 using Application.Data;
@@ -12,7 +13,9 @@ using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Outbox;
 using MassTransit;
+using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.OpenApi.Models;
 using Quartz;
 
@@ -194,6 +197,71 @@ namespace WebApi.Extensions
             });
 
             services.AddQuartzHostedService();
+            return services;
+        }
+
+        internal static IServiceCollection AddConfigResponseCompression(this IServiceCollection services)
+        {
+            services.AddResponseCompression(options =>
+            {
+#if DEBUG
+                options.EnableForHttps = true;
+#endif
+                options.Providers.Add<BrotliCompressionProvider>();//priority 1
+                options.Providers.Add<GzipCompressionProvider>();//priority 2
+            });
+
+            services.Configure<BrotliCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.SmallestSize;
+            });
+
+            services.Configure<GzipCompressionProviderOptions>(options =>
+            {
+                options.Level = CompressionLevel.SmallestSize;
+            });
+
+            return services;
+        }
+
+        internal static IServiceCollection AddCurrentUserService(this IServiceCollection services)
+        {
+            services.AddHttpContextAccessor();
+            //services.AddScoped<ICurrentUserService, CurrentUserService>();
+            return services;
+        }
+
+        internal static IServiceCollection AddHealthCheck(this IServiceCollection services, IConfiguration configuration)
+        {
+            //IConfigurationSection appSettingKafka = configuration.GetSection("Kafka");
+            //IConfigurationSection appSettingRedis = configuration.GetSection("Redis");
+            //var redisOption = appSettingRedis.Get<RedisConfigOptions>();
+            //var kafkaOption = appSettingKafka.Get<KafkaConfigOptions>();
+
+            //services.AddHostedService<StartupHostedService>()
+            //        .AddSingleton<StartupHostedServiceHealthCheck>();
+
+            //services
+            //       .AddHealthChecks()
+            //       .AddRedis(redisOption.ConfigRedis, tags: new[] { "system" })
+            //       .AddKafka(config =>
+            //       {
+            //           config.BatchSize = kafkaOption.Serilog.BatchSizeLimit;
+            //           config.BootstrapServers = kafkaOption.Serilog.Brokers;
+            //       }, kafkaOption.Serilog.TopicRequest, tags: new[] { "system" })
+            //       .AddCheck<SRWebHealthChecks>("SRWeb API", tags: new[] { "app" })
+            //       .AddCheck<InsideHealthChecks>("Inside", tags: new[] { "app" })
+            //       .AddCheck<TransactionCounterHealthChecks>("Transaction Counter", tags: new[] { "app" })
+            //       .AddCheck<StartupHostedServiceHealthCheck>("hosted_service_startup", failureStatus: HealthStatus.Degraded, tags: new[] { "ready" });
+
+            //services.AddHealthChecksUI(config =>
+            //{
+            //    config.DisableDatabaseMigrations();
+            //    config.SetEvaluationTimeInSeconds(360);
+            //    config.SetHeaderText("SRMobi");
+            //    config.SetMinimumSecondsBetweenFailureNotifications(60);
+            //}).AddInMemoryStorage();
+
             return services;
         }
     }

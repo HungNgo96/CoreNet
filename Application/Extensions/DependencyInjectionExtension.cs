@@ -1,4 +1,5 @@
-﻿using Application.Behaviors;
+﻿using System.Reflection;
+using Application.Behaviors;
 using FluentValidation;
 using MediatR.NotificationPublishers;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,16 +11,14 @@ namespace Application.Extensions
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             var assembly = typeof(DependencyInjectionExtension).Assembly;
-
+            _ = services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(configuration =>
             {
                 configuration.NotificationPublisher = new TaskWhenAllPublisher();
-                configuration.RegisterServicesFromAssembly(assembly);
+                configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 //configuration.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
                 configuration.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
             });
-
-            services.AddValidatorsFromAssembly(assembly);
 
             //_ = services.AddAutoMapper(assembly);
 

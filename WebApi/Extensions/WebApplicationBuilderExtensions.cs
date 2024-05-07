@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
@@ -70,6 +72,24 @@ namespace WebApi.Extensions
                     options.DocExpansion(DocExpansion.None);
                 });
             }
+        }
+
+        internal static void AddJsonFiles(this WebApplicationBuilder builder)
+        {
+            builder.Configuration.SetBasePath(builder.Environment.ContentRootPath)
+             .AddJsonFile("appsettings.json", true, true)
+             .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", true, true)
+             .AddEnvironmentVariables();
+        }
+
+        internal static void UseHealthCheckCustom(this WebApplication app)
+        {
+            app.UseHealthChecks($"/healthchecks", new HealthCheckOptions()
+            {
+                Predicate = _ => true,
+                ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,
+                AllowCachingResponses = false,
+            });
         }
     }
 }

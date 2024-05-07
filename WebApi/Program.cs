@@ -1,43 +1,51 @@
-﻿using Application.Abstractions.Data;
-using Application.Abstractions.EventBus;
-using Application.Data;
+﻿using System.Text.Json.Serialization;
 using Application.Extensions;
-using Application.Products.Commands.CreateProduct;
 using Domain.Core.SharedKernel.Correlation;
-using Infrastructure.BackgroundJobs;
+using FluentValidation.AspNetCore;
 using Infrastructure.Extensions;
-using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
-using Quartz;
+using WebApi.ConfigOptions;
 using WebApi.Extensions;
 using WebApi.Middlewares;
 
-IConfiguration config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
-    .AddEnvironmentVariables()
-    .Build();
-
+//IConfiguration config = new ConfigurationBuilder()
+//    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+//    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
+//    .AddEnvironmentVariables()
+//    .Build();
 var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 var env = builder.Environment;
 var configuration = builder.Configuration;
+
+builder.AddJsonFiles();
 // Add services to the container.
 builder.UseSerilog();
 
-services.AddControllers();
+services.AddControllers()
+.AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
+.ConfigureApiBehaviorOptions(ConfigureApiBehaviorExtension.ConfigureApiBehavior);
+
+services.AddRequestDecompression()
+        .AddConfigResponseCompression();
+
+services.AddHealthCheck(configuration);
 
 services.AddRegisterSwagger(env);
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 services.AddApiVersion();
 
+services.AddCurrentUserService();
+
 services.AddApplication()
     .AddInfrastructure();
+
+services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();//fluent API
 
 services.AddConfigDbContext(configuration);
 
@@ -63,11 +71,46 @@ app.UseErrorHandler();
 
 app.UseAuthorization();
 
+app.UseRequestDecompression();
+
+app.UseResponseCompression();
+
+app.UseStaticFiles();
+
+app.UseHealthCheckCustom();
+
 if (app.Environment.IsDevelopment())
 {
+    var scope = app.Services.CreateScope();
+    var dbContext = scope.ServiceProvider.GetRequiredService<WriteApplicationDbContext>();
+    dbContext.Database.Migrate();
     app.UseConfigureSwagger();
 }
 
 app.MapControllers();
+CheckTime(app);
+await app.RunAsync();
 
-app.Run();
+
+#region private
+
+void CheckTime(WebApplication app)
+{
+    ILogger<Program> _ilogger = app.Services.GetRequiredService<ILogger<Program>>();
+    var now = DateTime.Now;
+    var utcNow = DateTime.UtcNow;
+    var currentTimeZone = TimeZoneInfo.Local;
+    var currentTimeZoneUtc = TimeZoneInfo.Utc;
+
+    _ilogger.LogInformation(@"----------------Local time--------------------
+    Local Now: {Now} -- Kind :{Kind}
+    TimeZone Local: DaylightName: {DaylightName} -- DisplayName: {DisplayName}
+    ", now, now.Kind, currentTimeZone.DaylightName, currentTimeZone.DisplayName);
+
+    _ilogger.LogInformation(@"----------------UTC time----------------------
+    UTC Now: {UtcNow} -- Kind: {Kind}
+    TimeZone Utc: DaylightName: {DaylightName} -- DisplayName: {DisplayName}
+    ", utcNow, utcNow.Kind, currentTimeZoneUtc.DaylightName, currentTimeZoneUtc.DisplayName);
+}
+
+#endregion private
