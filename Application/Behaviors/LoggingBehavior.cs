@@ -10,8 +10,8 @@ namespace Application.Behaviors
 {
     public class LoggingBehavior<TRequest, TResponse>
         : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : IRequest<TResponse>
-        where TResponse : IResult
+        where TRequest : notnull, IRequest<TResponse>
+        where TResponse : notnull, IResult
     {
         private readonly ILogger<LoggingBehavior<TRequest, TResponse>> _logger;
 
@@ -23,6 +23,7 @@ namespace Application.Behaviors
                                             CancellationToken cancellationToken)
         {
             string requestName = typeof(TRequest).Name;
+
             _logger.Info(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"Starting request {requestName}, {DateTime.Now.ToString("dd-MM-yyyy hh:MM:ss", CultureInfo.InvariantCulture)}");
 
             var timer = new Stopwatch();
@@ -30,6 +31,11 @@ namespace Application.Behaviors
             var result = await next();
             timer.Stop();
             var timeTaken = timer.Elapsed.TotalSeconds;
+
+            if (timeTaken > 3) // if the request is greater than 3 seconds, then log the warnings
+            {
+                _logger.Warning(nameof(LoggingBehavior<TRequest, TResponse>), nameof(Handle), $"The request {requestName} took {timeTaken} seconds.");
+            }
 
             if (result is { Succeeded: false })
             {

@@ -3,12 +3,18 @@
 // See the LICENSE file in the project root for more information.
 
 using Application.Abstractions.Data;
+using Application.Abstractions.EventBus;
 using Application.Data;
+using Application.Products.Commands.CreateProduct;
 using Asp.Versioning;
+using Infrastructure.BackgroundJobs;
+using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Outbox;
+using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Quartz;
 
 namespace WebApi.Extensions
 {
@@ -123,7 +129,7 @@ namespace WebApi.Extensions
                 op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
             }, contextLifetime: ServiceLifetime.Scoped);
 
-            services.AddDbContext<WriteApplicationDbContext>((sp,op) =>
+            services.AddDbContext<WriteApplicationDbContext>((sp, op) =>
             {
                 op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
                 op.AddInterceptors(sp.GetRequiredService<InsertOutboxMessageInterceptor>());
@@ -133,6 +139,61 @@ namespace WebApi.Extensions
             services.AddScoped<IWriteApplicationDbContext>(s => s.GetRequiredService<WriteApplicationDbContext>());
             services.AddScoped<IUnitOfWork>(s => s.GetRequiredService<WriteApplicationDbContext>());
 
+            return services;
+        }
+
+        internal static IServiceCollection AddConfigureMassTransit(this IServiceCollection services)
+        {
+            services.AddMassTransit((busConfigurator) =>
+            {
+                busConfigurator.SetKebabCaseEndpointNameFormatter();
+
+                busConfigurator.AddConsumer<ProductCreatedEventConsumer, ProductCreatedEventConsumerDefinition>();
+
+                busConfigurator.UsingRabbitMq((context, configurator) =>
+                {
+                    configurator.PrefetchCount = 1;//to consumer in order but this is not performance
+                    //configurator.ReceiveEndpoint();
+                    configurator.Host(new Uri("amqp://localhost:5672"), (h) =>
+                    {
+                        h.Username("guest");
+                        h.Password("guest");
+                    });
+
+                    configurator.ReceiveEndpoint("product-service", e =>
+                    {
+                        e.ConcurrentMessageLimit = 28; // only applies to this endpoint
+                        e.PrefetchCount = 5;
+                        e.ConfigureConsumer<ProductCreatedEventConsumer>(context);
+                    });
+
+                    //configurator.ConfigureEndpoints(context);
+                });
+            });
+
+            services.AddTransient<IEventBus, EventBus>();
+            return services;
+        }
+
+        internal static IServiceCollection AddConfigQuartz(this IServiceCollection services)
+        {
+            services.AddQuartz(config =>
+            {
+                var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
+
+                config.
+                AddJob<ProcessOutboxMessageJob>(jobKey)
+                .AddTrigger(trigger =>
+                {
+                    trigger.ForJob(jobKey)
+                    .WithSimpleSchedule(schedule =>
+                    {
+                        schedule.WithIntervalInSeconds(60).RepeatForever();
+                    });
+                });
+            });
+
+            services.AddQuartzHostedService();
             return services;
         }
     }

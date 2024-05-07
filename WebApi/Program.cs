@@ -1,10 +1,14 @@
 ﻿using Application.Abstractions.Data;
+using Application.Abstractions.EventBus;
 using Application.Data;
 using Application.Extensions;
+using Application.Products.Commands.CreateProduct;
 using Domain.Core.SharedKernel.Correlation;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.Extensions;
+using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
+using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Quartz;
@@ -45,25 +49,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-services.AddQuartz(config =>
-{
-    var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
+services.AddConfigQuartz();
 
-    config.
-    AddJob<ProcessOutboxMessageJob>(jobKey)
-    .AddTrigger(trigger =>
-    {
-        trigger.ForJob(jobKey)
-        .WithSimpleSchedule(schedule =>
-        {
-            schedule.WithIntervalInSeconds(60).RepeatForever();
-        });
-    });
-
-    //_ = config.UseMicrosoftDependencyInjectionJobFactory();
-});
-
-services.AddQuartzHostedService();
+services.AddConfigureMassTransit();
 
 var app = builder.Build();
 
@@ -77,7 +65,6 @@ app.UseAuthorization();
 
 if (app.Environment.IsDevelopment())
 {
-
     app.UseConfigureSwagger();
 }
 
