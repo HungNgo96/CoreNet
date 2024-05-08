@@ -18,6 +18,7 @@ namespace Application.Extensions
                 configuration.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
                 //configuration.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
                 configuration.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
+                configuration.AddOpenBehavior(typeof(IdempotentCommandPipelineBehavior<,>));
             });
 
             //_ = services.AddAutoMapper(assembly);

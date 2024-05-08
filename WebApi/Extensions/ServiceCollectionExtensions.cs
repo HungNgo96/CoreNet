@@ -2,20 +2,24 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System;
 using System.IO.Compression;
 using Application.Abstractions.Data;
 using Application.Abstractions.EventBus;
 using Application.Data;
 using Application.Products.Commands.CreateProduct;
 using Asp.Versioning;
+using Domain.Core;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
 using Infrastructure.Persistence.Outbox;
 using MassTransit;
+using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Quartz;
 
@@ -126,15 +130,41 @@ namespace WebApi.Extensions
         {
             services.AddSingleton<InsertOutboxMessageInterceptor>();
 
-            services.AddDbContext<ReadApplicationDbContext>(op =>
+            services.AddDbContext<ReadApplicationDbContext>((sp, op) =>
             {
-                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
+                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x =>
+                {
+                    x.MigrationsAssembly("Infrastructure");
+                    x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                });
+
                 op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
+
+                var environment = sp.GetRequiredService<IHostEnvironment>();
+
+                if (!environment.IsProduction())
+                {
+                    op.EnableDetailedErrors();
+                    op.EnableSensitiveDataLogging();
+                }
             }, contextLifetime: ServiceLifetime.Scoped);
 
             services.AddDbContext<WriteApplicationDbContext>((sp, op) =>
             {
-                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x => x.MigrationsAssembly("Infrastructure"));
+                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x =>
+                {
+                    x.MigrationsAssembly("Infrastructure");
+                    x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
+                });
+
+                var environment = sp.GetRequiredService<IHostEnvironment>();
+
+                if (!environment.IsProduction())
+                {
+                    op.EnableDetailedErrors();
+                    op.EnableSensitiveDataLogging();
+                }
+
                 op.AddInterceptors(sp.GetRequiredService<InsertOutboxMessageInterceptor>());
             }, contextLifetime: ServiceLifetime.Scoped);
 
@@ -261,6 +291,51 @@ namespace WebApi.Extensions
             //    config.SetHeaderText("SRMobi");
             //    config.SetMinimumSecondsBetweenFailureNotifications(60);
             //}).AddInMemoryStorage();
+
+            return services;
+        }
+
+        public static IServiceCollection AddRepository(this IServiceCollection services, Type repoType)
+        {
+            services.Scan(scan => scan
+                .FromAssembliesOf(repoType)
+                .AddClasses(classes =>
+                    classes.AssignableTo(repoType)).As(typeof(IRepository<>)).WithScopedLifetime()
+                .AddClasses(classes =>
+                    classes.AssignableTo(repoType)).As(typeof(Domain.Core.IServiceScope)).WithScopedLifetime()
+            );
+
+            return services;
+        }
+
+        public static IServiceCollection AddServices(this IServiceCollection services, Type repoType)
+        {
+            services.Scan(scan => scan
+                .FromAssembliesOf(repoType)
+                .AddClasses(classes =>
+                    classes.AssignableTo(repoType)).As(typeof(Domain.Core.IServiceScope)).WithScopedLifetime()
+            );
+
+            return services;
+        }
+
+        public static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
+        {
+            //var options = configuration.GetOptions<ConnectionOptions>();
+            //if (options.CacheConnectionInMemory())
+            //{
+            //    services.AddMemoryCacheService();
+            //    services.AddMemoryCache(memoryOptions => memoryOptions.TrackStatistics = true);
+            //}
+            //else
+            //{
+            //    services.AddDistributedCacheService();
+            //    services.AddStackExchangeRedisCache(redisOptions =>
+            //    {
+            //        redisOptions.InstanceName = RedisInstanceName;
+            //        redisOptions.Configuration = options.CacheConnection;
+            //    });
+            //}
 
             return services;
         }

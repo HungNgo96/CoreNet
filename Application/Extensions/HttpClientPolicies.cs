@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Extensions.Http;
 
-namespace Server.Application.Extensions
+namespace Application.Extensions
 {
     public static class HttpClientPolicies
     {
@@ -47,11 +47,11 @@ namespace Server.Application.Extensions
 
         private static int RandomNumberGeneratorValue()
         {
-            byte[] randomNumberBytes = new byte[4];
-            using RandomNumberGenerator rng = RandomNumberGenerator.Create();
+            var randomNumberBytes = new byte[4];
+            using var rng = RandomNumberGenerator.Create();
             rng.GetBytes(randomNumberBytes);
             // Convert the random bytes to an integer
-            int randomNumber = BitConverter.ToInt32(randomNumberBytes, 0);
+            var randomNumber = BitConverter.ToInt32(randomNumberBytes, 0);
             return Math.Abs(randomNumber) % 101;
         }
     }

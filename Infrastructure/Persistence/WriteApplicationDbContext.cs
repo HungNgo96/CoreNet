@@ -2,32 +2,37 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
-using System;
+using System.Data;
 using Application.Abstractions.Data;
+using Application.Data;
+using Application.Extensions;
 using Domain.Core.Abstractions;
 using Domain.Core.Events;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;
 using Domain.Primitives;
+using Infrastructure.Persistence.Idempotency;
+using Infrastructure.Persistence.Outbox;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
-using MediatR;
-using Domain.Entities;
-using Application.Data;
+using Microsoft.Extensions.Logging;
 
 namespace Infrastructure.Persistence
 {
     public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext, IUnitOfWork
     {
         private readonly IMediator _mediator;
+        private readonly ILogger<WriteApplicationDbContext> _logger;
 
         public WriteApplicationDbContext(DbContextOptions<WriteApplicationDbContext> options,
-                                         IMediator mediator) : base(options)
+                                         IMediator mediator,
+                                         ILogger<WriteApplicationDbContext> logger) : base(options)
         {
             _mediator = mediator;
+            _logger = logger;
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -36,12 +41,15 @@ namespace Infrastructure.Persistence
             //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
+        //public override DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
+
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderSummary> OrderSummaries { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
         public DbSet<OutboxMessage> OutboxMessages { get; set; }
+        public DbSet<IdempotentRequest> IdempotentRequests { get; set; }
 
         /// <summary>
         /// Saves all of the pending changes in the unit of work.
@@ -50,15 +58,49 @@ namespace Infrastructure.Persistence
         /// <returns>The number of entities that have been saved.</returns>
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
         {
-            //DateTime utcNow = DateTime.UtcNow;
+            var strategy = Database.CreateExecutionStrategy();
+            var rowsAffected = 0;
+            // Executing the strategy.
+            await strategy.ExecuteAsync(async () =>
+            {
+                await using var transaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
-            //UpdateAuditableEntities(utcNow);
+                _logger.Info(nameof(WriteApplicationDbContext), nameof(SaveChangesAsync), $"----- Begin transaction: '{transaction.TransactionId}'");
 
-            //UpdateSoftDeletableEntities(utcNow);
+                try
+                {
+                    //DateTime utcNow = DateTime.UtcNow;
 
-            //await PublishDomainEvents(cancellationToken);
+                    //UpdateAuditableEntities(utcNow);
 
-            return await base.SaveChangesAsync(cancellationToken);
+                    //UpdateSoftDeletableEntities(utcNow);
+
+                    //await PublishDomainEvents(cancellationToken);
+                    // Getting the domain events and event stores from the tracked entities in the EF Core context.
+                    rowsAffected = await base.SaveChangesAsync();
+
+                    _logger.LogInformation("----- Commit transaction: '{TransactionId}'", transaction.TransactionId);
+
+                    await transaction.CommitAsync();
+
+                    // Triggering the events and saving the stores.
+
+                    _logger.Info(nameof(WriteApplicationDbContext), nameof(SaveChangesAsync),
+                        $"----- Transaction successfully confirmed: '{transaction.TransactionId}', Rows Affected: {rowsAffected}");
+                }
+                catch (Exception ex)
+                {
+                    _logger.Error(
+                        nameof(WriteApplicationDbContext), nameof(SaveChangesAsync),
+                        $"An unexpected exception occurred while committing the transaction: '{transaction.TransactionId}', message: {ex.Message}", ex);
+
+                    await transaction.RollbackAsync();
+
+                    throw;
+                }
+            });
+
+            return rowsAffected;
         }
 
         /// <inheritdoc />

@@ -4,14 +4,14 @@
 
 using System.Linq.Expressions;
 using Application.Abstractions.Data;
+using Application.Services;
 using Domain.Entities.Products;
 using Domain.Repositories;
-using Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public sealed class ProductRepository : IProductRepository, IScopeService
+    public sealed class ProductRepository : IProductRepository
     {
         private readonly IReadApplicationDbContext _readDbContext;
         private readonly IWriteApplicationDbContext _writeDbContext;
@@ -28,10 +28,10 @@ namespace Infrastructure.Persistence.Repositories
             IQueryable<Product> iqueryAble = _readDbContext.Products.Where(x => !string.IsNullOrEmpty(x.Id.ToString()));
 
             IQueryable<Product> orderBy = iqueryAble.OrderBy(x => x.Name);
-            IQueryable<Product> iqueryAble2 = orderBy.Skip(3).Take(2);
+            //IQueryable<Product> iqueryAble2 = orderBy.Skip(3).Take(2);
             //Func<Product, bool> d = (x) => !string.IsNullOrEmpty(x.Name);
             //IReadOnlyCollection<Product> result = _readDbContext.Products.Where(d).ToList().AsReadOnly();
-            return await iqueryAble2.ToListAsync(cancellationToken).ConfigureAwait(false);
+            return await orderBy.ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)

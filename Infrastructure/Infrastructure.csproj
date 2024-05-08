@@ -12,6 +12,8 @@
 
   <ItemGroup>
     <Folder Include="Persistence\Migrations\" />
+    <Folder Include="Persistence\Services\" />
+    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +21,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.3" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Quartz" Version="3.8.1" />
+    <PackageReference Include="Scrutor" Version="3.3.0" />
   </ItemGroup>
 
 </Project>

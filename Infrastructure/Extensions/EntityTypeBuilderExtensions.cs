@@ -1,7 +1,7 @@
 ﻿using Domain.Primitives;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Shop.Infrastructure.Data.Extensions;
+namespace Infrastructure.Extensions;
 
 internal static class EntityTypeBuilderExtensions
 {

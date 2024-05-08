@@ -10,7 +10,12 @@ using Microsoft.EntityFrameworkCore;
 using WebApi.ConfigOptions;
 using WebApi.Extensions;
 using WebApi.Middlewares;
-
+using Domain.Core;
+using System.Threading;
+using Infrastructure.Persistence.Idempotency;
+using Application.Abstractions.Idempotency;
+using Domain.Repositories;
+using Infrastructure.Persistence.Repositories;
 //IConfiguration config = new ConfigurationBuilder()
 //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 //    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
@@ -49,7 +54,7 @@ services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapte
 
 services.AddConfigDbContext(configuration);
 
-services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+services.AddCorrelationGenerator();
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
@@ -58,8 +63,12 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 services.AddConfigQuartz();
-
 services.AddConfigureMassTransit();
+
+//services.AddRepository(typeof(Enti)).AddServices(services);
+
+services.AddScoped<IIdempotencyService, IdempotencyService>();
+services.AddScoped<IProductRepository, ProductRepository>();
 
 var app = builder.Build();
 
@@ -83,6 +92,12 @@ if (app.Environment.IsDevelopment())
 {
     var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WriteApplicationDbContext>();
+
+
+    if (!await dbContext.Database.CanConnectAsync(default))
+    {
+        throw new Exception("Couldn't connect database.");
+    }
     dbContext.Database.Migrate();
     app.UseConfigureSwagger();
 }

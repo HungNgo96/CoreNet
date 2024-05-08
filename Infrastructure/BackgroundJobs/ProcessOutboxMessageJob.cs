@@ -5,7 +5,7 @@
 using Application.Abstractions.Data;
 using Application.Data;
 using Domain.Core.Events;
-using Domain.Entities;
+using Infrastructure.Persistence.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
@@ -29,8 +29,7 @@ namespace Infrastructure.BackgroundJobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            List<OutboxMessage> outboxMessages = await _context
-               .OutboxMessages
+            List<OutboxMessage> outboxMessages = await _context.Set<OutboxMessage>()
                .Where(x => x.ProcessedOnUtc == null)
                .OrderBy(x => x.Id)
                .Take(20)

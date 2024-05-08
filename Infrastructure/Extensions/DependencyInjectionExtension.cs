@@ -1,5 +1,5 @@
-﻿using Infrastructure.Persistence.Outbox;
-using Infrastructure.Services;
+﻿using Application.Services;
+using Infrastructure.Persistence.Outbox;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Infrastructure.Extensions

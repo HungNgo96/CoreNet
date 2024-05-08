@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-namespace Infrastructure.Services
+namespace Application.Services
 {
-    public interface ITransientService
+    public interface IScopeService
     {
     }
 }

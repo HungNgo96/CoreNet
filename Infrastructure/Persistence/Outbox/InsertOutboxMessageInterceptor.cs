@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Domain.Core.Events;
-using Domain.Entities;
 using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;

@@ -5,6 +5,7 @@
 using Application.Products.Commands.CreateProduct;
 using Application.Products.Queries;
 using Application.Products.Queries.GetProduct;
+using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -25,9 +26,23 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductCommand request, CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductCommand request,
+                                                            [FromHeader(Name = "X-Idempotency-Key")] string requestId,
+                                                            CancellationToken cancellationToken)
         {
-            return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
+            if (!Guid.TryParse(requestId, out Guid parseRequestId))
+            {
+                return BadRequest(Result<bool>.Fail("Missing header X-Idempotency-Key"));
+            }
+
+            return Ok(await Mediator.Send(new CreateProductCommand()
+            {
+                Id = request.Id,
+                Name = request.Name,
+                Price = request.Price,
+                Sku = request.Sku,
+                RequestId = parseRequestId
+            }, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
     }
 }

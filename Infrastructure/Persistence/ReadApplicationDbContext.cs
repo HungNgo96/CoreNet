@@ -3,9 +3,9 @@ using Application.Abstractions.Data;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;
-using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
+using Infrastructure.Persistence.Outbox;
 
 namespace Infrastructure.Persistence
 {
@@ -19,8 +19,8 @@ namespace Infrastructure.Persistence
         public DbSet<OrderSummary> OrderSummaries { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<LineItem> LineItems { get; set; }
-        public DbSet<OutboxMessage> OutboxMessages { get; set; }
 
+        public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class => Set<TEntity>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(ReadApplicationDbContext).Assembly);
