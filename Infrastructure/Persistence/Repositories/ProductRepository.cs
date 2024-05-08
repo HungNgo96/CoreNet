@@ -4,7 +4,7 @@
 
 using System.Linq.Expressions;
 using Application.Abstractions.Data;
-using Application.Services;
+using Domain.Core;
 using Domain.Entities.Products;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +15,15 @@ namespace Infrastructure.Persistence.Repositories
     {
         private readonly IReadApplicationDbContext _readDbContext;
         private readonly IWriteApplicationDbContext _writeDbContext;
+        private readonly IRepository<Product> _productRepository;
 
         public ProductRepository(IReadApplicationDbContext readDbContext,
-                                 IWriteApplicationDbContext writeDbContext)
+                                 IWriteApplicationDbContext writeDbContext,
+                                 IRepository<Product> productRepository)
         {
             _readDbContext = readDbContext;
             _writeDbContext = writeDbContext;
+            _productRepository = productRepository;
         }
 
         public async Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken)
@@ -43,7 +46,7 @@ namespace Infrastructure.Persistence.Repositories
 
         public async Task InsertAsync(Product product, CancellationToken cancellationToken)
         {
-            await _writeDbContext.Products.AddAsync(product, cancellationToken);
+            _ = await _productRepository.AddAsync(product, cancellationToken);
         }
     }
 }

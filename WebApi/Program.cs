@@ -65,10 +65,8 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 services.AddConfigQuartz();
 services.AddConfigureMassTransit();
 
-//services.AddRepository(typeof(Enti)).AddServices(services);
-
-services.AddScoped<IIdempotencyService, IdempotencyService>();
-services.AddScoped<IProductRepository, ProductRepository>();
+services.AddRepository()
+    .AddServices();
 
 var app = builder.Build();
 

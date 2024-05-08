@@ -2,24 +2,24 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System;
 using System.IO.Compression;
 using Application.Abstractions.Data;
 using Application.Abstractions.EventBus;
+using Application.Abstractions.Idempotency;
 using Application.Data;
 using Application.Products.Commands.CreateProduct;
 using Asp.Versioning;
 using Domain.Core;
+using Domain.Repositories;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.MessageBroker;
 using Infrastructure.Persistence;
+using Infrastructure.Persistence.Idempotency;
 using Infrastructure.Persistence.Outbox;
+using Infrastructure.Persistence.Repositories;
 using MassTransit;
-using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Quartz;
 
@@ -295,29 +295,22 @@ namespace WebApi.Extensions
             return services;
         }
 
-        public static IServiceCollection AddRepository(this IServiceCollection services, Type repoType)
+        public static IServiceCollection AddRepository(this IServiceCollection services)
         {
-            services.Scan(scan => scan
-                .FromAssembliesOf(repoType)
-                .AddClasses(classes =>
-                    classes.AssignableTo(repoType)).As(typeof(IRepository<>)).WithScopedLifetime()
-                .AddClasses(classes =>
-                    classes.AssignableTo(repoType)).As(typeof(Domain.Core.IServiceScope)).WithScopedLifetime()
-            );
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+         
+            services.AddScoped<IProductRepository, ProductRepository>();
+            return services;
+        }
+
+        public static IServiceCollection AddServices(this IServiceCollection services)
+        {
+            services.AddScoped<IIdempotencyService, IdempotencyService>();
 
             return services;
         }
 
-        public static IServiceCollection AddServices(this IServiceCollection services, Type repoType)
-        {
-            services.Scan(scan => scan
-                .FromAssembliesOf(repoType)
-                .AddClasses(classes =>
-                    classes.AssignableTo(repoType)).As(typeof(Domain.Core.IServiceScope)).WithScopedLifetime()
-            );
-
-            return services;
-        }
 
         public static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
         {
