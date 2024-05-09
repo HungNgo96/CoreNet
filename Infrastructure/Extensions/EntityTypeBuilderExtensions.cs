@@ -21,7 +21,8 @@ internal static class EntityTypeBuilderExtensions
         builder
             .Property(entity => entity.Id)
             .IsRequired()
-            .ValueGeneratedNever();
+            //.ValueGeneratedNever()
+            ;
 
         // Ignores the DomainEvents property for the entity.
         _ = builder

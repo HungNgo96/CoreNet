@@ -16,9 +16,9 @@ namespace Infrastructure.Persistence.Repositories
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public TEntity FindById(Guid id, CancellationToken cancellationToken)
+        public async Task<TEntity?> FindByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return _dbContext.Set<TEntity>().SingleOrDefault(e => e.Id == id)!;
+            return await _dbContext.Set<TEntity>().AsNoTracking().SingleOrDefaultAsync(e => e.Id == id, cancellationToken)!;
         }
 
         public async Task<TEntity?> FindOneAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken)
@@ -35,10 +35,16 @@ namespace Infrastructure.Persistence.Repositories
             return await specificationResult.ToListAsync();
         }
 
-
         public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
         {
             await _dbContext.Set<TEntity>().AddAsync(entity);
+
+            return entity;
+        }
+
+        public TEntity Update(TEntity entity)
+        {
+            _dbContext.Set<TEntity>().Update(entity);
 
             return entity;
         }
@@ -86,6 +92,5 @@ namespace Infrastructure.Persistence.Repositories
 
             return query;
         }
-
     }
 }

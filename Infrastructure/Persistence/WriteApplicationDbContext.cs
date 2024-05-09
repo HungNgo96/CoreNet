@@ -41,8 +41,6 @@ namespace Infrastructure.Persistence
             //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
         }
 
-        //public override DbSet<TEntity> Set<TEntity>() where TEntity : class => base.Set<TEntity>();
-
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderSummary> OrderSummaries { get; set; }
@@ -63,17 +61,17 @@ namespace Infrastructure.Persistence
             // Executing the strategy.
             await strategy.ExecuteAsync(async () =>
             {
-                await using var transaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+                await using var transaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
 
                 _logger.Info(nameof(WriteApplicationDbContext), nameof(SaveChangesAsync), $"----- Begin transaction: '{transaction.TransactionId}'");
 
                 try
                 {
-                    //DateTime utcNow = DateTime.UtcNow;
+                    DateTime utcNow = DateTime.UtcNow;
 
-                    //UpdateAuditableEntities(utcNow);
+                    UpdateAuditableEntities(utcNow);
 
-                    //UpdateSoftDeletableEntities(utcNow);
+                    UpdateSoftDeletableEntities(utcNow);
 
                     //await PublishDomainEvents(cancellationToken);
                     // Getting the domain events and event stores from the tracked entities in the EF Core context.
@@ -81,7 +79,7 @@ namespace Infrastructure.Persistence
 
                     _logger.LogInformation("----- Commit transaction: '{TransactionId}'", transaction.TransactionId);
 
-                    await transaction.CommitAsync();
+                    await transaction.CommitAsync(cancellationToken);
 
                     // Triggering the events and saving the stores.
 
@@ -94,7 +92,7 @@ namespace Infrastructure.Persistence
                         nameof(WriteApplicationDbContext), nameof(SaveChangesAsync),
                         $"An unexpected exception occurred while committing the transaction: '{transaction.TransactionId}', message: {ex.Message}", ex);
 
-                    await transaction.RollbackAsync();
+                    await transaction.RollbackAsync(cancellationToken);
 
                     throw;
                 }

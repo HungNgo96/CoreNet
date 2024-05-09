@@ -299,7 +299,6 @@ namespace WebApi.Extensions
         {
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
-         
             services.AddScoped<IProductRepository, ProductRepository>();
             return services;
         }
@@ -310,7 +309,6 @@ namespace WebApi.Extensions
 
             return services;
         }
-
 
         public static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
         {

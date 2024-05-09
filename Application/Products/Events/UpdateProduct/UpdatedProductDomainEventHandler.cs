@@ -7,11 +7,11 @@ using Domain.Events;
 
 namespace Application.Products.Events.CreateProduct
 {
-    public class CreatedProductDomainEventHandler : IDomainEventHandler<CreatedProductDomainEvent>
+    public class UpdatedProductDomainEventHandler : IDomainEventHandler<UpdatedProductDomainEvent>
     {
-        public Task Handle(CreatedProductDomainEvent notification, CancellationToken cancellationToken)
+        public Task Handle(UpdatedProductDomainEvent notification, CancellationToken cancellationToken)
         {
-            Console.WriteLine($"create product message create domain event name: {notification.Name}");
+            Console.WriteLine($"update product message create domain event name: {notification.Name}");
 
             return Task.CompletedTask;
         }

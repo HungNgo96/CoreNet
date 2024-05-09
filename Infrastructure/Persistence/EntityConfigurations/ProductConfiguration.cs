@@ -3,17 +3,17 @@
 // See the LICENSE file in the project root for more information.
 
 using Domain.Entities.Products;
+using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Infrastructure.Persistence.EntityConfigurations
 {
-    public class ProductConfiguration : IEntityTypeConfiguration<Product>
+    internal class ProductConfiguration : IEntityTypeConfiguration<Product>
     {
         public void Configure(EntityTypeBuilder<Product> builder)
         {
-            builder.HasKey(p => p.Id);
-
+            builder.ConfigureBaseEntity();
             //builder.Property(p => p.Id).HasConversion(
             //    productId => productId.Value,
             //    value => new ProductId(value));
@@ -23,8 +23,6 @@ namespace Infrastructure.Persistence.EntityConfigurations
             _ = builder.Property(p => p.Sku).HasConversion(
                skuId => skuId.Value,
                value => Sku.Create(value));
-            builder.Ignore(p => p.GetDomainEvents);
-
 
             builder.OwnsOne(p => p.Price, priceBuilder =>
             {

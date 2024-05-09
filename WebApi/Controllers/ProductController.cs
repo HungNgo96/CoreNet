@@ -3,10 +3,12 @@
 // See the LICENSE file in the project root for more information.
 
 using Application.Products.Commands.CreateProduct;
+using Application.Products.Commands.UpdateProduct;
 using Application.Products.Queries;
 using Application.Products.Queries.GetProduct;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
+using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers
 {
@@ -44,5 +46,20 @@ namespace WebApi.Controllers
                 RequestId = parseRequestId
             }, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
+
+        [SwaggerOperation(Summary = "Update product.")]
+        [HttpPost]
+        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductCommand request, CancellationToken cancellationToken)
+        {
+
+            return Ok(await Mediator.Send(new UpdateProductCommand()
+            {
+                Id = request.Id,
+                Name = request.Name,
+                Price = request.Price,
+                Sku = request.Sku,
+            }, cancellationToken: cancellationToken).ConfigureAwait(false));
+        }
+
     }
 }

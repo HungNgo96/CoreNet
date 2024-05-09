@@ -2,17 +2,22 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using Domain.Core;
+using Domain.Core.Abstractions;
 using Domain.Events;
 using Domain.Primitives;
 
 namespace Domain.Entities.Products;
 
-public class Product : BaseEntity, IAggregateRoot
+public class Product : BaseEntity, IAggregateRoot, IAuditableEntity
 {
     public string Name { get; private set; } = string.Empty;
     public Money? Price { get; private set; }
 
     public Sku? Sku { get; private set; }
+
+    public DateTime CreatedOnUtc { get; set; }
+
+    public DateTime? ModifiedOnUtc { get; set; }
 
     public Product()
     {
@@ -30,6 +35,17 @@ public class Product : BaseEntity, IAggregateRoot
         var product = new Product(id, name, price, sku);
 
         product.AddDomainEvent(new CreatedProductDomainEvent(id, name, price, sku));
+
+        return product;
+    }
+
+    public static Product Update(Product product, Guid id, string name, Money? price, Sku? sku)
+    {
+        product.Name = name;
+        product.Price = price;
+        product.Sku = sku;
+
+        product.AddDomainEvent(new UpdatedProductDomainEvent(id, name, price, sku));
 
         return product;
     }

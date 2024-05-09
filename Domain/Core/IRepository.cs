@@ -9,10 +9,16 @@ namespace Domain.Core
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity, IAggregateRoot
     {
-        TEntity FindById(Guid id, CancellationToken cancellationToken);
+        Task<TEntity?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
+
         Task<TEntity?> FindOneAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken);
+
         Task<List<TEntity>> FindAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken);
+
         Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken);
+
+        TEntity Update(TEntity entity);
+
         Task RemoveAsync(TEntity entity, CancellationToken cancellationToken);
     }
 }
