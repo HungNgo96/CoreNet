@@ -5,7 +5,7 @@
 using Domain.Core.Events;
 using Domain.Events;
 
-namespace Application.Products.Events.CreateProduct
+namespace Application.Products.Events.UpdateProduct
 {
     public class UpdatedProductDomainEventHandler : IDomainEventHandler<UpdatedProductDomainEvent>
     {

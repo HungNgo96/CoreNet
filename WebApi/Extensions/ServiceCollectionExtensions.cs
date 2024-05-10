@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IO.Compression;
+using System.Reflection;
 using Application.Abstractions.Data;
 using Application.Abstractions.EventBus;
 using Application.Abstractions.Idempotency;
@@ -181,26 +182,25 @@ namespace WebApi.Extensions
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
-                busConfigurator.AddConsumer<ProductCreatedEventConsumer, ProductCreatedEventConsumerDefinition>();
-
+                //busConfigurator.AddConsumer<ProductCreatedEventConsumer, ProductCreatedEventConsumerDefinition>();
+                busConfigurator.AddConsumers(Assembly.GetExecutingAssembly());
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
-                    configurator.PrefetchCount = 1;//to consumer in order but this is not performance
-                    //configurator.ReceiveEndpoint();
+                    configurator.PrefetchCount = 7;//to consumer in order but this is not performance
                     configurator.Host(new Uri("amqp://localhost:5672"), (h) =>
                     {
                         h.Username("guest");
                         h.Password("guest");
                     });
 
-                    configurator.ReceiveEndpoint("product-service", e =>
-                    {
-                        e.ConcurrentMessageLimit = 28; // only applies to this endpoint
-                        e.PrefetchCount = 5;
-                        e.ConfigureConsumer<ProductCreatedEventConsumer>(context);
-                    });
+                    //configurator.ReceiveEndpoint("product-service", e =>
+                    //{
+                    //    e.ConcurrentMessageLimit = 28; // only applies to this endpoint
+                    //    e.PrefetchCount = 5;
+                    //    e.ConfigureConsumer<ProductCreatedEventConsumer>(context);
+                    //});
 
-                    //configurator.ConfigureEndpoints(context);
+                    configurator.ConfigureEndpoints(context);
                 });
             });
 

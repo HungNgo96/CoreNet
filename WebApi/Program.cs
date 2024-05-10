@@ -91,10 +91,9 @@ if (app.Environment.IsDevelopment())
     var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WriteApplicationDbContext>();
 
-
     if (!await dbContext.Database.CanConnectAsync(default))
     {
-        throw new Exception("Couldn't connect database.");
+        throw new ConnectionException("Couldn't connect database.");
     }
     dbContext.Database.Migrate();
     app.UseConfigureSwagger();

@@ -4,6 +4,12 @@
         <name>WebApi</name>
     </assembly>
     <members>
+        <member name="M:WebApi.Controllers.MassTransitController.Procedure">
+            <summary>
+            procedure demo
+            </summary>
+            <returns></returns>
+        </member>
         <member name="M:WebApi.Middlewares.ErrorHandlerMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{WebApi.Middlewares.ErrorHandlerMiddleware})">
             <summary>
             This is handler middleware
