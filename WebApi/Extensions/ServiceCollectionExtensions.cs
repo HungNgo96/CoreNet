@@ -10,7 +10,7 @@ using Application.Abstractions.Idempotency;
 using Application.Data;
 using Application.Products.Commands.CreateProduct;
 using Asp.Versioning;
-using Domain.Core;
+using Domain.Core.SharedKernel;
 using Domain.Repositories;
 using Infrastructure.BackgroundJobs;
 using Infrastructure.MessageBroker;
@@ -183,7 +183,7 @@ namespace WebApi.Extensions
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
                 //busConfigurator.AddConsumer<ProductCreatedEventConsumer, ProductCreatedEventConsumerDefinition>();
-                busConfigurator.AddConsumers(Assembly.GetExecutingAssembly());
+                //busConfigurator.AddConsumers(Assembly.GetExecutingAssembly());
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
                     configurator.PrefetchCount = 7;//to consumer in order but this is not performance
@@ -199,9 +199,26 @@ namespace WebApi.Extensions
                     //    e.PrefetchCount = 5;
                     //    e.ConfigureConsumer<ProductCreatedEventConsumer>(context);
                     //});
-
+                    configurator.Message<ProductCreatedEvent>(x =>
+                    {
+                        x.SetEntityName("omg-we-got-one");
+                    });
                     configurator.ConfigureEndpoints(context);
                 });
+
+                //services.AddOptions<MassTransitHostOptions>()
+                //       .Configure(options =>
+                //       {
+                //           options.WaitUntilStarted = true;
+                //           options.StartTimeout = TimeSpan.FromSeconds(30);
+                //           options.StopTimeout = TimeSpan.FromSeconds(60);
+                //       });
+                //services.AddOptions<HostOptions>()
+                //    .Configure(options =>
+                //    {
+                //        options.StartupTimeout = TimeSpan.FromSeconds(60);
+                //        options.ShutdownTimeout = TimeSpan.FromSeconds(60);
+                //    });
             });
 
             services.AddTransient<IEventBus, EventBus>();

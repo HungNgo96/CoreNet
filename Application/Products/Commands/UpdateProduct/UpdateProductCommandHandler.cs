@@ -4,7 +4,7 @@
 
 using Application.Abstractions.Messaging;
 using Application.Data;
-using Domain.Core;
+using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
 using Domain.Shared;
 

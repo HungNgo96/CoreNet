@@ -1,9 +1,10 @@
 ﻿// Licensed to the .NET Foundation under one or more agreements.
 // The .NET Foundation licenses this file to you under the MIT license.
 
-using Domain.Core;
 using Domain.Core.Abstractions;
+using Domain.Core.SharedKernel;
 using Domain.Events;
+using Domain.Events.Products;
 using Domain.Primitives;
 
 namespace Domain.Entities.Products;

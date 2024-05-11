@@ -6,6 +6,7 @@ using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Infrastructure.Persistence.Outbox;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Infrastructure.Persistence
 {
@@ -13,6 +14,14 @@ namespace Infrastructure.Persistence
     {
         public ReadApplicationDbContext(DbContextOptions<ReadApplicationDbContext> options) : base(options)
         {
+        }
+        public override ChangeTracker ChangeTracker
+        {
+            get
+            {
+                base.ChangeTracker.LazyLoadingEnabled = false;
+                return base.ChangeTracker;
+            }
         }
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }

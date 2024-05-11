@@ -1,5 +1,8 @@
-﻿using Contract.IntegrationEvents;
+﻿using Application.Products.Commands.CreateProduct;
+using Contract.IntegrationEvents;
+using Domain.Entities.Products;
 using MassTransit;
+using MassTransit.Middleware;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -35,6 +38,35 @@ namespace WebApi.Controllers
                 TimeStamp = DateTime.Now,
                 TransactionId = Guid.NewGuid()
             });
+
+            return Accepted();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProcedureReceiveEndpoint(CancellationToken cancellationToken)
+        {
+            await _publishEndpoint.Publish(new ProductReceiveEndpoint()
+            {
+                Id = Guid.NewGuid(),
+                Description = "Sms",
+                Name = "Name sms",
+                Type = "SMS",
+                TimeStamp = DateTime.Now,
+                TransactionId = Guid.NewGuid()
+            }, typeof(ProductReceiveEndpoint), cancellationToken);
+
+            return Accepted();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> ProductCreatedEvent(CancellationToken cancellationToken)
+        {
+            await _publishEndpoint.Publish(new ProductCreatedEvent()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Name ProductCreatedEvent",
+                Price = 0
+            },typeof(ProductCreatedEvent) , cancellationToken);
 
             return Accepted();
         }

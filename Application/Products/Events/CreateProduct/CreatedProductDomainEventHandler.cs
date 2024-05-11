@@ -3,7 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Domain.Core.Events;
-using Domain.Events;
+using Domain.Events.Products;
 
 namespace Application.Products.Events.CreateProduct
 {

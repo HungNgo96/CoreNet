@@ -4,14 +4,15 @@
 
 using System.Linq.Expressions;
 using Application.Abstractions.Data;
-using Domain.Core;
+using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
+using Domain.Primitives;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
 {
-    public sealed class ProductRepository : IProductRepository
+    public sealed class ProductRepository : RepositoryBase<WriteApplicationDbContext, Product>, IProductRepository
     {
         private readonly IReadApplicationDbContext _readDbContext;
         private readonly IWriteApplicationDbContext _writeDbContext;
@@ -19,7 +20,8 @@ namespace Infrastructure.Persistence.Repositories
 
         public ProductRepository(IReadApplicationDbContext readDbContext,
                                  IWriteApplicationDbContext writeDbContext,
-                                 IRepository<Product> productRepository)
+                                 IRepository<Product> productRepository,
+                                 WriteApplicationDbContext writeApplicationDbContext) : base(writeApplicationDbContext)
         {
             _readDbContext = readDbContext;
             _writeDbContext = writeDbContext;

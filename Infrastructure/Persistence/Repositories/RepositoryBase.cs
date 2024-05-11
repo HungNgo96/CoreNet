@@ -1,4 +1,4 @@
-﻿using Domain.Core;
+﻿using Domain.Core.SharedKernel;
 using Domain.Core.Specification;
 using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;

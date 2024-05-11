@@ -5,7 +5,7 @@
 using Domain.Core.Specification;
 using Domain.Primitives;
 
-namespace Domain.Core
+namespace Domain.Core.SharedKernel
 {
     public interface IRepository<TEntity> where TEntity : BaseEntity, IAggregateRoot
     {

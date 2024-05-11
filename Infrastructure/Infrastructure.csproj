@@ -12,7 +12,7 @@
 
   <ItemGroup>
     <Folder Include="Persistence\Migrations\" />
-    <Folder Include="Persistence\Services\" />
+    <Folder Include="Persistence\Repositories\Common\" />
     <Folder Include="Services\" />
   </ItemGroup>
 

@@ -5,7 +5,7 @@
 using Domain.Core.Events;
 using Domain.Entities.Products;
 
-namespace Domain.Events
+namespace Domain.Events.Products
 {
     public sealed record UpdatedProductDomainEvent : IDomainEvent
     {

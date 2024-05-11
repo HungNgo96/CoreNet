@@ -26,7 +26,7 @@ public class Order
             new LineItemId(Guid.NewGuid()),
             Id!,
             product.Id,
-            product.Price);
+            product.Price!);
         _lineItems.Add(lineItem);
     }
 

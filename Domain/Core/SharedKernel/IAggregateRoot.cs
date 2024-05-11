@@ -1,4 +1,4 @@
-﻿namespace Domain.Core;
+﻿namespace Domain.Core.SharedKernel;
 
 /// <summary>
 /// Represents an interface for aggregate roots.
