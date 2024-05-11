@@ -4,7 +4,6 @@
 
 using Application.Abstractions.Data;
 using Application.Abstractions.Messaging;
-using Application.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Application.Orders.Commands.RemoveLineItem

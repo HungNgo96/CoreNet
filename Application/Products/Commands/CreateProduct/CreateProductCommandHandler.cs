@@ -5,7 +5,6 @@
 using Application.Abstractions.Data;
 using Application.Abstractions.EventBus;
 using Application.Abstractions.Messaging;
-using Application.Data;
 using Domain.Entities.Products;
 using Domain.Repositories;
 using Domain.Shared;

@@ -7,7 +7,6 @@ using System.Reflection;
 using Application.Abstractions.Data;
 using Application.Abstractions.EventBus;
 using Application.Abstractions.Idempotency;
-using Application.Data;
 using Application.Products.Commands.CreateProduct;
 using Asp.Versioning;
 using Domain.Core.SharedKernel;
@@ -201,7 +200,7 @@ namespace WebApi.Extensions
                     //});
                     configurator.Message<ProductCreatedEvent>(x =>
                     {
-                        x.SetEntityName("omg-we-got-one");
+                        x.SetEntityName("product-created-event-exchange-2");
                     });
                     configurator.ConfigureEndpoints(context);
                 });

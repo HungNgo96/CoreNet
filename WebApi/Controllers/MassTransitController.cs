@@ -45,7 +45,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> ProcedureReceiveEndpoint(CancellationToken cancellationToken)
         {
-            await _publishEndpoint.Publish(new ProductReceiveEndpoint()
+            await _bus.Publish(new ProductReceiveEndpoint()
             {
                 Id = Guid.NewGuid(),
                 Description = "Sms",
@@ -61,7 +61,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductCreatedEvent(CancellationToken cancellationToken)
         {
-            await _publishEndpoint.Publish(new ProductCreatedEvent()
+            await _bus.Publish(new ProductCreatedEvent()
             {
                 Id = Guid.NewGuid(),
                 Name = "Name ProductCreatedEvent",

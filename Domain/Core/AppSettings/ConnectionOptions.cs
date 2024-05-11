@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Shop.Core.SharedKernel;
+using Domain.Core.SharedKernel;
 
 namespace Domain.Core.AppSettings;
 

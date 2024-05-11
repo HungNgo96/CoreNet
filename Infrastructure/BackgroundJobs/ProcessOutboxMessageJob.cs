@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Application.Abstractions.Data;
-using Application.Data;
 using Domain.Core.Events;
 using Infrastructure.Persistence.Outbox;
 using MediatR;

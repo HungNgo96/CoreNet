@@ -4,7 +4,6 @@
 
 using Application.Abstractions.Data;
 using Application.Abstractions.Idempotency;
-using Application.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Idempotency
