@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data;
-using Application.Abstractions.Data;
-using Application.Extensions;
 using Domain.Core.Abstractions;
 using Domain.Core.Events;
+using Domain.Core.Extensions;
+using Domain.Core.SharedKernel;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;

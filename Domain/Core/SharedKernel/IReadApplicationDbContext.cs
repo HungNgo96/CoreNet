@@ -4,7 +4,7 @@ using Domain.Entities.Orders;
 using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Abstractions.Data
+namespace Domain.Core.SharedKernel
 {
     public interface IReadApplicationDbContext : IApplicationDbContext
     {

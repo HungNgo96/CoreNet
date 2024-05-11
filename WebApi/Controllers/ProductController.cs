@@ -39,7 +39,6 @@ namespace WebApi.Controllers
 
             return Ok(await Mediator.Send(new CreateProductCommand()
             {
-                Id = request.Id,
                 Name = request.Name,
                 Price = request.Price,
                 Sku = request.Sku,

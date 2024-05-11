@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Linq.Expressions;
-using Application.Abstractions.Data;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
 using Domain.Primitives;

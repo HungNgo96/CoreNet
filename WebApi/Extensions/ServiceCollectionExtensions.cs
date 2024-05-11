@@ -4,7 +4,6 @@
 
 using System.IO.Compression;
 using System.Reflection;
-using Application.Abstractions.Data;
 using Application.Abstractions.EventBus;
 using Application.Abstractions.Idempotency;
 using Application.Products.Commands.CreateProduct;

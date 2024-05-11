@@ -47,10 +47,10 @@ services.AddApiVersion();
 
 services.AddCurrentUserService();
 
-services.AddApplication()
-    .AddInfrastructure();
+services.AddApplication();
+//.AddInfrastructure();
 
-services.AddFluentValidationAutoValidation().AddFluentValidationClientsideAdapters();//fluent API
+services.AddFluentValidationAutoValidation();//fluent API
 
 services.AddConfigDbContext(configuration);
 

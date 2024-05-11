@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 
 using System.Transactions;
-using Application.Abstractions.Data;
+using Domain.Core.SharedKernel;
 using MediatR;
 
 namespace Application.Behaviors

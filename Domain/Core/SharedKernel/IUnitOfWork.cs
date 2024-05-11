@@ -3,7 +3,7 @@
 
 using Microsoft.EntityFrameworkCore.Storage;
 
-namespace Application.Abstractions.Data
+namespace Domain.Core.SharedKernel
 {
     public interface IUnitOfWork
     {

@@ -1,6 +1,6 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Application.Extensions;
+using Domain.Core.Extensions;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 

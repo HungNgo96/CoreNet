@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics.CodeAnalysis;
-using Application.Abstractions.Data;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;
@@ -7,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Infrastructure.Persistence.Outbox;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Domain.Core.SharedKernel;
 
 namespace Infrastructure.Persistence
 {

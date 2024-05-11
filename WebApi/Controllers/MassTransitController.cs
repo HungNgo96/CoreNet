@@ -1,8 +1,6 @@
 ﻿using Application.Products.Commands.CreateProduct;
 using Contract.IntegrationEvents;
-using Domain.Entities.Products;
 using MassTransit;
-using MassTransit.Middleware;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.Controllers
@@ -66,7 +64,7 @@ namespace WebApi.Controllers
                 Id = Guid.NewGuid(),
                 Name = "Name ProductCreatedEvent",
                 Price = 0
-            },typeof(ProductCreatedEvent) , cancellationToken);
+            }, typeof(ProductCreatedEvent), cancellationToken);
 
             return Accepted();
         }

@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using Microsoft.Extensions.Logging;
 
-namespace Application.Extensions
+namespace Domain.Core.Extensions
 {
     internal static class EventIds
     {

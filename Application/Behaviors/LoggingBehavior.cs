@@ -1,6 +1,6 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using Application.Extensions;
+using Domain.Core.Extensions;
 using Domain.Shared;
 using MediatR;
 using Microsoft.Extensions.Logging;
