@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using Asp.Versioning.ApiExplorer;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Serilog;
@@ -62,8 +63,14 @@ namespace WebApi.Extensions
                 _ = app.UseSwaggerUI(options =>
                 {
                     options.RoutePrefix = "swagger";
+                    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
-                    options.SwaggerEndpoint($"/v1/swagger.json", $"{projectName} -- v1");
+                    foreach (var groupName in provider.ApiVersionDescriptions.Select(x => x.GroupName))
+                    {
+                        options.SwaggerEndpoint($"/v1/swagger/{groupName}/swagger.json",
+                            projectName + " - " + groupName.ToUpperInvariant());
+                    }
+
                     options.DisplayRequestDuration();
                     options.EnableFilter();
                     options.ShowExtensions();
