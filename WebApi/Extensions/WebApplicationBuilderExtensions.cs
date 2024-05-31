@@ -67,7 +67,7 @@ namespace WebApi.Extensions
 
                     foreach (var groupName in provider.ApiVersionDescriptions.Select(x => x.GroupName))
                     {
-                        options.SwaggerEndpoint($"/v1/swagger/{groupName}/swagger.json",
+                        options.SwaggerEndpoint($"/{groupName}/swagger.json",
                             projectName + " - " + groupName.ToUpperInvariant());
                     }
 

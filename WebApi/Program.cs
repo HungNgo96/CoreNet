@@ -100,7 +100,9 @@ if (app.Environment.IsDevelopment())
     {
         throw new ConnectionException("Couldn't connect database.");
     }
-    dbContext.Database.Migrate();
+
+    await dbContext.Database.MigrateAsync();
+
     app.UseConfigureSwagger();
 }
 
