@@ -16,6 +16,8 @@ using Infrastructure.Persistence.Idempotency;
 using Application.Abstractions.Idempotency;
 using Domain.Repositories;
 using Infrastructure.Persistence.Repositories;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using WebApi.Commons;
 //IConfiguration config = new ConfigurationBuilder()
 //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 //    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
@@ -31,7 +33,10 @@ builder.AddJsonFiles();
 // Add services to the container.
 builder.UseSerilog();
 
-services.AddControllers()
+services.AddControllers((options) =>
+{
+    options.Conventions.Add(new RouteTokenTransformerConvention(new KebabParameterTransformer()));
+})
 .AddJsonOptions(options => options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles)
 .ConfigureApiBehaviorOptions(ConfigureApiBehaviorExtension.ConfigureApiBehavior);
 
