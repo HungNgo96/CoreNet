@@ -282,7 +282,6 @@ namespace WebApi.Extensions
 
         internal static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            var d = configuration.GetRequiredSection("ConnectionStrings");
             services.AddOptions()
                 .Configure<ConnectionOptions>(configuration.GetRequiredSection("ConnectionStrings"));
 

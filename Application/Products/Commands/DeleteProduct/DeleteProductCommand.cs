@@ -32,9 +32,9 @@ namespace Application.Products.Commands.DeleteProduct
                     return Result<bool>.Fail("Not found production");
                 }
 
-                var updateProduct = Product.Delete(request.Id);
+                var updateProduct = Product.Delete(product, request.Id);
 
-                await productRepository.RemoveAsync(updateProduct, cancellationToken).ConfigureAwait(false);
+                productRepository.Remove(updateProduct);
 
                 int countSave = await unitOfWork.SaveChangesAsync(cancellationToken).ConfigureAwait(false);
 

@@ -6,6 +6,7 @@ namespace Application.Responses.Products
 {
     public sealed class GetProductResponse
     {
+        public Guid Id { get; set; }
         public string Name { get; private set; } = string.Empty;
         public Money? Price { get; private set; }
 

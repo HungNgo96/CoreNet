@@ -66,10 +66,10 @@ namespace WebApi.Controllers
 
         [SwaggerOperation(Summary = "Delete product.")]
         [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteAsync([FromRoute] DeleteProductCommand.Command request,
+        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id,
                                                      CancellationToken cancellationToken)
         {
-            return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
+            return Ok(await Mediator.Send(new DeleteProductCommand.Command(id), cancellationToken: cancellationToken).ConfigureAwait(false));
         }
     }
 }

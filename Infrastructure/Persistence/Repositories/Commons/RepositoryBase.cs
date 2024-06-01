@@ -1,7 +1,10 @@
-﻿using Domain.Core.SharedKernel;
+﻿using System.Linq.Expressions;
+using Domain.Core.SharedKernel;
 using Domain.Core.Specification;
 using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Infrastructure.Persistence.Repositories.Commons
 {
@@ -49,11 +52,20 @@ namespace Infrastructure.Persistence.Repositories.Commons
             return entity;
         }
 
-        public async Task RemoveAsync(TEntity entity, CancellationToken cancellationToken)
+        public EntityEntry<TEntity> Remove(TEntity entity)
         {
-            _dbContext.Set<TEntity>().Remove(entity);
+            return _dbContext.Set<TEntity>().Remove(entity);
+        }
 
-            await _dbContext.SaveChangesAsync();
+        public Task<int> ExecuteDeleteAsync(Expression<Func<TEntity, bool>> predicate)
+        {
+            return _dbContext.Set<TEntity>().Where(predicate).ExecuteDeleteAsync();
+        }
+
+        public Task<int> ExecuteUpdateAsync(Expression<Func<TEntity, bool>> predicate,
+                                            Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls)
+        {
+            return _dbContext.Set<TEntity>().Where(predicate).ExecuteUpdateAsync(setPropertyCalls);
         }
 
         private static IQueryable<TEntity> GetQuery(IQueryable<TEntity> inputQuery,
