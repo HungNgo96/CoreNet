@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IO.Compression;
-using System.Reflection;
 using Application.Abstractions.EventBus;
 using Application.Abstractions.Idempotency;
 using Application.Products.Commands.CreateProduct;
+using Application.Services;
 using Asp.Versioning;
+using Domain.Core.AppSettings;
+using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
 using Domain.Repositories;
 using Infrastructure.BackgroundJobs;
@@ -32,8 +34,9 @@ namespace WebApi.Extensions
             {
                 services.AddSwaggerGen(c =>
                 {
+                    c.CustomSchemaIds(s => s.FullName?.Replace("+", "."));
                     c.EnableAnnotations();
-                    //TODO - Lowercase Swagger Documents
+                    c.UseInlineDefinitionsForEnums();
                     //Refer - https://gist.github.com/rafalkasa/01d5e3b265e5aa075678e0adfd54e23f
                     Uri url = new(uriString: "https://opensource.org/licenses/MIT");
                     // include all project's xml comments
@@ -125,13 +128,14 @@ namespace WebApi.Extensions
             return services;
         }
 
-        internal static IServiceCollection AddConfigDbContext(this IServiceCollection services, ConfigurationManager config)
+        internal static IServiceCollection AddConfigDbContext(this IServiceCollection services, IConfiguration config)
         {
+            var optionsConfig = config.GetOptions<ConnectionOptions>() ?? new();
             services.AddSingleton<InsertOutboxMessageInterceptor>();
 
             services.AddDbContext<ReadApplicationDbContext>((sp, op) =>
             {
-                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:ReadSqlServer").Value, x =>
+                op.UseSqlServer(optionsConfig.ReadSqlServer!, x =>
                 {
                     x.MigrationsAssembly("Infrastructure");
                     x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
@@ -150,7 +154,7 @@ namespace WebApi.Extensions
 
             services.AddDbContext<WriteApplicationDbContext>((sp, op) =>
             {
-                op.UseSqlServer(config.GetRequiredSection("ConnectionStrings:WriteSqlServer").Value, x =>
+                op.UseSqlServer(optionsConfig.WriteSqlServer!, x =>
                 {
                     x.MigrationsAssembly("Infrastructure");
                     x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
@@ -176,7 +180,7 @@ namespace WebApi.Extensions
 
         internal static IServiceCollection AddConfigureMassTransit(this IServiceCollection services)
         {
-            services.AddMassTransit((busConfigurator) =>
+            _ = services.AddMassTransit((busConfigurator) =>
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
@@ -272,7 +276,16 @@ namespace WebApi.Extensions
         internal static IServiceCollection AddCurrentUserService(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
-            //services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            return services;
+        }
+
+        internal static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration configuration)
+        {
+            var d = configuration.GetRequiredSection("ConnectionStrings");
+            services.AddOptions()
+                .Configure<ConnectionOptions>(configuration.GetRequiredSection("ConnectionStrings"));
+
             return services;
         }
 
@@ -327,21 +340,22 @@ namespace WebApi.Extensions
 
         public static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
         {
-            //var options = configuration.GetOptions<ConnectionOptions>();
-            //if (options.CacheConnectionInMemory())
-            //{
-            //    services.AddMemoryCacheService();
-            //    services.AddMemoryCache(memoryOptions => memoryOptions.TrackStatistics = true);
-            //}
-            //else
-            //{
-            //    services.AddDistributedCacheService();
-            //    services.AddStackExchangeRedisCache(redisOptions =>
-            //    {
-            //        redisOptions.InstanceName = RedisInstanceName;
-            //        redisOptions.Configuration = options.CacheConnection;
-            //    });
-            //}
+            var options = configuration.GetOptions<ConnectionOptions>() ?? new();
+
+            if (options.CacheConnectionInMemory())
+            {
+                //services.AddMemoryCacheService();
+                services.AddMemoryCache(memoryOptions => memoryOptions.TrackStatistics = true);
+            }
+            else
+            {
+                //services.AddDistributedCacheService();
+                services.AddStackExchangeRedisCache(redisOptions =>
+                {
+                    redisOptions.InstanceName = "redis-name";
+                    redisOptions.Configuration = options.CacheConnection;
+                });
+            }
 
             return services;
         }

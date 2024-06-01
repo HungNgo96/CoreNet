@@ -4,11 +4,33 @@
         <name>WebApi</name>
     </assembly>
     <members>
+        <member name="T:WebApi.Commons.KebabParameterTransformer">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:WebApi.Commons.KebabParameterTransformer.TransformOutbound(System.Object)">
+            <summary>
+            
+            </summary>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
         <member name="M:WebApi.Controllers.MassTransitController.Procedure">
             <summary>
             procedure demo
             </summary>
             <returns></returns>
+        </member>
+        <member name="T:WebApi.Controllers.ProductController">
+            <summary>
+            Product controller
+            </summary>
+        </member>
+        <member name="M:WebApi.Controllers.ProductController.#ctor(Microsoft.Extensions.Options.IOptions{Domain.Core.AppSettings.ConnectionOptions})">
+            <summary>
+            Product controller
+            </summary>
         </member>
         <member name="M:WebApi.Middlewares.ErrorHandlerMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{WebApi.Middlewares.ErrorHandlerMiddleware})">
             <summary>

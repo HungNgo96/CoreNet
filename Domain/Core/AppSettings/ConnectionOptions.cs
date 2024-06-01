@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using Domain.Core.SharedKernel;
 
@@ -9,14 +9,17 @@ public sealed class ConnectionOptions : IAppOptions
     static string IAppOptions.ConfigSectionPath => "ConnectionStrings";
 
     [Required]
-    public string SqlConnection { get; private init; }
+    public string? ReadSqlServer { get; set; }
 
     [Required]
-    public string NoSqlConnection { get; private init; }
+    public string? WriteSqlServer { get; set; }
 
     [Required]
-    public string CacheConnection { get; private init; }
+    public string? NoSqlConnection { get; set; }
+
+    [Required]
+    public string? CacheConnection { get; set; }
 
     public bool CacheConnectionInMemory() =>
-        CacheConnection.Equals("InMemory", StringComparison.InvariantCultureIgnoreCase);
+        CacheConnection!.Equals("InMemory", StringComparison.InvariantCultureIgnoreCase);
 }

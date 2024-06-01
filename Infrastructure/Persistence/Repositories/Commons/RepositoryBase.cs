@@ -3,7 +3,7 @@ using Domain.Core.Specification;
 using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Persistence.Repositories
+namespace Infrastructure.Persistence.Repositories.Commons
 {
     public class RepositoryBase<TDbContext, TEntity> : IRepository<TEntity>
         where TEntity : BaseEntity, IAggregateRoot

@@ -4,40 +4,46 @@
 
 using Application.Products.Commands.CreateProduct;
 using Application.Products.Commands.UpdateProduct;
-using Application.Products.Queries;
-using Application.Products.Queries.GetProduct;
+using Application.Products.Queries.GetAllProduct;
+using Application.Products.Queries.GetProductById;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers
 {
+    /// <summary>
+    /// Product controller
+    /// </summary>
     [ApiController]
     public class ProductController : BaseController
     {
+        [SwaggerOperation(Summary = "Get all produc")]
         [HttpGet]
-        public async Task<IActionResult> GetAllProductAsync([FromQuery] GetAllProduct.Query request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAsync([FromQuery] GetAllProduct.Query request, CancellationToken cancellationToken)
         {
             return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetProductByIdAsync([FromQuery] GetProductByIdQuery request, CancellationToken cancellationToken)
+        [SwaggerOperation(Summary = "Get product by id.")]
+        [HttpGet("{id:guid}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
         {
-            return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
+            return Ok(await Mediator.Send(new GetProductById.Query(id), cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
+        [SwaggerOperation(Summary = "Create product.")]
         [HttpPost]
-        public async Task<IActionResult> CreateProductAsync([FromBody] CreateProductCommand request,
-                                                            [FromHeader(Name = "X-Idempotency-Key")] string requestId,
-                                                            CancellationToken cancellationToken)
+        public async Task<IActionResult> CreateAsync([FromBody] CreateProduct.Command request,
+                                                     [FromHeader(Name = "X-Idempotency-Key")] string requestId,
+                                                     CancellationToken cancellationToken)
         {
             if (!Guid.TryParse(requestId, out Guid parseRequestId))
             {
                 return BadRequest(Result<bool>.Fail("Missing header X-Idempotency-Key"));
             }
 
-            return Ok(await Mediator.Send(new CreateProductCommand()
+            return Ok(await Mediator.Send(new CreateProduct.Command()
             {
                 Name = request.Name,
                 Price = request.Price,
@@ -47,18 +53,22 @@ namespace WebApi.Controllers
         }
 
         [SwaggerOperation(Summary = "Update product.")]
-        [HttpPost]
-        public async Task<IActionResult> UpdateProductAsync([FromBody] UpdateProductCommand request, CancellationToken cancellationToken)
+        [HttpPut("{id:guid}")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id,
+                                                     [FromBody] UpdateProductCommand.Command request,
+                                                     CancellationToken cancellationToken)
         {
+            request.SetId(id: id);
 
-            return Ok(await Mediator.Send(new UpdateProductCommand()
-            {
-                Id = request.Id,
-                Name = request.Name,
-                Price = request.Price,
-                Sku = request.Sku,
-            }, cancellationToken: cancellationToken).ConfigureAwait(false));
+            return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
+        //[SwaggerOperation(Summary = "Delete product.")]
+        //[HttpDelete("{id:guid}")]
+        //public async Task<IActionResult> DeleteAsync([FromRoute] DeleteProductCommand.Command request,
+        //                                             CancellationToken cancellationToken)
+        //{
+        //    return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
+        //}
     }
 }
