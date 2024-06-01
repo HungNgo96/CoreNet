@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Application.Products.Commands.CreateProduct;
+using Application.Products.Commands.DeleteProduct;
 using Application.Products.Commands.UpdateProduct;
 using Application.Products.Queries.GetAllProduct;
 using Application.Products.Queries.GetProductById;
@@ -63,12 +64,12 @@ namespace WebApi.Controllers
             return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
-        //[SwaggerOperation(Summary = "Delete product.")]
-        //[HttpDelete("{id:guid}")]
-        //public async Task<IActionResult> DeleteAsync([FromRoute] DeleteProductCommand.Command request,
-        //                                             CancellationToken cancellationToken)
-        //{
-        //    return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
-        //}
+        [SwaggerOperation(Summary = "Delete product.")]
+        [HttpDelete("{id:guid}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] DeleteProductCommand.Command request,
+                                                     CancellationToken cancellationToken)
+        {
+            return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
+        }
     }
 }
