@@ -1,9 +1,10 @@
-﻿using Domain.Entities.Customers;
+﻿using Domain.Core.Abstractions;
+using Domain.Entities.Customers;
 using Domain.Entities.Products;
 
 namespace Domain.Entities.Orders;
 
-public class Order
+public class Order : IEntityBase<OrderId>
 {
     private readonly HashSet<LineItem> _lineItems = new();
     public OrderId? Id { get; private set; }

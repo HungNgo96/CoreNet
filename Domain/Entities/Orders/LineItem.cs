@@ -1,8 +1,8 @@
-﻿using Domain.Entities.Products;
+﻿using Domain.Core.Abstractions;
 
 namespace Domain.Entities.Orders;
 
-public class LineItem
+public class LineItem : IEntityBase<LineItemId>
 {
     public LineItem(LineItemId id, OrderId orderId, Guid productId, Money price)
     {

@@ -21,8 +21,9 @@
 
   <ItemGroup>
     <Folder Include="Contracts\" />
-    <Folder Include="Orders\Events\" />
-    <Folder Include="Orders\Queries\" />
+    <Folder Include="DependencyInjections\Options\" />
+    <Folder Include="UseCases\v1\Orders\Events\" />
+    <Folder Include="UseCases\v1\Orders\Queries\" />
   </ItemGroup>
 
   <ItemGroup>

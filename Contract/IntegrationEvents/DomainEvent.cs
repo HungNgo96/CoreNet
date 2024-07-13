@@ -31,14 +31,15 @@ namespace Contract.IntegrationEvents
             public DateTimeOffset TimeStamp { get; set; }
         }
     }
+
     [EntityName("product-receive-endpoint")]
     public class ProductReceiveEndpoint
     {
         public Guid TransactionId { get; set; }
         public Guid Id { get; set; }
         public DateTimeOffset TimeStamp { get; set; }
-        public required string Name { get; set; }
-        public required string Description { get; set; }
-        public required string Type { get; set; }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Type { get; set; }
     }
 }

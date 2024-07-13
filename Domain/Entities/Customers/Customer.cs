@@ -1,6 +1,8 @@
-﻿namespace Domain.Entities.Customers;
+﻿using Domain.Core.Abstractions;
 
-public class Customer
+namespace Domain.Entities.Customers;
+
+public class Customer : IEntityBase<CustomerId>
 {
     public CustomerId Id { get; private set; }
     public string Email { get; private set; } = string.Empty;
