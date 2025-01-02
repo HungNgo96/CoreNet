@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Domain.Core.Specification
 {
@@ -9,9 +7,9 @@ namespace Domain.Core.Specification
         public abstract Expression<Func<T, bool>> Criteria { get; }
         public List<Expression<Func<T, object>>> Includes { get; } = new();
         public List<string> IncludeStrings { get; } = new();
-        public Expression<Func<T, object>> OrderBy { get; private set; }
-        public Expression<Func<T, object>> OrderByDescending { get; private set; }
-        public Expression<Func<T, object>> GroupBy { get; private set; }
+        public Expression<Func<T, object>> OrderBy { get; private set; } = null!;
+        public Expression<Func<T, object>> OrderByDescending { get; private set; } = null!;
+        public Expression<Func<T, object>> GroupBy { get; private set; } = null!;
 
         public int Take { get; private set; }
         public int Skip { get; private set; }
@@ -25,17 +23,17 @@ namespace Domain.Core.Specification
             }
         }
 
-        protected void AddInclude(Expression<Func<T, object>> includeExpression)
-        {
-            Includes.Add(includeExpression);
-        }
-
         protected void ApplyIncludeList(IEnumerable<string> includes)
         {
             foreach (var include in includes)
             {
                 AddInclude(include);
             }
+        }
+
+        protected void AddInclude(Expression<Func<T, object>> includeExpression)
+        {
+            Includes.Add(includeExpression);
         }
 
         protected void AddInclude(string includeString)

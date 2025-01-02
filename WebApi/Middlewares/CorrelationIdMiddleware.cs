@@ -4,14 +4,12 @@
 
 using Domain.Core.SharedKernel.Correlation;
 using Microsoft.Extensions.Primitives;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace WebApi.Middlewares
 {
     public class CorrelationIdMiddleware(RequestDelegate next)
     {
         private const string CorrelationIdHeaderKey = "X-Correlation-Id";
-        private readonly RequestDelegate _next = next;
 
         public async Task Invoke(HttpContext context, ICorrelationIdGenerator correlationIdGenerator)
         {
@@ -23,18 +21,19 @@ namespace WebApi.Middlewares
                 return Task.CompletedTask;
             });
 
-            await _next(context);
+            await next(context);
         }
 
         private static StringValues GetCorrelationId(HttpContext context, ICorrelationIdGenerator correlationIdGenerator)
         {
-            if (context.Request.Headers.TryGetValue(CorrelationIdHeaderKey, out var correlationId))
+            if (!context.Request.Headers.TryGetValue(CorrelationIdHeaderKey, out var correlationId))
             {
-                correlationIdGenerator.Set(correlationId!);
-                return correlationId;
+                return correlationIdGenerator.Get();
             }
 
-            return correlationIdGenerator.Get();
+            correlationIdGenerator.Set(correlationId!);
+            return correlationId;
+
         }
     }
 

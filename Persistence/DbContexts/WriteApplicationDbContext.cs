@@ -56,9 +56,9 @@ namespace Persistence.DbContexts
             var strategy = Database.CreateExecutionStrategy();
             var rowsAffected = 0;
             // Executing the strategy.
-            await strategy.ExecuteAsync(async () =>
+            await strategy.ExecuteAsync(cancellationToken, async (token) =>
             {
-                await using var transaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken);
+                await using var transaction = await Database.BeginTransactionAsync(IsolationLevel.ReadCommitted, token);
 
                 _logger.Info(nameof(WriteApplicationDbContext), nameof(SaveChangesAsync), $"----- Begin transaction: '{transaction.TransactionId}'");
 
@@ -72,7 +72,7 @@ namespace Persistence.DbContexts
 
                     //await PublishDomainEvents(cancellationToken);
                     // Getting the domain events and event stores from the tracked entities in the EF Core context.
-                    rowsAffected = await base.SaveChangesAsync();
+                    rowsAffected = await base.SaveChangesAsync(token);
 
                     _logger.LogInformation("----- Commit transaction: '{TransactionId}'", transaction.TransactionId);
 
@@ -159,9 +159,7 @@ namespace Persistence.DbContexts
 
             foreach (var referenceEntry in entityEntry.References.Where(r => r.TargetEntry!.State == EntityState.Deleted))
             {
-                referenceEntry
-                    .TargetEntry
-                    !.State = EntityState.Unchanged;
+                referenceEntry.TargetEntry!.State = EntityState.Unchanged;
 
                 UpdateDeletedEntityEntryReferencesToUnchanged(referenceEntry.TargetEntry);
             }

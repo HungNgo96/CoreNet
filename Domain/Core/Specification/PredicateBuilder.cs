@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Domain.Core.Specification
 {
@@ -12,8 +9,8 @@ namespace Domain.Core.Specification
     {
         public static Expression<Func<T, bool>> Build<T>(string propertyName, string comparison, string value)
         {
-            const string parameterName = "x";
-            var parameter = Expression.Parameter(typeof(T), parameterName);
+            const string ParameterName = "x";
+            var parameter = Expression.Parameter(typeof(T), ParameterName);
             var left = propertyName.Split('.').Aggregate((Expression)parameter, Expression.Property);
             var body = MakeComparison(left, comparison, value);
             return Expression.Lambda<Func<T, bool>>(body, parameter);
@@ -23,8 +20,7 @@ namespace Domain.Core.Specification
         {
             var p = a.Parameters[0];
 
-            var visitor = new SubstExpressionVisitor();
-            visitor.subst[b.Parameters[0]] = p;
+            var visitor = new SubstExpressionVisitor { subst = { [b.Parameters[0]] = p } };
 
             Expression body = Expression.And(a.Body, visitor.Visit(b.Body));
             return Expression.Lambda<Func<T, bool>>(body, p);
@@ -34,8 +30,7 @@ namespace Domain.Core.Specification
         {
             var p = a.Parameters[0];
 
-            var visitor = new SubstExpressionVisitor();
-            visitor.subst[b.Parameters[0]] = p;
+            var visitor = new SubstExpressionVisitor { subst = { [b.Parameters[0]] = p } };
 
             Expression body = Expression.Or(a.Body, visitor.Visit(b.Body));
             return Expression.Lambda<Func<T, bool>>(body, p);
@@ -103,7 +98,7 @@ namespace Domain.Core.Specification
 
             protected override Expression VisitParameter(ParameterExpression node)
             {
-                return subst.TryGetValue(node, out var newValue) ? newValue : node;
+                return subst.GetValueOrDefault(node, node);
             }
         }
     }
