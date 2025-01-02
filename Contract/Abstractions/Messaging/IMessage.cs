@@ -4,7 +4,7 @@
 
 using MassTransit;
 
-namespace Contract.Abstractions.Messages
+namespace Contract.Abstractions.Messaging
 {
     [ExcludeFromTopology]
     public interface IMessage

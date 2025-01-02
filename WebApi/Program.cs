@@ -6,7 +6,7 @@ using FluentValidation.AspNetCore;
 using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Persistence;
+using Persistence.DbContexts;
 using Persistence.DependencyInjections.Extensions;
 using WebApi.Commons;
 using WebApi.ConfigOptions;

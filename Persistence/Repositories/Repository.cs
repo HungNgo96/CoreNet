@@ -4,6 +4,7 @@
 
 using Domain.Core.SharedKernel;
 using Domain.Primitives;
+using Persistence.DbContexts;
 using Persistence.Repositories.Commons;
 
 namespace Persistence.Repositories

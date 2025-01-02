@@ -18,7 +18,7 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 
-namespace Persistence
+namespace Persistence.DbContexts
 {
     public class WriteApplicationDbContext : DbContext, IWriteApplicationDbContext, IUnitOfWork
     {
@@ -35,8 +35,7 @@ namespace Persistence
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(WriteApplicationDbContext).Assembly);
-            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemlyReference).Assembly);
         }
 
         public DbSet<Customer> Customers { get; set; }

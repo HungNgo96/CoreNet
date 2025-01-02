@@ -3,11 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IO.Compression;
-using Application.Abstractions.EventBus;
-using Application.Abstractions.Idempotency;
 using Application.Services;
 using Application.UseCases.v1.Products.Commands.CreateProduct;
 using Asp.Versioning;
+using Contract.Abstractions.EventBus;
+using Contract.Abstractions.Idempotency;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;

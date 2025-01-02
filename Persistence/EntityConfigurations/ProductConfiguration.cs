@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Domain.Entities.Products;
-using Infrastructure.Extensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Persistence.Extensions;
 
 namespace Persistence.EntityConfigurations
 {

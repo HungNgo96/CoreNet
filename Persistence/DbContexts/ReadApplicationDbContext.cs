@@ -5,7 +5,7 @@ using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 
-namespace Persistence
+namespace Persistence.DbContexts
 {
     public class ReadApplicationDbContext : DbContext, IReadApplicationDbContext
     {
@@ -29,8 +29,7 @@ namespace Persistence
         public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class => Set<TEntity>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.ApplyConfigurationsFromAssembly(typeof(ReadApplicationDbContext).Assembly);
-            //modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+            modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemlyReference).Assembly);
         }
     }
 }

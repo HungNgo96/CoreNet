@@ -7,6 +7,7 @@ using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
+using Persistence.DbContexts;
 using Persistence.Repositories.Commons;
 
 namespace Persistence.Repositories

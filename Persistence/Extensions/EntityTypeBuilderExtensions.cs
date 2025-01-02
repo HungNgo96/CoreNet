@@ -1,7 +1,7 @@
 ﻿using Domain.Primitives;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Infrastructure.Extensions;
+namespace Persistence.Extensions;
 
 internal static class EntityTypeBuilderExtensions
 {
