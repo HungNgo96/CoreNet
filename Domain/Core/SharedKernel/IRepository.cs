@@ -2,8 +2,12 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Linq.Expressions;
 using Domain.Core.Specification;
 using Domain.Primitives;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Domain.Core.SharedKernel
 {
@@ -19,6 +23,10 @@ namespace Domain.Core.SharedKernel
 
         TEntity Update(TEntity entity);
 
-        Task RemoveAsync(TEntity entity, CancellationToken cancellationToken);
+        EntityEntry<TEntity> Remove(TEntity entity);
+
+        Task<int> ExecuteDeleteAsync(Expression<Func<TEntity, bool>> predicate);
+
+        Task<int> ExecuteUpdateAsync(Expression<Func<TEntity, bool>> predicate, Expression<Func<SetPropertyCalls<TEntity>, SetPropertyCalls<TEntity>>> setPropertyCalls);
     }
 }

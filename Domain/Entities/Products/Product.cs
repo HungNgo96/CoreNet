@@ -50,4 +50,11 @@ public class Product : BaseEntity, IAggregateRoot, IAuditableEntity
 
         return product;
     }
+
+    public static Product Delete(Product product, Guid id)
+    {
+        product.AddDomainEvent(new DeletedProductDomainEvent(id));
+
+        return product;
+    }
 }

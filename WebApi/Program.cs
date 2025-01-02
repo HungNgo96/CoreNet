@@ -52,6 +52,9 @@ services.AddApiVersion();
 
 services.AddCurrentUserService();
 
+services.AddConfigOptions(configuration)
+    .AddCacheService(configuration);
+
 services.AddApplication();
 //.AddInfrastructure();
 
@@ -68,6 +71,7 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
 });
 
 services.AddConfigQuartz();
+
 services.AddConfigureMassTransit();
 
 services.AddRepository()
@@ -106,6 +110,7 @@ if (app.Environment.IsDevelopment())
 
     app.UseConfigureSwagger();
 }
+
 
 app.MapControllers();
 CheckTime(app);

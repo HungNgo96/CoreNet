@@ -57,17 +57,17 @@ namespace WebApi.Extensions
             {
                 _ = app.UseSwagger(c =>
                 {
-                    c.RouteTemplate = "/{documentName}/swagger.json";
+                    c.RouteTemplate = "/swagger/{documentName}/swagger.json";
                 });
 
                 _ = app.UseSwaggerUI(options =>
                 {
-                    options.RoutePrefix = "swagger";
+                    options.RoutePrefix = "";
                     var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
 
                     foreach (var groupName in provider.ApiVersionDescriptions.Select(x => x.GroupName))
                     {
-                        options.SwaggerEndpoint($"/{groupName}/swagger.json",
+                        options.SwaggerEndpoint($"/v1/swagger/{groupName}/swagger.json",
                             projectName + " - " + groupName.ToUpperInvariant());
                     }
 

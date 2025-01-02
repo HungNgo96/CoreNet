@@ -4,6 +4,7 @@
 
 using Domain.Core.SharedKernel;
 using Domain.Primitives;
+using Infrastructure.Persistence.Repositories.Commons;
 
 namespace Infrastructure.Persistence.Repositories
 {

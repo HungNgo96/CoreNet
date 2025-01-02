@@ -5,8 +5,8 @@
 using System.Linq.Expressions;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
-using Domain.Primitives;
 using Domain.Repositories;
+using Infrastructure.Persistence.Repositories.Commons;
 using Microsoft.EntityFrameworkCore;
 
 namespace Infrastructure.Persistence.Repositories
