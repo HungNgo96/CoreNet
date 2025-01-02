@@ -1,23 +1,17 @@
 ﻿using System.Text.Json.Serialization;
-using Application.Extensions;
-using Domain.Core.SharedKernel.Correlation;
+using Application.DependencyInjection.Extensions;
+using Domain.Core;
+using Domain.Core.SharedKernel;
 using FluentValidation.AspNetCore;
-using Infrastructure.Extensions;
-using Infrastructure.Persistence;
 using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Persistence;
+using Persistence.DependencyInjections.Extensions;
+using WebApi.Commons;
 using WebApi.ConfigOptions;
 using WebApi.Extensions;
 using WebApi.Middlewares;
-using Domain.Core;
-using System.Threading;
-using Infrastructure.Persistence.Idempotency;
-using Application.Abstractions.Idempotency;
-using Domain.Repositories;
-using Infrastructure.Persistence.Repositories;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using WebApi.Commons;
 //IConfiguration config = new ConfigurationBuilder()
 //    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
 //    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)

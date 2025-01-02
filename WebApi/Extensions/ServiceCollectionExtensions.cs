@@ -5,23 +5,20 @@
 using System.IO.Compression;
 using Application.Abstractions.EventBus;
 using Application.Abstractions.Idempotency;
-using Application.Products.Commands.CreateProduct;
 using Application.Services;
+using Application.UseCases.v1.Products.Commands.CreateProduct;
 using Asp.Versioning;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
 using Domain.Repositories;
 using Infrastructure.BackgroundJobs;
+using Infrastructure.Idempotency;
 using Infrastructure.MessageBroker;
-using Infrastructure.Persistence;
-using Infrastructure.Persistence.Idempotency;
-using Infrastructure.Persistence.Outbox;
-using Infrastructure.Persistence.Repositories;
 using MassTransit;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Persistence.Repositories;
 using Quartz;
 
 namespace WebApi.Extensions
@@ -128,55 +125,7 @@ namespace WebApi.Extensions
             return services;
         }
 
-        internal static IServiceCollection AddConfigDbContext(this IServiceCollection services, IConfiguration config)
-        {
-            var optionsConfig = config.GetOptions<ConnectionOptions>() ?? new();
-            services.AddSingleton<InsertOutboxMessageInterceptor>();
-
-            services.AddDbContext<ReadApplicationDbContext>((sp, op) =>
-            {
-                op.UseSqlServer(optionsConfig.ReadSqlServer!, x =>
-                {
-                    x.MigrationsAssembly("Infrastructure");
-                    x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                });
-
-                op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
-
-                var environment = sp.GetRequiredService<IHostEnvironment>();
-
-                if (!environment.IsProduction())
-                {
-                    op.EnableDetailedErrors();
-                    op.EnableSensitiveDataLogging();
-                }
-            }, contextLifetime: ServiceLifetime.Scoped);
-
-            services.AddDbContext<WriteApplicationDbContext>((sp, op) =>
-            {
-                op.UseSqlServer(optionsConfig.WriteSqlServer!, x =>
-                {
-                    x.MigrationsAssembly("Infrastructure");
-                    x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-                });
-
-                var environment = sp.GetRequiredService<IHostEnvironment>();
-
-                if (!environment.IsProduction())
-                {
-                    op.EnableDetailedErrors();
-                    op.EnableSensitiveDataLogging();
-                }
-
-                op.AddInterceptors(sp.GetRequiredService<InsertOutboxMessageInterceptor>());
-            }, contextLifetime: ServiceLifetime.Scoped);
-
-            services.AddScoped<IReadApplicationDbContext>(s => s.GetRequiredService<ReadApplicationDbContext>());
-            services.AddScoped<IWriteApplicationDbContext>(s => s.GetRequiredService<WriteApplicationDbContext>());
-            services.AddScoped<IUnitOfWork>(s => s.GetRequiredService<WriteApplicationDbContext>());
-
-            return services;
-        }
+       
 
         internal static IServiceCollection AddConfigureMassTransit(this IServiceCollection services)
         {

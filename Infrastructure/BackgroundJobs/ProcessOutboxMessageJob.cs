@@ -4,7 +4,7 @@
 
 using Domain.Core.Events;
 using Domain.Core.SharedKernel;
-using Infrastructure.Persistence.Outbox;
+using Infrastructure.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;

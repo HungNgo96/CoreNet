@@ -23,6 +23,7 @@ namespace Domain.Primitives
         /// Required by EF Core.
         /// </remarks>
         protected BaseEntity(Guid id) => Id = id;
+
         /// <summary>
         /// Gets or sets the entity identifier.
         /// </summary>
@@ -44,7 +45,14 @@ namespace Domain.Primitives
         /// Adds the specified <see cref="IDomainEvent"/> to the <see cref="AggregateRoot"/>.
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
-        protected void AddDomainEvent(IDomainEvent domainEvent) => _domainEvents.Add(domainEvent);
+        protected void AddDomainEvent(IDomainEvent domainEvent)
+        {
+            if (_domainEvents.Contains(domainEvent))
+            {
+                return;
+            }
 
+            _domainEvents.Add(domainEvent);
+        }
     }
 }

@@ -2,11 +2,11 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Application.Products.Commands.CreateProduct;
-using Application.Products.Commands.DeleteProduct;
-using Application.Products.Commands.UpdateProduct;
-using Application.Products.Queries.GetAllProduct;
-using Application.Products.Queries.GetProductById;
+using Application.UseCases.v1.Products.Commands.CreateProduct;
+using Application.UseCases.v1.Products.Commands.DeleteProduct;
+using Application.UseCases.v1.Products.Commands.UpdateProduct;
+using Application.UseCases.v1.Products.Queries.GetAllProduct;
+using Application.UseCases.v1.Products.Queries.GetProductById;
 using Domain.Shared;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

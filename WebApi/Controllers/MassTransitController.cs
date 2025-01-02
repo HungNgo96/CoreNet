@@ -1,4 +1,4 @@
-﻿using Application.Products.Commands.CreateProduct;
+﻿using Application.UseCases.v1.Products.Commands.CreateProduct;
 using Contract.IntegrationEvents;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
