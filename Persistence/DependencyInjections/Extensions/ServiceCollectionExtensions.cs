@@ -21,6 +21,7 @@ namespace Persistence.DependencyInjections.Extensions
 
             services.AddDbContext<ReadApplicationDbContext>((sp, op) =>
             {
+                Console.WriteLine(optionsConfig.ReadSqlServer);
                 op.UseSqlServer(optionsConfig.ReadSqlServer!, x =>
                 {
                     x.MigrationsAssembly("Persistence");
@@ -40,6 +41,7 @@ namespace Persistence.DependencyInjections.Extensions
 
             services.AddDbContext<WriteApplicationDbContext>((sp, op) =>
             {
+                Console.WriteLine(optionsConfig.WriteSqlServer);
                 op.UseSqlServer(optionsConfig.WriteSqlServer!, x =>
                 {
                     x.MigrationsAssembly("Persistence");

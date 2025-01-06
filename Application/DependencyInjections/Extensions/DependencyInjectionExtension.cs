@@ -59,11 +59,13 @@ namespace Application.DependencyInjections.Extensions
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
                     configurator.PrefetchCount = 7;//to consumer in order but this is not performance
-                    configurator.Host(new Uri("amqp://localhost:5672"), (h) =>
+                    configurator.Host(new Uri("amqp://guest:guest@rabbitmq:5672"), (h) =>
                     {
                         h.Username("guest");
                         h.Password("guest");
                     });
+
+                    configurator.UseMessageRetry(r => r.Interval(5, TimeSpan.FromSeconds(5)));
 
                     //configurator.ReceiveEndpoint("product-service", e =>
                     //{
@@ -71,10 +73,10 @@ namespace Application.DependencyInjections.Extensions
                     //    e.PrefetchCount = 5;
                     //    e.ConfigureConsumer<ProductCreatedEventConsumer>(context);
                     //});
-                    configurator.Message<ProductCreatedEvent>(x =>
-                    {
-                        x.SetEntityName("product-created-event-exchange-2");
-                    });
+                    //configurator.Message<ProductCreatedEvent>(x =>
+                    //{
+                    //    x.SetEntityName("product-created-event-exchange-2");
+                    //});
                     configurator.ConfigureEndpoints(context);
                 });
 
