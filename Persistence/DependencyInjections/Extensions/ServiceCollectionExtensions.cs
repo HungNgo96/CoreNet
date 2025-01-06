@@ -23,7 +23,7 @@ namespace Persistence.DependencyInjections.Extensions
             {
                 op.UseSqlServer(optionsConfig.ReadSqlServer!, x =>
                 {
-                    x.MigrationsAssembly("Infrastructure");
+                    x.MigrationsAssembly("Persistence");
                     x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
                 });
 
@@ -42,7 +42,7 @@ namespace Persistence.DependencyInjections.Extensions
             {
                 op.UseSqlServer(optionsConfig.WriteSqlServer!, x =>
                 {
-                    x.MigrationsAssembly("Infrastructure");
+                    x.MigrationsAssembly("Persistence");
                     x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
                 });
 

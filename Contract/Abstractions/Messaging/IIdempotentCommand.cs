@@ -1,4 +1,4 @@
-﻿namespace Application.Abstractions.Messaging
+﻿namespace Contract.Abstractions.Messaging
 {
     public interface IIdempotentCommand<out TResponse> : ICommand<TResponse>
     {

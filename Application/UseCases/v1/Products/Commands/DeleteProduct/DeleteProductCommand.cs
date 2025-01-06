@@ -1,6 +1,6 @@
 ﻿// HungNgo96
 
-using Application.Abstractions.Messaging;
+using Contract.Abstractions.Messaging;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
 using Domain.Shared;

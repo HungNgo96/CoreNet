@@ -1,0 +1,66 @@
+﻿version: '3.9'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: WebApi/Dockerfile
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8080:8080"
+    environment:
+      - RABBITMQ_CONNECTION=amqp://rabbitmq:5672
+      - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - mynetwork
+ # prometheus service     
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+    networks:
+      - mynetwork
+# grafana service
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      - mynetwork
+# RabbitMQ service
+  rabbitmq:
+    image: "rabbitmq:3-management"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"   # RabbitMQ default AMQP port
+      - "15672:15672" # RabbitMQ management UI port
+    networks:
+      - mynetwork
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
+    ports:
+      - "14333:1433"  # Expose SQL Server port to the host (local/Docker container)
+    networks:
+      - mynetwork
+    volumes:
+      - sql_data:/var/opt/mssql  # Persist data between container restarts
+
+volumes:
+  sql_data:
+    driver: local
+
+networks:
+  mynetwork:
+    driver: bridge

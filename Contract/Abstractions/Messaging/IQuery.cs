@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace Application.Abstractions.Messaging;
+namespace Contract.Abstractions.Messaging;
 
 public interface IQuery<out TResponse> : IRequest<TResponse>
 {

@@ -35,12 +35,12 @@ namespace Persistence.Repositories.Commons
         {
             var specificationResult = GetQuery(_dbContext.Set<TEntity>(), spec);
 
-            return await specificationResult.ToListAsync();
+            return await specificationResult.ToListAsync(cancellationToken);
         }
 
         public async Task<TEntity> AddAsync(TEntity entity, CancellationToken cancellationToken)
         {
-            await _dbContext.Set<TEntity>().AddAsync(entity);
+            await _dbContext.Set<TEntity>().AddAsync(entity, cancellationToken);
 
             return entity;
         }

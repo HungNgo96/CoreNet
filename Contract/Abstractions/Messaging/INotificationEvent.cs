@@ -7,9 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Contract.Abstractions.Messaging;
 
-namespace Contract.Abstractions.Messages
+namespace Contract.Abstractions.Messaging
 {
     public interface INotificationEvent : IMessage
     {

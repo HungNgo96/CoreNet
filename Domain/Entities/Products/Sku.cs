@@ -10,7 +10,7 @@ namespace Domain.Entities.Products
         private Sku(string value) => Value = value;
         private Sku() { }
 
-        public string Value { get; init; }
+        public string? Value { get; init; }
 
         public static Sku? Create(string value)
         {
@@ -19,12 +19,7 @@ namespace Domain.Entities.Products
                 return null;
             }
 
-            if (value.Length == DefaultLength)
-            {
-                return null;
-            }
-
-            return new Sku(value);
+            return value.Length == DefaultLength ? null : new Sku(value);
         }
     }
 }

@@ -11,13 +11,5 @@ using Domain.Core.Events;
 
 namespace Domain.Events.Products
 {
-    public record DeletedProductDomainEvent : IDomainEvent
-    {
-        public DeletedProductDomainEvent(Guid productId)
-        {
-            ProductId = productId;
-        }
-
-        public Guid ProductId { get; }
-    }
+    public record DeletedProductDomainEvent(Guid ProductId) : IDomainEvent;
 }

@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Application.Abstractions.Messaging;
+using Contract.Abstractions.Messaging;
 using Domain.Entities.Orders;
 
 namespace Application.UseCases.v1.Orders.Commands.RemoveLineItem

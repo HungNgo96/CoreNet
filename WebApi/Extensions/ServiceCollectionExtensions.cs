@@ -125,78 +125,7 @@ namespace WebApi.Extensions
             return services;
         }
 
-       
 
-        internal static IServiceCollection AddConfigureMassTransit(this IServiceCollection services)
-        {
-            _ = services.AddMassTransit((busConfigurator) =>
-            {
-                busConfigurator.SetKebabCaseEndpointNameFormatter();
-
-                //busConfigurator.AddConsumer<ProductCreatedEventConsumer, ProductCreatedEventConsumerDefinition>();
-                //busConfigurator.AddConsumers(Assembly.GetExecutingAssembly());
-                busConfigurator.UsingRabbitMq((context, configurator) =>
-                {
-                    configurator.PrefetchCount = 7;//to consumer in order but this is not performance
-                    configurator.Host(new Uri("amqp://localhost:5672"), (h) =>
-                    {
-                        h.Username("guest");
-                        h.Password("guest");
-                    });
-
-                    //configurator.ReceiveEndpoint("product-service", e =>
-                    //{
-                    //    e.ConcurrentMessageLimit = 28; // only applies to this endpoint
-                    //    e.PrefetchCount = 5;
-                    //    e.ConfigureConsumer<ProductCreatedEventConsumer>(context);
-                    //});
-                    configurator.Message<ProductCreatedEvent>(x =>
-                    {
-                        x.SetEntityName("product-created-event-exchange-2");
-                    });
-                    configurator.ConfigureEndpoints(context);
-                });
-
-                //services.AddOptions<MassTransitHostOptions>()
-                //       .Configure(options =>
-                //       {
-                //           options.WaitUntilStarted = true;
-                //           options.StartTimeout = TimeSpan.FromSeconds(30);
-                //           options.StopTimeout = TimeSpan.FromSeconds(60);
-                //       });
-                //services.AddOptions<HostOptions>()
-                //    .Configure(options =>
-                //    {
-                //        options.StartupTimeout = TimeSpan.FromSeconds(60);
-                //        options.ShutdownTimeout = TimeSpan.FromSeconds(60);
-                //    });
-            });
-
-            services.AddTransient<IEventBus, EventBus>();
-            return services;
-        }
-
-        internal static IServiceCollection AddConfigQuartz(this IServiceCollection services)
-        {
-            services.AddQuartz(config =>
-            {
-                var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
-
-                config.
-                AddJob<ProcessOutboxMessageJob>(jobKey)
-                .AddTrigger(trigger =>
-                {
-                    trigger.ForJob(jobKey)
-                    .WithSimpleSchedule(schedule =>
-                    {
-                        schedule.WithIntervalInSeconds(60).RepeatForever();
-                    });
-                });
-            });
-
-            services.AddQuartzHostedService();
-            return services;
-        }
 
         internal static IServiceCollection AddConfigResponseCompression(this IServiceCollection services)
         {

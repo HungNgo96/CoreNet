@@ -2,9 +2,9 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Application.Abstractions.Messaging;
 using Contract.Abstractions.EventBus;
 using Contract.Abstractions.Idempotency;
+using Contract.Abstractions.Messaging;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
 using Domain.Repositories;
@@ -13,7 +13,7 @@ using FluentValidation;
 
 namespace Application.UseCases.v1.Products.Commands.CreateProduct
 {
-    public record CreateProduct
+    public static class CreateProduct
     {
         public sealed record Command : IdempotentCommand, ICommand<IResult<bool>>
         {

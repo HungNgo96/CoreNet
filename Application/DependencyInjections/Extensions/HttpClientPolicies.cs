@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Polly;
 using Polly.Extensions.Http;
 
-namespace Application.DependencyInjection.Extensions
+namespace Application.DependencyInjections.Extensions
 {
     public static class HttpClientPolicies
     {

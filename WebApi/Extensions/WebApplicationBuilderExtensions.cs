@@ -53,32 +53,34 @@ namespace WebApi.Extensions
             bool isEnvProduct = app.Environment.IsProduction();
             var projectName = typeof(Program).Assembly.GetName().Name;
 
-            if (!isEnvProduct)
+            if (isEnvProduct)
             {
-                _ = app.UseSwagger(c =>
-                {
-                    c.RouteTemplate = "/swagger/{documentName}/swagger.json";
-                });
-
-                _ = app.UseSwaggerUI(options =>
-                {
-                    options.RoutePrefix = "";
-                    var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
-
-                    foreach (var groupName in provider.ApiVersionDescriptions.Select(x => x.GroupName))
-                    {
-                        options.SwaggerEndpoint($"/v1/swagger/{groupName}/swagger.json",
-                            projectName + " - " + groupName.ToUpperInvariant());
-                    }
-
-                    options.DisplayRequestDuration();
-                    options.EnableFilter();
-                    options.ShowExtensions();
-                    options.ShowCommonExtensions();
-                    options.EnableDeepLinking();
-                    options.DocExpansion(DocExpansion.None);
-                });
+                return;
             }
+
+            _ = app.UseSwagger(c =>
+            {
+                c.RouteTemplate = "/v1/swagger/{documentName}/swagger.json";
+            });
+
+            _ = app.UseSwaggerUI(options =>
+            {
+                options.RoutePrefix = "swagger";
+                var provider = app.Services.GetRequiredService<IApiVersionDescriptionProvider>();
+
+                foreach (var groupName in provider.ApiVersionDescriptions.Select(x => x.GroupName))
+                {
+                    options.SwaggerEndpoint($"/v1/swagger/{groupName}/swagger.json",
+                        projectName + " - " + groupName.ToUpperInvariant());
+                }
+
+                options.DisplayRequestDuration();
+                options.EnableFilter();
+                options.ShowExtensions();
+                options.ShowCommonExtensions();
+                options.EnableDeepLinking();
+                options.DocExpansion(DocExpansion.None);
+            });
         }
 
         internal static void AddJsonFiles(this WebApplicationBuilder builder)
@@ -91,7 +93,7 @@ namespace WebApi.Extensions
 
         internal static void UseHealthCheckCustom(this WebApplication app)
         {
-            app.UseHealthChecks($"/healthchecks", new HealthCheckOptions()
+            app.UseHealthChecks($"/health-checks", new HealthCheckOptions()
             {
                 Predicate = _ => true,
                 ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse,

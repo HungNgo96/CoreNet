@@ -11,7 +11,7 @@ namespace Infrastructure.Outbox
 {
     public sealed class InsertOutboxMessageInterceptor : SaveChangesInterceptor
     {
-        private static readonly JsonSerializerSettings JsonSerializerSettings = new()
+        private static readonly JsonSerializerSettings s_jsonSerializerSettings = new()
         {
             TypeNameHandling = TypeNameHandling.All,
         };
@@ -50,7 +50,7 @@ namespace Infrastructure.Outbox
                     return new OutboxMessage()
                     {
                         Id = Guid.NewGuid(),
-                        Content = JsonConvert.SerializeObject(domainEvent, JsonSerializerSettings),
+                        Content = JsonConvert.SerializeObject(domainEvent, s_jsonSerializerSettings),
                         OccurrendOnUtc = utcNow,
                         Type = domainEvent.GetType().Name,
                     };

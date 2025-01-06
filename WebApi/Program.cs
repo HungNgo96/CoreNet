@@ -1,13 +1,12 @@
 ﻿using System.Text.Json.Serialization;
-using Application.DependencyInjection.Extensions;
+using Application.DependencyInjections.Extensions;
 using Domain.Core;
-using Domain.Core.SharedKernel;
 using FluentValidation.AspNetCore;
 using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.EntityFrameworkCore;
 using Persistence.DbContexts;
-using Persistence.DependencyInjections.Extensions;
 using WebApi.Commons;
 using WebApi.ConfigOptions;
 using WebApi.Extensions;
@@ -26,7 +25,6 @@ var configuration = builder.Configuration;
 builder.AddJsonFiles();
 // Add services to the container.
 builder.UseSerilog();
-
 services.AddControllers((options) =>
 {
     options.Conventions.Add(new RouteTokenTransformerConvention(new KebabParameterTransformer()));
@@ -49,12 +47,11 @@ services.AddCurrentUserService();
 services.AddConfigOptions(configuration)
     .AddCacheService(configuration);
 
-services.AddApplication();
-//.AddInfrastructure();
+services.AddApplication()
+.AddInfrastructure()
+.AddPersistence(configuration);
 
 services.AddFluentValidationAutoValidation();//fluent API
-
-services.AddConfigDbContext(configuration);
 
 services.AddCorrelationGenerator();
 
@@ -63,10 +60,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
-
-services.AddConfigQuartz();
-
-services.AddConfigureMassTransit();
 
 services.AddRepository()
     .AddServices();
@@ -78,6 +71,11 @@ app.UseForwardedHeaders();
 app.UseCorrelationId();
 
 app.UseErrorHandler();
+
+app.UseRouting();
+
+// Kích hoạt Prometheus metrics endpoint
+//app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
 
@@ -91,7 +89,7 @@ app.UseHealthCheckCustom();
 
 if (app.Environment.IsDevelopment())
 {
-    var scope = app.Services.CreateScope();
+    using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WriteApplicationDbContext>();
 
     if (!await dbContext.Database.CanConnectAsync(default))
@@ -99,12 +97,12 @@ if (app.Environment.IsDevelopment())
         throw new ConnectionException("Couldn't connect database.");
     }
 
-    await dbContext.Database.EnsureCreatedAsync();
-    //await dbContext.Database.MigrateAsync();
-
-    app.UseConfigureSwagger();
+    //await dbContext.Database.EnsureCreatedAsync();
+    await dbContext.Database.MigrateAsync();
 }
 
+
+app.UseConfigureSwagger();
 
 app.MapControllers();
 CheckTime(app);

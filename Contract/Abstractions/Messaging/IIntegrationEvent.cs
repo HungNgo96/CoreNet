@@ -4,7 +4,7 @@
 
 using MediatR;
 
-namespace Application.Abstractions.Messaging
+namespace Contract.Abstractions.Messaging
 {
     public interface IIntegrationEvent : INotification
     {
