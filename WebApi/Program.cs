@@ -92,7 +92,7 @@ if (app.Environment.IsDevelopment())
     using var scope = app.Services.CreateScope();
     var dbContext = scope.ServiceProvider.GetRequiredService<WriteApplicationDbContext>();
 
-    if (!await dbContext.Database.CanConnectAsync(default))
+    if (!await dbContext.Database.CanConnectAsync(CancellationToken.None))
     {
         throw new ConnectionException("Couldn't connect database.");
     }
