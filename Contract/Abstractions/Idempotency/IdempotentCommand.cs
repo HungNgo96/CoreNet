@@ -6,6 +6,11 @@ namespace Contract.Abstractions.Idempotency
 {
     public abstract record IdempotentCommand
     {
-        public Guid RequestId { get; init; }
+        public Guid RequestId { get; private set; }
+
+        public void SetRequestId(Guid guid)
+        {
+            RequestId = guid;
+        }
     };
 }

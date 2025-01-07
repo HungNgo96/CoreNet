@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Domain.Core.Abstractions
+﻿namespace Domain.Core.Abstractions
 {
     /// <summary>
     /// Represents the marker interface for auditable entities.

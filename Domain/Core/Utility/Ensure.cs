@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Domain.Core.Utility
+﻿namespace Domain.Core.Utility
 {
     /// <summary>
     /// Contains assertions for the most common application checks.

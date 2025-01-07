@@ -21,7 +21,6 @@ namespace Persistence.DependencyInjections.Extensions
 
             services.AddDbContext<ReadApplicationDbContext>((sp, op) =>
             {
-                Console.WriteLine(optionsConfig.ReadSqlServer);
                 op.UseSqlServer(optionsConfig.ReadSqlServer!, x =>
                 {
                     x.MigrationsAssembly("Persistence");

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -17,6 +16,5 @@ namespace Persistence.EntityConfigurations
 
             _ = builder.Property(o => o.TotalPrice).HasColumnType(nameof(Decimal));
         }
-
     }
 }

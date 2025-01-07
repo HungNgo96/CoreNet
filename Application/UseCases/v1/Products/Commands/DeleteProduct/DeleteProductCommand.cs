@@ -46,6 +46,5 @@ namespace Application.UseCases.v1.Products.Commands.DeleteProduct
                 return Result<bool>.Fail("Update fail");
             }
         }
-
     }
 }

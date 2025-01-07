@@ -12,6 +12,7 @@ namespace Persistence.DbContexts
         public ReadApplicationDbContext(DbContextOptions<ReadApplicationDbContext> options) : base(options)
         {
         }
+
         public override ChangeTracker ChangeTracker
         {
             get
@@ -20,6 +21,7 @@ namespace Persistence.DbContexts
                 return base.ChangeTracker;
             }
         }
+
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<OrderSummary> OrderSummaries { get; set; }
@@ -27,6 +29,7 @@ namespace Persistence.DbContexts
         public DbSet<LineItem> LineItems { get; set; }
 
         public DbSet<TEntity> GetDbSet<TEntity>() where TEntity : class => Set<TEntity>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemlyReference).Assembly);

@@ -15,6 +15,7 @@ internal class DistributedCacheService(
     : ICacheService
 {
     private const string CacheServiceName = nameof(DistributedCacheService);
+
     private readonly DistributedCacheEntryOptions _cacheOptions = new()
     {
         AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(cacheOptions.Value.AbsoluteExpirationInHours),

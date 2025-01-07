@@ -75,7 +75,7 @@ app.UseErrorHandler();
 app.UseRouting();
 
 // Kích hoạt Prometheus metrics endpoint
-//app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
 
@@ -87,24 +87,25 @@ app.UseStaticFiles();
 
 app.UseHealthCheckCustom();
 
-if (app.Environment.IsDevelopment())
-{
-    using var scope = app.Services.CreateScope();
-    var dbContext = scope.ServiceProvider.GetRequiredService<WriteApplicationDbContext>();
-
-    if (!await dbContext.Database.CanConnectAsync(CancellationToken.None))
-    {
-        throw new ConnectionException("Couldn't connect database.");
-    }
-
-    //await dbContext.Database.EnsureCreatedAsync();
-    await dbContext.Database.MigrateAsync();
-}
-
-
 app.UseConfigureSwagger();
 
 app.MapControllers();
+
+//if (app.Environment.IsDevelopment())
+//{
+//    using var scope = app.Services.CreateScope();
+//    var dbContext = scope.ServiceProvider.GetRequiredService<WriteApplicationDbContext>();
+
+//    if (!await dbContext.Database.CanConnectAsync(CancellationToken.None))
+//    {
+//        throw new ConnectionException("Couldn't connect database.");
+//    }
+
+//    //await dbContext.Database.EnsureCreatedAsync();
+//    await dbContext.Database.MigrateAsync();
+//}
+
+
 CheckTime(app);
 await app.RunAsync();
 

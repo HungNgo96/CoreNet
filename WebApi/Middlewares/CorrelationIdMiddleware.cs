@@ -33,7 +33,6 @@ namespace WebApi.Middlewares
 
             correlationIdGenerator.Set(correlationId!);
             return correlationId;
-
         }
     }
 

@@ -4,22 +4,16 @@
 
 using System.IO.Compression;
 using Application.Services;
-using Application.UseCases.v1.Products.Commands.CreateProduct;
 using Asp.Versioning;
-using Contract.Abstractions.EventBus;
 using Contract.Abstractions.Idempotency;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
 using Domain.Repositories;
-using Infrastructure.BackgroundJobs;
 using Infrastructure.Idempotency;
-using Infrastructure.MessageBroker;
-using MassTransit;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
 using Persistence.Repositories;
-using Quartz;
 
 namespace WebApi.Extensions
 {
@@ -124,8 +118,6 @@ namespace WebApi.Extensions
 
             return services;
         }
-
-
 
         internal static IServiceCollection AddConfigResponseCompression(this IServiceCollection services)
         {

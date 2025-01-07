@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-
-namespace Domain.Core.SharedKernel;
+﻿namespace Domain.Core.SharedKernel;
 
 public interface ICacheService
 {

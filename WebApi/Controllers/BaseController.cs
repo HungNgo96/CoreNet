@@ -9,7 +9,7 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("/api/v{version:apiVersion}/[controller]")]
-    public class BaseController : Controller
+    public abstract class BaseController : ControllerBase
     {
         private IMediator? _mapper;
         protected IMediator Mediator => _mapper ??= HttpContext.RequestServices.GetRequiredService<IMediator>();

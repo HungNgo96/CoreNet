@@ -28,7 +28,7 @@ namespace Infrastructure.Outbox
             return base.SavingChangesAsync(eventData, result, cancellationToken);
         }
 
-        private void InsertOutboxMessage(DbContext context)
+        private static void InsertOutboxMessage(DbContext context)
         {
             var utcNow = DateTime.UtcNow;
 
@@ -45,15 +45,12 @@ namespace Infrastructure.Outbox
 
                     return domainEvents;
                 })
-                .Select(domainEvent =>
+                .Select(domainEvent => new OutboxMessage()
                 {
-                    return new OutboxMessage()
-                    {
-                        Id = Guid.NewGuid(),
-                        Content = JsonConvert.SerializeObject(domainEvent, s_jsonSerializerSettings),
-                        OccurrendOnUtc = utcNow,
-                        Type = domainEvent.GetType().Name,
-                    };
+                    Id = Guid.NewGuid(),
+                    Content = JsonConvert.SerializeObject(domainEvent, s_jsonSerializerSettings),
+                    OccurrendOnUtc = utcNow,
+                    Type = domainEvent.GetType().Name,
                 }).ToList();
 
             context.Set<OutboxMessage>().AddRange(outboxMessage);

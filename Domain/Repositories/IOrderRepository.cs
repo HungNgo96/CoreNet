@@ -9,7 +9,9 @@ namespace Domain.Repositories
     public interface IOrderRepository
     {
         public Task<Order> GetByIdAsync(int id, CancellationToken cancellationToken);
+
         public Task<IReadOnlyCollection<Order>> GetAllAsync(CancellationToken cancellationToken);
+
         public Task<bool> InsertAsync(Order order, CancellationToken cancellationToken);
     }
 }

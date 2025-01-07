@@ -5,7 +5,6 @@
 using System.Linq.Expressions;
 using Domain.Core.Specification;
 using Domain.Primitives;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 

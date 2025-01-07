@@ -8,16 +8,11 @@ using Microsoft.Extensions.Logging;
 
 namespace Application.UseCases.v1.Products.Commands.CreateProduct
 {
-    [ExcludeFromConfigureEndpoints]//https://masstransit.io/documentation/configuration
-    public sealed class ProductCreatedEventConsumer
+    //[ExcludeFromConfigureEndpoints]//https://masstransit.io/documentation/configuration
+    public sealed class ProductCreatedEventConsumer(ILogger<ProductCreatedEventConsumer> logger)
         : IConsumer<ProductCreatedEvent>
     {
-        private readonly ILogger<ProductCreatedEventConsumer> _logger;
-
-        public ProductCreatedEventConsumer(ILogger<ProductCreatedEventConsumer> logger)
-        {
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-        }
+        private readonly ILogger<ProductCreatedEventConsumer> _logger = logger ?? throw new ArgumentNullException(nameof(logger));
 
         public Task Consume(ConsumeContext<ProductCreatedEvent> context)
         {

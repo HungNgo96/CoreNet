@@ -12,6 +12,7 @@ namespace Infrastructure.Idempotency
     {
         private readonly IWriteApplicationDbContext _context;
         private readonly IUnitOfWork _unitOfWork;
+
         public IdempotencyService(IWriteApplicationDbContext context, IUnitOfWork unitOfWork)
         {
             _context = context;

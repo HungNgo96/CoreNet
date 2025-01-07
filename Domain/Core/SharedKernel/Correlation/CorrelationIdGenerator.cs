@@ -1,6 +1,4 @@
-using System;
-
-namespace Domain.Core.SharedKernel.Correlation;
+﻿namespace Domain.Core.SharedKernel.Correlation;
 
 public class CorrelationIdGenerator : ICorrelationIdGenerator
 {

@@ -7,19 +7,12 @@ namespace WebApi.Controllers
 {
     [ApiController]
     [Route("[controller]/[action]")]
-    public class MassTransitController : ControllerBase
+    public class MassTransitController(
+        ILogger<MassTransitController> logger,
+        IPublishEndpoint publishEndpoint,
+        IBus bus)
+        : ControllerBase
     {
-        private readonly ILogger<MassTransitController> _logger;
-        private readonly IPublishEndpoint _publishEndpoint;
-        private readonly IBus _bus;
-
-        public MassTransitController(ILogger<MassTransitController> logger, IPublishEndpoint publishEndpoint, IBus bus)
-        {
-            _logger = logger;
-            _publishEndpoint = publishEndpoint;
-            _bus = bus;
-        }
-
         /// <summary>
         /// procedure demo
         /// </summary>
@@ -27,7 +20,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> Procedure()
         {
-            await _publishEndpoint.Publish(new DomainEvent.SmsNotificationEvent()
+            await publishEndpoint.Publish(new DomainEvent.SmsNotificationEvent()
             {
                 Id = Guid.NewGuid(),
                 Description = "Sms",
@@ -43,7 +36,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> ProcedureReceiveEndpoint(CancellationToken cancellationToken)
         {
-            await _bus.Publish(new ProductReceiveEndpoint()
+            await bus.Publish(new ProductReceiveEndpoint()
             {
                 Id = Guid.NewGuid(),
                 Description = "Sms",
@@ -59,7 +52,7 @@ namespace WebApi.Controllers
         [HttpGet]
         public async Task<IActionResult> ProductCreatedEvent(CancellationToken cancellationToken)
         {
-            await _bus.Publish(new ProductCreatedEvent()
+            await bus.Publish(new ProductCreatedEvent()
             {
                 Id = Guid.NewGuid(),
                 Name = "Name ProductCreatedEvent",

@@ -4,7 +4,6 @@
 
 using Domain.Core.Events;
 using Domain.Core.SharedKernel;
-using Domain.Core.Utility;
 
 namespace Domain.Primitives
 {

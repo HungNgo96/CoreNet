@@ -3,7 +3,6 @@
 
 using Domain.Core.Abstractions;
 using Domain.Core.SharedKernel;
-using Domain.Events;
 using Domain.Events.Products;
 using Domain.Primitives;
 

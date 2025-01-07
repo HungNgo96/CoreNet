@@ -1,6 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace Domain.Core.Specification
 {

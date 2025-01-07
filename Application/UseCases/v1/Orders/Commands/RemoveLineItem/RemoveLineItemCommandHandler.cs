@@ -35,7 +35,6 @@ namespace Application.UseCases.v1.Orders.Commands.RemoveLineItem
             order.RemoveLineItem(request.LineItemId);
 
             return await _unitOfWork.SaveChangesAsync(cancellationToken) > 0;
-
         }
     }
 }

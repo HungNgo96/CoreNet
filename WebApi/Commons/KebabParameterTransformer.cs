@@ -7,12 +7,12 @@ using System.Text.RegularExpressions;
 namespace WebApi.Commons
 {
     /// <summary>
-    /// 
+    ///
     /// </summary>
     public class KebabParameterTransformer : IOutboundParameterTransformer
     {
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>

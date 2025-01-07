@@ -42,8 +42,8 @@ namespace Application.DependencyInjections.Extensions
 
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            //services.AddConfigQuartz()
-            //    .AddInfasOpenTelemetry();
+            services.AddConfigQuartz()
+                .AddInfasOpenTelemetry();
 
             return services.AddConfigureMassTransit();
         }
@@ -54,7 +54,8 @@ namespace Application.DependencyInjections.Extensions
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
 
-                busConfigurator.AddConsumer<ProductCreatedEventConsumer, ProductCreatedEventConsumerDefinition>();
+                //busConfigurator.AddConsumer<ProductCreatedEventConsumer, ProductCreatedEventConsumerDefinition>();
+                busConfigurator.AddConsumer<ProductCreatedEventConsumer>();
                 //busConfigurator.AddConsumers(Assembly.GetExecutingAssembly());
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
@@ -77,7 +78,7 @@ namespace Application.DependencyInjections.Extensions
                     //{
                     //    x.SetEntityName("product-created-event-exchange-2");
                     //});
-                    configurator.ConfigureEndpoints(context);
+                    configurator.ConfigureEndpoints(context);///add attribute ExcludeFromConfigureEndpoints to ignore config
                 });
 
                 //services.AddOptions<MassTransitHostOptions>()

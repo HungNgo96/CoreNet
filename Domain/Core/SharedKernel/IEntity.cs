@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Domain.Core.SharedKernel;
+﻿namespace Domain.Core.SharedKernel;
 
 /// <summary>
 /// This is the base interface for all entities

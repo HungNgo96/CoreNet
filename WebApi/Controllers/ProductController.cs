@@ -44,13 +44,9 @@ namespace WebApi.Controllers
                 return BadRequest(Result<bool>.Fail("Missing header X-Idempotency-Key"));
             }
 
-            return Ok(await Mediator.Send(new CreateProduct.Command()
-            {
-                Name = request.Name,
-                Price = request.Price,
-                Sku = request.Sku,
-                RequestId = parseRequestId
-            }, cancellationToken: cancellationToken).ConfigureAwait(false));
+            request.SetRequestId(parseRequestId);
+
+            return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
         [SwaggerOperation(Summary = "Update product.")]

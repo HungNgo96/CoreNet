@@ -2,11 +2,11 @@
 
 using Infrastructure.BackgroundJobs;
 using Microsoft.Extensions.DependencyInjection;
-using Quartz;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using Quartz;
 
 namespace Infrastructure.Extensions
 {
