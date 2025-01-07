@@ -5,14 +5,16 @@
     </assembly>
     <members>
         <member name="T:WebApi.Commons.KebabParameterTransformer">
-            <summary>
-            </summary>
+             <summary>
+            
+             </summary>
         </member>
         <member name="M:WebApi.Commons.KebabParameterTransformer.TransformOutbound(System.Object)">
-            <summary>
-            </summary>
-            <param name="value"></param>
-            <returns></returns>
+             <summary>
+            
+             </summary>
+             <param name="value"></param>
+             <returns></returns>
         </member>
         <member name="M:WebApi.Controllers.MassTransitController.Procedure">
             <summary>
