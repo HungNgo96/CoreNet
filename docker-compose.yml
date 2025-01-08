@@ -1,4 +1,15 @@
 ﻿version: '3.9'
+
+networks:
+  otel-network:
+    driver: bridge
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  sql_data:
+    driver: local
 services:
   app:
     build:
@@ -14,27 +25,76 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=Demo01;User Id=sa;Password=YourStrong!Passw0rd;
     networks:
-      - mynetwork
- # prometheus service     
+      - otel-network
+
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    container_name: otel-collector
+    ports:
+      - "4317:4317" # OTLP gRPC
+      - "4318:4318" # OTLP HTTP
+      - "9464:9464" # Prometheus metrics
+    volumes:
+      - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+    command: ["--config=/etc/otel-collector-config.yml"]
+    depends_on:
+      - jaeger
+      - prometheus
+    networks:
+      - otel-network
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: jaeger
+    ports:
+      - "16686:16686" # Jaeger UI
+      - "14250:14250" # OTLP endpoint for traces
+    networks:
+      - otel-network
+  zipkin:
+    image: openzipkin/zipkin:latest
+    container_name: zipkin
+    ports:
+      - "9411:9411" # Zipkin UI
+    networks:
+      - otel-network
+  node_exporter:
+    image: quay.io/prometheus/node-exporter:v1.5.0
+    container_name: node_exporter
+    command: '--path.rootfs=/host'
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    networks:
+      - otel-network
+#prometheus service     
   prometheus:
     image: prom/prometheus:latest
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus-data:/prometheus # Persist data between container restarts
     ports:
       - "9090:9090"
     networks:
-      - mynetwork
-# grafana service
+      - otel-network
+#grafana service
   grafana:
     image: grafana/grafana:latest
     ports:
       - "3000:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana # Persist data between container restarts
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
     networks:
-      - mynetwork
-# RabbitMQ service
+      - otel-network
+#RabbitMQ service
   rabbitmq:
     container_name: rabbitmq
     image: "rabbitmq:3-management"
@@ -45,9 +105,9 @@ services:
       - "5672:5672"   # RabbitMQ default AMQP port
       - "15672:15672" # RabbitMQ management UI port
     networks:
-      - mynetwork
+      - otel-network
     restart: always
-
+#Sql server 2019
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2019-latest
     container_name: sqlserver
@@ -57,14 +117,6 @@ services:
     ports:
       - "1433:1433"  # Expose SQL Server port to the host (local/Docker container)
     networks:
-      - mynetwork
+      - otel-network
     volumes:
       - sql_data:/var/opt/mssql  # Persist data between container restarts
-
-volumes:
-  sql_data:
-    driver: local
-
-networks:
-  mynetwork:
-    driver: bridge

@@ -16,7 +16,7 @@ using WebApi.Middlewares;
 //    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
 //    .AddEnvironmentVariables()
 //    .Build();
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 var env = builder.Environment;
@@ -48,7 +48,7 @@ services.AddConfigOptions(configuration)
     .AddCacheService(configuration);
 
 services.AddApplication()
-.AddInfrastructure()
+.AddInfrastructure(builder)
 .AddPersistence(configuration);
 
 services.AddFluentValidationAutoValidation();//fluent API

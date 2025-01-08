@@ -7,6 +7,7 @@ using Infrastructure.Extensions;
 using Infrastructure.MessageBroker;
 using MassTransit;
 using MediatR.NotificationPublishers;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.DependencyInjections.Extensions;
@@ -40,10 +41,10 @@ namespace Application.DependencyInjections.Extensions
             return services;
         }
 
-        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services, WebApplicationBuilder builder)
         {
             services.AddConfigQuartz()
-                .AddInfasOpenTelemetry();
+                .AddInfasOpenTelemetry(builder);
 
             return services.AddConfigureMassTransit();
         }
