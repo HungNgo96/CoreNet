@@ -6,7 +6,7 @@ using Contract.Abstractions.Idempotency;
 using Domain.Core.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Idempotency
+namespace Persistence.Idempotency
 {
     public class IdempotencyService : IIdempotencyService
     {

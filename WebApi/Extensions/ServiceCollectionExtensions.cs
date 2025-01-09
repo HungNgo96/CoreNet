@@ -10,9 +10,9 @@ using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
 using Domain.Repositories;
-using Infrastructure.Idempotency;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
+using Persistence.Idempotency;
 using Persistence.Repositories;
 
 namespace WebApi.Extensions

@@ -1,6 +1,5 @@
 ﻿// HungNgo96
 
-using Infrastructure.BackgroundJobs;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -9,34 +8,11 @@ using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
-using Quartz;
 
 namespace Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        public static IServiceCollection AddConfigQuartz(this IServiceCollection services)
-        {
-            services.AddQuartz(config =>
-            {
-                var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
-
-                config.
-                AddJob<ProcessOutboxMessageJob>(jobKey)
-                .AddTrigger(trigger =>
-                {
-                    trigger.ForJob(jobKey)
-                    .WithSimpleSchedule(schedule =>
-                    {
-                        schedule.WithIntervalInSeconds(60).RepeatForever();
-                    });
-                });
-            });
-
-            services.AddQuartzHostedService();
-            return services;
-        }
-
         public static IServiceCollection AddInfasOpenTelemetry(this IServiceCollection services, WebApplicationBuilder builder)
         {
             builder.Logging.AddOpenTelemetry(logging =>
@@ -44,7 +20,6 @@ namespace Infrastructure.Extensions
                 logging.IncludeFormattedMessage = true;
                 logging.IncludeScopes = true;
             });
-
 
             services.AddOpenTelemetry()
                      //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApi"))
@@ -70,11 +45,11 @@ namespace Infrastructure.Extensions
                     .AddAspNetCoreInstrumentation() // Capture ASP.NET Core metrics
                                                     //.AddRuntimeInstrumentation()    // Capture runtime (GC, CPU, etc.) metrics
                     .AddPrometheusExporter()      // Export metrics to Prometheus
-                    //.AddOtlpExporter(options =>
-                    //    {
-                    //        options.Endpoint = new Uri("http://otel-collector:4317");
-                    //        options.Protocol = OtlpExportProtocol.Grpc;
-                    //    })
+                                                  //.AddOtlpExporter(options =>
+                                                  //    {
+                                                  //        options.Endpoint = new Uri("http://otel-collector:4317");
+                                                  //        options.Protocol = OtlpExportProtocol.Grpc;
+                                                  //    })
                         ;
             })
             //.WithLogging(loggingBuilder =>

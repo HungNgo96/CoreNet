@@ -3,12 +3,12 @@
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
-using Infrastructure.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Persistence.DbContexts;
+using Persistence.Interceptors;
 
 namespace Persistence.DependencyInjections.Extensions
 {

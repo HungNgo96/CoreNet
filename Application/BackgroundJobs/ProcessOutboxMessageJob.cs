@@ -4,10 +4,10 @@
 
 using Domain.Core.Events;
 using Domain.Core.SharedKernel;
-using Infrastructure.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Persistence.Outbox;
 using Quartz;
 
 namespace Infrastructure.BackgroundJobs

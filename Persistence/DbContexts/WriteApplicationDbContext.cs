@@ -10,13 +10,13 @@ using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;
 using Domain.Primitives;
-using Infrastructure.Idempotency;
-using Infrastructure.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
+using Persistence.Idempotency;
+using Persistence.Outbox;
 
 namespace Persistence.DbContexts
 {

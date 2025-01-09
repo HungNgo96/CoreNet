@@ -7,14 +7,9 @@ using MassTransit;
 
 namespace Infrastructure.MessageBroker
 {
-    public sealed class EventBus : IEventBus
+    public sealed class EventBus(IPublishEndpoint publishEndpoint) : IEventBus
     {
-        private readonly IPublishEndpoint _publishEndpoint;
-
-        public EventBus(IPublishEndpoint publishEndpoint)
-        {
-            _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
-        }
+        private readonly IPublishEndpoint _publishEndpoint = publishEndpoint ?? throw new ArgumentNullException(nameof(publishEndpoint));
 
         public Task PublishAsync<T>(T message, CancellationToken cancellationToken = default) where T : class
         => _publishEndpoint.Publish<T>(message, cancellationToken);

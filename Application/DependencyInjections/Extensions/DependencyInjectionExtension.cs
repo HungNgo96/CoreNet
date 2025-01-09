@@ -3,6 +3,7 @@ using Application.Behaviors;
 using Application.UseCases.v1.Products.Commands.CreateProduct;
 using Contract.Abstractions.EventBus;
 using FluentValidation;
+using Infrastructure.BackgroundJobs;
 using Infrastructure.Extensions;
 using Infrastructure.MessageBroker;
 using MassTransit;
@@ -11,11 +12,34 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.DependencyInjections.Extensions;
+using Quartz;
 
 namespace Application.DependencyInjections.Extensions
 {
     public static class DependencyInjectionExtension
     {
+        public static IServiceCollection AddConfigQuartz(this IServiceCollection services)
+        {
+            services.AddQuartz(config =>
+            {
+                var jobKey = new JobKey(nameof(ProcessOutboxMessageJob));
+
+                config.
+                AddJob<ProcessOutboxMessageJob>(jobKey)
+                .AddTrigger(trigger =>
+                {
+                    trigger.ForJob(jobKey)
+                    .WithSimpleSchedule(schedule =>
+                    {
+                        schedule.WithIntervalInSeconds(60).RepeatForever();
+                    });
+                });
+            });
+
+            services.AddQuartzHostedService();
+            return services;
+        }
+
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
             var assembly = typeof(DependencyInjectionExtension).Assembly;

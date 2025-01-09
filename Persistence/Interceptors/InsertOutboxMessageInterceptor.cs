@@ -6,8 +6,9 @@ using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
+using Persistence.Outbox;
 
-namespace Infrastructure.Outbox
+namespace Persistence.Interceptors
 {
     public sealed class InsertOutboxMessageInterceptor : SaveChangesInterceptor
     {
@@ -49,7 +50,7 @@ namespace Infrastructure.Outbox
                 {
                     Id = Guid.NewGuid(),
                     Content = JsonConvert.SerializeObject(domainEvent, s_jsonSerializerSettings),
-                    OccurrendOnUtc = utcNow,
+                    OccurredOnUtc = utcNow,
                     Type = domainEvent.GetType().Name,
                 }).ToList();
 
