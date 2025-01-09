@@ -121,7 +121,6 @@ namespace Application.DependencyInjections.Extensions
                 //    });
             });
 
-            services.AddTransient<IEventBus, EventBus>();
             return services;
         }
     }

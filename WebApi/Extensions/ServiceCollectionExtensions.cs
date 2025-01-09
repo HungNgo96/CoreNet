@@ -207,26 +207,6 @@ namespace WebApi.Extensions
             return services;
         }
 
-        public static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
-        {
-            var options = configuration.GetOptions<ConnectionOptions>() ?? new();
 
-            if (options.CacheConnectionInMemory())
-            {
-                //services.AddMemoryCacheService();
-                services.AddMemoryCache(memoryOptions => memoryOptions.TrackStatistics = true);
-            }
-            else
-            {
-                //services.AddDistributedCacheService();
-                services.AddStackExchangeRedisCache(redisOptions =>
-                {
-                    redisOptions.InstanceName = "redis-name";
-                    redisOptions.Configuration = options.CacheConnection;
-                });
-            }
-
-            return services;
-        }
     }
 }

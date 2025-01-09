@@ -2,6 +2,7 @@
 using Application.DependencyInjections.Extensions;
 using Domain.Core;
 using FluentValidation.AspNetCore;
+using Infrastructure.Extensions;
 using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
