@@ -191,22 +191,5 @@ namespace WebApi.Extensions
 
             return services;
         }
-
-        public static IServiceCollection AddRepository(this IServiceCollection services)
-        {
-            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
-
-            services.AddScoped<IProductRepository, ProductRepository>();
-            return services;
-        }
-
-        public static IServiceCollection AddServices(this IServiceCollection services)
-        {
-            services.AddScoped<IIdempotencyService, IdempotencyService>();
-
-            return services;
-        }
-
-
     }
 }

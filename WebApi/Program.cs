@@ -2,12 +2,9 @@
 using Application.DependencyInjections.Extensions;
 using Domain.Core;
 using FluentValidation.AspNetCore;
-using Infrastructure.Extensions;
 using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-using Microsoft.EntityFrameworkCore;
-using Persistence.DbContexts;
 using WebApi.Commons;
 using WebApi.ConfigOptions;
 using WebApi.Extensions;
@@ -45,12 +42,11 @@ services.AddApiVersion();
 
 services.AddCurrentUserService();
 
-services.AddConfigOptions(configuration)
-    .AddCacheService(configuration);
+services.AddConfigOptions(configuration);
 
 services.AddApplication()
-.AddInfrastructure(builder)
-.AddPersistence(configuration);
+    .AddInfrastructureLayer(builder)
+    .AddPersistenceLayer(configuration);
 
 services.AddFluentValidationAutoValidation();//fluent API
 
@@ -62,8 +58,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
 
-services.AddRepository()
-    .AddServices();
 
 var app = builder.Build();
 
