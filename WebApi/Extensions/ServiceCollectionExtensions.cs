@@ -3,17 +3,15 @@
 // See the LICENSE file in the project root for more information.
 
 using System.IO.Compression;
+using System.Net;
+using System.Threading.RateLimiting;
 using Application.Services;
 using Asp.Versioning;
-using Contract.Abstractions.Idempotency;
 using Domain.Core.AppSettings;
-using Domain.Core.Extensions;
-using Domain.Core.SharedKernel;
-using Domain.Repositories;
+using Domain.Shared;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
-using Persistence.Idempotency;
-using Persistence.Repositories;
 
 namespace WebApi.Extensions
 {
@@ -191,5 +189,113 @@ namespace WebApi.Extensions
 
             return services;
         }
+
+        internal static IServiceCollection AddRateLimitRequest(this IServiceCollection services)
+        {
+            services.AddRateLimiter(config =>
+            {
+                //config.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
+                //{
+                //    return RateLimitPartition.GetFixedWindowLimiter(partitionKey: httpContext.Request.Headers.Host.ToString(), partition =>
+                //        new FixedWindowRateLimiterOptions
+                //        {
+                //            PermitLimit = 50,
+                //            AutoReplenishment = true,
+                //            Window = TimeSpan.FromSeconds(2),
+                //            QueueProcessingOrder = QueueProcessingOrder.OldestFirst,
+                //            QueueLimit = 10
+                //        });
+                //});
+
+                config.AddFixedWindowLimiter(policyName: "sample", options =>
+                {
+                    options.AutoReplenishment = true;
+                    options.PermitLimit = 2;
+                    options.Window = TimeSpan.FromSeconds(12);
+                    options.QueueProcessingOrder = QueueProcessingOrder.OldestFirst;
+                    options.QueueLimit = 2;
+                });
+
+                var optionForPolicy = new FixedWindowRateLimiterOptions()
+                {
+                    AutoReplenishment = true,
+                    PermitLimit = 20,
+                    Window = TimeSpan.FromSeconds(5)
+                };
+
+                config.AddPolicy(policyName: "SamplePolicy", httpContext => RateLimitPartition.GetFixedWindowLimiter(
+                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
+                        factory: _ => optionForPolicy));
+
+
+                config.OnRejected = async (context, token) =>
+                {
+                    Result<string> responseModel = Result<string>.Fail("Too Many Requests", (int)HttpStatusCode.TooManyRequests);
+                    context.HttpContext.Response.StatusCode = (int)HttpStatusCode.TooManyRequests;
+                    await context.HttpContext.Response.WriteAsJsonAsync(responseModel, token);
+                };
+
+                #region example
+
+                //// 1. Fixed Window Limiter (20 requests per 2 minutes)
+                //// ----------------------------------------------
+                //// | -------------------- 2 min -------------------- |
+                //// | Blocked if limit hit                             |
+                //// ----------------------------------------------
+                //// Requests reset fully after 2 minutes, blocking all requests
+                //// until the next window starts.
+                config.AddFixedWindowLimiter("fixed", opt =>
+                {
+                    opt.Window = TimeSpan.FromMinutes(2);
+                    opt.PermitLimit = 20;
+                });
+
+                //// 2. Sliding Window Limiter (20 requests per 2 minutes, 4 segments)
+                //// ----------------------------------------------
+                //// | --30s-- | --30s-- | --30s-- | --30s-- |  (4 segments in 2 min)
+                //// |        <- Requests slide as segments roll over 
+                //// ----------------------------------------------
+                //// As new 30-second segments open, the oldest one expires, allowing
+                //// smoother traffic over time.
+                config.AddSlidingWindowLimiter("sliding", opt =>
+                {
+                    opt.Window = TimeSpan.FromMinutes(2);
+                    opt.PermitLimit = 20;
+                    opt.SegmentsPerWindow = 4; // Divides into 4 rolling segments (every 30 seconds)
+                });
+
+                //// 3. Token Bucket Limiter (15 tokens max, refill 1 token/sec)
+                //// ----------------------------------------------
+                //// Tokens: 15 (Max) - Burst Capacity
+                //// Refills: 1 token per second (smoother flow)
+                //// ----------------------------------------------
+                //// Allows bursts but gradually refills tokens over time.
+                //// Requests consume tokens, and when depleted, requests are throttled until refilled.
+                config.AddTokenBucketLimiter("token", opt =>
+                {
+                    opt.TokenLimit = 15;
+                    opt.TokensPerPeriod = 1; // Refill rate
+                    opt.ReplenishmentPeriod = TimeSpan.FromSeconds(1); // Refill interval
+                });
+
+                //// 4. Concurrency Limiter (5 concurrent requests, 10 in queue)
+                //// ----------------------------------------------
+                //// Concurrent: 1       (5 slots)
+                //// Queue: | | | | | | | | | |    (10 slots)
+                //// ----------------------------------------------
+                //// Allows 5 active requests and queues 10 more. If the queue is full,
+                //// new requests are rejected with 503 or 429 (if overridden).
+                config.AddConcurrencyLimiter("concurrency", opt =>
+                {
+                    opt.PermitLimit = 5; // Max concurrent requests
+                    opt.QueueLimit = 10; // Queue limit before rejection
+                });
+
+                #endregion
+
+            });
+            return services;
+        }
+
     }
 }

@@ -23,7 +23,7 @@ namespace Infrastructure.Extensions
         {
             services
                 .AddCacheService(builder.Configuration)
-                .AddInfasOpenTelemetry(builder)
+                //.AddInfasOpenTelemetry(builder)
                 .AddConfigureMassTransit();
 
             return services;
@@ -53,7 +53,6 @@ namespace Infrastructure.Extensions
 
         private static IServiceCollection AddInfasOpenTelemetry(this IServiceCollection services, WebApplicationBuilder builder)
         {
-            services.AddTransient<IEventBus, EventBus>();
 
             builder.Logging.AddOpenTelemetry(logging =>
             {
@@ -110,6 +109,8 @@ namespace Infrastructure.Extensions
 
         private static IServiceCollection AddConfigureMassTransit(this IServiceCollection services)
         {
+            services.AddTransient<IEventBus, EventBus>();
+
             _ = services.AddMassTransit((busConfigurator) =>
             {
                 busConfigurator.SetKebabCaseEndpointNameFormatter();
@@ -120,7 +121,7 @@ namespace Infrastructure.Extensions
                 busConfigurator.UsingRabbitMq((context, configurator) =>
                 {
                     configurator.PrefetchCount = 7;//to consumer in order but this is not performance
-                    configurator.Host(new Uri("amqp://guest:guest@rabbitmq:5672"), (h) =>
+                    configurator.Host(new Uri("amqp://rabbitmq:5672"), (h) =>
                     {
                         h.Username("guest");
                         h.Password("guest");

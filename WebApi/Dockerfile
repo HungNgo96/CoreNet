@@ -2,11 +2,20 @@
 
 # This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
-USER app
+#USER app
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+WORKDIR /app
+EXPOSE 5001
+ENV ASPNETCORE_URLS=http://+:5001
 
+#USER root
+# Install OpenTelemetry .NET Automatic Instrumentation
+#RUN apt-get -y update; apt-get -y install curl
+#
+#ARG OTEL_VERSION=1.3.0
+#ADD https://github.com/open-telemetry/opentelemetry-dotnet-instrumentation/releases/download/v${OTEL_VERSION}/otel-dotnet-auto-install.sh otel-dotnet-auto-install.sh
+#RUN apt-get -y update && apt-get install -y unzip && \
+    #OTEL_DOTNET_AUTO_HOME="/otel-dotnet-auto" sh otel-dotnet-auto-install.sh
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build

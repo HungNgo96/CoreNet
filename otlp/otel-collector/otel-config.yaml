@@ -1,0 +1,79 @@
+extensions:
+  health_check:
+  zpages:
+    endpoint: :55679
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+  zipkin:
+
+processors:
+  batch:
+
+exporters:
+  logging:
+    # logLevel: debug
+  file/traces:
+    path: /log/otel/traces.log
+  file/metrics:
+    path: /log/otel/metrics.log
+  file/logs:
+    path: /log/otel/logs.log
+  otlp:
+    endpoint: "${JAEGER_ENDPOINT}"
+    tls:
+      insecure: true
+  prometheus:
+    endpoint: "${PROMETHEUS_ENDPOINT}"
+  loki:
+    endpoint: "${LOKI_ENDPOINT}"
+    tls:
+      insecure: true
+  zipkin:
+    endpoint: "${ZIPKIN_ENDPOINT}"
+    tls:
+      insecure: true
+  # otlp/aspecto:
+  #     endpoint: "${ASPECTO_ENDPOINT}"
+  #     headers:
+  #       Authorization: "${ASPECTO_APIKEY}"
+  # azuremonitor:
+  #   instrumentation_key: "${AZ_INSTRUMENTATION_KEY}"
+        
+service:
+  pipelines:
+    traces:
+      receivers:
+        - otlp
+        - zipkin
+      processors: [batch]
+      exporters:
+        - logging 
+        - file/traces
+        - otlp
+        - zipkin
+        # - otlp/aspecto
+        # - azuremonitor
+    metrics:
+      receivers:
+        - otlp
+      processors: [batch]
+      exporters:
+        - logging 
+        - file/metrics
+        - prometheus
+    logs:
+      receivers:
+        - otlp
+      processors: [batch]
+      exporters:
+        - logging 
+        - file/logs
+        - loki
+        # - azuremonitor
+  extensions:
+    - health_check
+    - zpages
