@@ -1,0 +1,213 @@
+﻿version: '3.9'
+
+networks:
+  otel-network:
+    driver: bridge
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  sql_data:
+    driver: local
+services:
+  app:
+    build:
+      context: .
+      dockerfile: WebApi/Dockerfile
+    depends_on:
+      - sqlserver
+      - rabbitmq
+    ports:
+      - "5001:5001"
+    environment:
+      - RABBITMQ_CONNECTION=amqp://guest:guest@rabbitmq:5672
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=Demo01;User Id=sa;Password=YourStrong!Passw0rd;
+    networks:
+      - otel-network
+
+  # otel-collector:
+  #   image: otel/opentelemetry-collector:latest
+  #   container_name: otel-collector
+  #   ports:
+  #     - "4317:4317" # OTLP gRPC
+  #     - "4318:4318" # OTLP HTTP
+  #     - "9464:9464" # Prometheus metrics
+  #   volumes:
+  #     - ./otel-collector-config.yml:/etc/otel-collector-config.yml
+  #   command: ["--config=/etc/otel-collector-config.yml"]
+  #   depends_on:
+  #     - jaeger
+  #     - prometheus
+  #   networks:
+  #     - otel-network
+
+  # jaeger:
+  #   image: jaegertracing/all-in-one:latest
+  #   container_name: jaeger
+  #   ports:
+  #     - "16686:16686" # Jaeger UI
+  #     - "14250:14250" # OTLP endpoint for traces
+  #   networks:
+  #     - otel-network
+  # zipkin:
+  #   image: openzipkin/zipkin:latest
+  #   container_name: zipkin
+  #   ports:
+  #     - "9411:9411" # Zipkin UI
+  #   networks:
+  #     - otel-network
+  # node_exporter:
+  #   image: quay.io/prometheus/node-exporter:v1.5.0
+  #   container_name: node_exporter
+  #   command: '--path.rootfs=/host'
+  #   pid: host
+  #   restart: unless-stopped
+  #   volumes:
+  #     - /proc:/host/proc:ro
+  #     - /sys:/host/sys:ro
+  #     - /:/rootfs:ro
+  #   networks:
+  #     - otel-network
+#prometheus service     
+  # prometheus:
+  #   image: prom/prometheus:latest
+  #   volumes:
+  #     - ./prometheus.yml:/etc/prometheus/prometheus.yml
+  #     - prometheus-data:/prometheus # Persist data between container restarts
+  #   ports:
+  #     - "9090:9090"
+  #   networks:
+  #     - otel-network
+#grafana service
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana # Persist data between container restarts
+  #   environment:
+  #     - GF_SECURITY_ADMIN_USER=admin
+  #     - GF_SECURITY_ADMIN_PASSWORD=admin
+  #   depends_on:
+  #     - prometheus
+  #   networks:
+  #     - otel-network
+#RabbitMQ service
+  rabbitmq:
+    container_name: rabbitmq
+    image: "rabbitmq:3-management"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"   # RabbitMQ default AMQP port
+      - "15672:15672" # RabbitMQ management UI port
+    networks:
+      - otel-network
+    restart: always
+#Sql server 2019
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong!Passw0rd
+    ports:
+      - "1433:1433"  # Expose SQL Server port to the host (local/Docker container)
+    networks:
+      - otel-network
+    volumes:
+      - sql_data:/var/opt/mssql  # Persist data between container restarts
+
+
+ #OpenTelemetry Collector
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.92.0
+    volumes:
+      - ./otlp/otel-collector/otel-config.yaml:/etc/otel/config.yaml
+      - ./log:/log/otel
+    command: --config /etc/otel/config.yaml
+    environment:
+      LOKI_ENDPOINT: "http://loki:3100/loki/api/v1/push"
+      JAEGER_ENDPOINT: "jaeger:4317"
+      ZIPKIN_ENDPOINT: "http://zipkin:9411/api/v2/spans"
+      PROMETHEUS_ENDPOINT: "0.0.0.0:8889"
+      #ASPECTO_ENDPOINT: "otelcol.aspecto.io:4317"
+      #ASPECTO_APIKEY: "c1de0e60-7b48-494b-a0e3-e3500db40640"      
+      #AZ_INSTRUMENTATION_KEY: "8e062472-20ce-4157-b6fb-f9d8266733c1"
+    ports:
+      - "8889:8889"   # Prometheus metrics exporter (scrape endpoint)
+      - "13133:13133" # health_check extension
+      - "55679:55679" # ZPages extension
+      - "4318:4318"   # OTLP Receiver protocol HTTP
+      - "4317:4317"   # OTLP Receiver protocol gRPC
+    depends_on:
+      - jaeger
+      - prometheus
+      - loki
+    networks:
+      - otel-network
+
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686" # Jaeger Web UI
+      - "5775:5775"   # accept zipkin.thrift over compact thrift protocol
+      - "6831:6831"   # accept jaeger.thrift over compact thrift protocol
+      - "6832:6832"   # accept jaeger.thrift over binary thrift protocol
+      - "5778:5778"   # serve configs
+      - "14268:14268" # accept jaeger.thrift directly from clients
+    networks:
+      - otel-network
+
+  prometheus:
+    image: prom/prometheus:latest
+    volumes:
+      - ./otlp/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+      - "9090:9090"
+
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - otel-network
+
+  promtail:
+    image:  grafana/promtail:latest
+    container_name: promtail
+    volumes:
+      - ./otlp/promtail/promtail.yaml:/etc/promtail/docker-config.yaml
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: -config.file=/etc/promtail/docker-config.yaml
+    depends_on:
+      - loki
+    networks:
+      - otel-network
+
+  grafana:
+    image: grafana/grafana:latest
+    volumes:
+      - ./otlp/grafana/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+    environment:
+      GF_AUTH_ANONYMOUS_ENABLED: "true"
+      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+    ports:
+      - "3000:3000"
+    networks:
+      - otel-network
+
+  zipkin:
+    image: openzipkin/zipkin:latest
+    ports:
+      - "9411:9411"
+    networks:
+      - otel-network
+

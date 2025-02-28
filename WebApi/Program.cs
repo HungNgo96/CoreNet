@@ -70,7 +70,7 @@ app.UseErrorHandler();
 app.UseRouting();
 
 // Kích hoạt Prometheus metrics endpoint
-//app.UseOpenTelemetryPrometheusScrapingEndpoint();
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.UseAuthorization();
 

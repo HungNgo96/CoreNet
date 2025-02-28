@@ -1,4 +1,4 @@
-extensions:
+﻿extensions:
   health_check:
   zpages:
     endpoint: :55679
@@ -7,17 +7,16 @@ receivers:
   otlp:
     protocols:
       grpc:
-        endpoint: 0.0.0.0:4317
+        # endpoint: 0.0.0.0:4317
       http:
-        endpoint: 0.0.0.0:4318
+        # endpoint: 0.0.0.0:4318
   zipkin:
 
 processors:
   batch:
 
 exporters:
-  logging:
-    # logLevel: debug
+  debug:
   file/traces:
     path: /log/otel/traces.log
   file/metrics:
@@ -29,7 +28,7 @@ exporters:
     tls:
       insecure: true
   prometheus:
-    endpoint: "${PROMETHEUS_ENDPOINT}"
+    endpoint: "0.0.0.0:8889"
   loki:
     endpoint: "${LOKI_ENDPOINT}"
     tls:
@@ -38,13 +37,9 @@ exporters:
     endpoint: "${ZIPKIN_ENDPOINT}"
     tls:
       insecure: true
-  # otlp/aspecto:
-  #     endpoint: "${ASPECTO_ENDPOINT}"
-  #     headers:
-  #       Authorization: "${ASPECTO_APIKEY}"
-  # azuremonitor:
-  #   instrumentation_key: "${AZ_INSTRUMENTATION_KEY}"
-        
+  otlphttp:  # đúng cú pháp
+    endpoint: "${SEQ_ENDPOINT}"
+
 service:
   pipelines:
     traces:
@@ -53,18 +48,17 @@ service:
         - zipkin
       processors: [batch]
       exporters:
-        - logging 
+        # - debug 
         - file/traces
         - otlp
         - zipkin
-        # - otlp/aspecto
-        # - azuremonitor
+        - otlphttp
     metrics:
       receivers:
         - otlp
       processors: [batch]
       exporters:
-        - logging 
+        # - debug
         - file/metrics
         - prometheus
     logs:
@@ -72,10 +66,11 @@ service:
         - otlp
       processors: [batch]
       exporters:
-        - logging 
+        # - debug 
         - file/logs
         - loki
-        # - azuremonitor
+        - otlphttp  # Đẩy logs tới Seq
+
   extensions:
     - health_check
     - zpages

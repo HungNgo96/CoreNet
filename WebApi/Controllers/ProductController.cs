@@ -17,12 +17,15 @@ namespace WebApi.Controllers
     /// Product controller
     /// </summary>
     [ApiController]
-    public class ProductController : BaseController
+    public class ProductController(ILogger<ProductController> logger) : BaseController
     {
         [SwaggerOperation(Summary = "Get all produc")]
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] GetAllProduct.Query request, CancellationToken cancellationToken)
         {
+            logger.LogInformation("LogInfo" + DateTime.Now.Date);
+            logger.LogError("LogError" + DateTime.Now.Date);
+            logger.LogWarning("Warning" + DateTime.Now.Date);
             return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 

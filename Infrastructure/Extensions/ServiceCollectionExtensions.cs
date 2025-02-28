@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+using Microsoft.Identity.Client;
+using OpenTelemetry;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
@@ -23,7 +26,7 @@ namespace Infrastructure.Extensions
         {
             services
                 .AddCacheService(builder.Configuration)
-                //.AddInfasOpenTelemetry(builder)
+                .AddInfasOpenTelemetry(builder)
                 .AddConfigureMassTransit();
 
             return services;
@@ -53,57 +56,82 @@ namespace Infrastructure.Extensions
 
         private static IServiceCollection AddInfasOpenTelemetry(this IServiceCollection services, WebApplicationBuilder builder)
         {
-
-            builder.Logging.AddOpenTelemetry(logging =>
+            var otel = builder.Services.AddOpenTelemetry();
+            builder.Logging.AddOpenTelemetry(options =>
             {
-                logging.IncludeFormattedMessage = true;
-                logging.IncludeScopes = true;
+                options.IncludeFormattedMessage = true;
+                options.IncludeScopes = true;
+                options.SetResourceBuilder(ResourceBuilder.CreateDefault()
+            .AddService("WebApiLogging")
+            .AddAttributes(new Dictionary<string, object>
+            {
+                ["service.environment"] = "development"
+            }))
+                 .AddOtlpExporter(o =>
+                    {
+                        //options.Endpoint = new Uri("http://otel-collector:4317");
+                        //options.Protocol = OtlpExportProtocol.Grpc;
+                        o.Endpoint = new Uri("http://otel-collector:4318/v1/logs");
+                        //o.Endpoint = new Uri("http://seq:5341/ingest/otlp/v1/logs");
+                        o.Protocol = OtlpExportProtocol.HttpProtobuf;
+                    });
             });
 
-            services.AddOpenTelemetry()
-                     //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApi"))
-                     //.ConfigureResource(resource => resource.AddService("WebApi"))
 
-                     .WithTracing(tracerProviderBuilder =>
-            {
-                tracerProviderBuilder
-                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApiTracing"))
-                    .AddAspNetCoreInstrumentation() // Capture ASP.NET Core traces
-                    .AddHttpClientInstrumentation() // Capture HttpClient traces
-                                                    //.AddConsoleExporter();          // Export traces to the console
+            //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApi"))
+            //.ConfigureResource(resource => resource.AddService("WebApi"))
+
+            otel.WithTracing(tracerProviderBuilder =>
+           {
+               tracerProviderBuilder
+                   .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApiTracing"))
+                   .AddAspNetCoreInstrumentation() // Capture ASP.NET Core traces
+                   .AddHttpClientInstrumentation() // Capture HttpClient traces
+                   .AddSqlClientInstrumentation()
                    .AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri("http://otel-collector:4317");
-                        options.Protocol = OtlpExportProtocol.Grpc;
-                    });
-            })
-            .WithMetrics(metricsProviderBuilder =>
-            {
-                metricsProviderBuilder
-                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApiMetrics"))
-                    .AddAspNetCoreInstrumentation() // Capture ASP.NET Core metrics
-                                                    //.AddRuntimeInstrumentation()    // Capture runtime (GC, CPU, etc.) metrics
-                    .AddPrometheusExporter()      // Export metrics to Prometheus
-                                                  //.AddOtlpExporter(options =>
-                                                  //    {
-                                                  //        options.Endpoint = new Uri("http://otel-collector:4317");
-                                                  //        options.Protocol = OtlpExportProtocol.Grpc;
-                                                  //    })
-                        ;
-            })
-            //.WithLogging(loggingBuilder =>
-            //{
-            //    loggingBuilder
-            //        //.AddConsole()                   // Log to the console
-            //        //.AddDebug()                     // Log to the Debug output (useful for development)
-            //        .AddOpenTelemetry(options =>
-            //        {
-            //            options.IncludeScopes = true;    // Include scopes in logs
-            //            options.ParseStateValues = true; // Parse structured logging values
-            //            options.IncludeFormattedMessage = true; // Include formatted log messages
-            //        });
-            //})
-                ;
+                       {
+                           //options.Endpoint = new Uri("http://otel-collector:4317");
+                           //options.Protocol = OtlpExportProtocol.Grpc;
+                           options.Endpoint = new Uri("http://otel-collector:4318/v1/traces");
+                           options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                       }).AddZipkinExporter(options =>
+                       {
+                           options.Endpoint = new Uri("http://zipkin:9411");
+                       });
+           })
+           .WithMetrics(metricsProviderBuilder =>
+           {
+               metricsProviderBuilder
+                       .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApiMetrics"))
+                       .AddAspNetCoreInstrumentation() // Capture ASP.NET Core metrics
+                                                       //.AddRuntimeInstrumentation()    // Capture runtime (GC, CPU, etc.) metrics
+                       .AddPrometheusExporter()      // Export metrics to Prometheus
+                       .AddOtlpExporter(options =>
+                         {
+                             options.Endpoint = new Uri("http://otel-collector:4318/v1/metrics");
+                             options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                         })
+                       // Metrics provides by ASP.NET Core in .NET 8
+
+                       .AddMeter("Microsoft.AspNetCore.Hosting")
+                       .AddMeter("Microsoft.AspNetCore.Server.Kestrel");
+
+           })
+               //.WithLogging(loggingBuilder =>
+               //{
+               //    loggingBuilder
+               //        //.AddConsole()                   // Log to the console
+               //        //.AddDebug()                     // Log to the Debug output (useful for development)
+               //        .AddOpenTelemetry(options =>
+               //        {
+               //            options.IncludeScopes = true;    // Include scopes in logs
+               //            options.ParseStateValues = true; // Parse structured logging values
+               //            options.IncludeFormattedMessage = true; // Include formatted log messages
+               //        });
+               //})
+               ;
+
+            //otel.UseOtlpExporter();//set default or detail above
             return services;
         }
 

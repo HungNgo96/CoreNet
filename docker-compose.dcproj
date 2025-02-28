@@ -7,6 +7,7 @@
     <ProjectGuid>8e5b7783-ba20-4165-9c90-a76020b88bc3</ProjectGuid>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="docker-compose - Copy.yml" />
     <None Include="docker-compose.yml" />
     <None Include=".dockerignore" />
   </ItemGroup>
