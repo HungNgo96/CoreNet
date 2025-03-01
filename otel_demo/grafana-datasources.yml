@@ -1,31 +1,4 @@
-﻿# apiVersion: 1
-
-# datasources:
-#   - name: Prometheus
-#     uid: prom
-#     type: prometheus
-#     access: proxy
-#     url: http://prometheus:9090
-
-#   - name: Loki
-#     uid: loki
-#     type: loki
-#     access: proxy
-#     url: http://loki:3100
-
-#   - name: Jaeger
-#     type: jaeger
-#     uid: jaeger
-#     access: proxy
-#     url: http://jaeger:16686
-
-#   - name: Zipkin
-#     type: zipkin
-#     uid: zipkin
-#     access: proxy
-#     url: http://zipkin:9411
-
-apiVersion: 1
+﻿apiVersion: 1
 
 datasources:
   - name: Prometheus
@@ -33,45 +6,72 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prometheus:9090
-    isDefault: true                    # Đặt Prometheus làm datasource mặc định
-    jsonData:
-      httpMethod: POST                  # Một số query Prometheus dùng POST thay vì GET (tuỳ nhu cầu)
-      manageAlerts: true                 # Bật nếu dùng Alerting trực tiếp từ Prometheus
 
   - name: Loki
     uid: loki
     type: loki
     access: proxy
     url: http://loki:3100
-    jsonData:
-      derivedFields:
-        - name: TraceID
-          datasourceUid: jaeger         # Liên kết Log tới TraceID trong Jaeger
-          matcherRegex: "traceID=(\\w+)"
-          url: "$${__value.raw}"
 
   - name: Jaeger
-    uid: jaeger
     type: jaeger
+    uid: jaeger
     access: proxy
     url: http://jaeger:16686
-    jsonData:
-      tracesToLogs:
-        datasourceUid: loki             # Link từ Trace sang Log
-        tags:                            # Truyền metadata từ Trace sang Log (tuỳ chỉnh được)
-          - key: service.name
-            value: ${__service}
-          - key: span.kind
-            value: ${__spanKind}
-        mappedTags:
-          - key: traceID
-            value: ${__traceId}
-        spanStartTimeShift: "1h"
-        spanEndTimeShift: "1h"
 
   - name: Zipkin
-    uid: zipkin
     type: zipkin
+    uid: zipkin
     access: proxy
     url: http://zipkin:9411
+
+# apiVersion: 1
+
+# datasources:
+#   - name: Prometheus
+#     uid: prom
+#     type: prometheus
+#     access: proxy
+#     url: http://prometheus:9090
+#     isDefault: true                    # Đặt Prometheus làm datasource mặc định
+#     jsonData:
+#       httpMethod: POST                  # Một số query Prometheus dùng POST thay vì GET (tuỳ nhu cầu)
+#       manageAlerts: true                 # Bật nếu dùng Alerting trực tiếp từ Prometheus
+
+#   - name: Loki
+#     uid: loki
+#     type: loki
+#     access: proxy
+#     url: http://loki:3100
+#     jsonData:
+#       derivedFields:
+#         - name: TraceID
+#           datasourceUid: jaeger         # Liên kết Log tới TraceID trong Jaeger
+#           matcherRegex: "traceID=(\\w+)"
+#           url: "$${__value.raw}"
+
+#   - name: Jaeger
+#     uid: jaeger
+#     type: jaeger
+#     access: proxy
+#     url: http://jaeger:16686
+#     jsonData:
+#       tracesToLogs:
+#         datasourceUid: loki             # Link từ Trace sang Log
+#         tags:                            # Truyền metadata từ Trace sang Log (tuỳ chỉnh được)
+#           - key: service.name
+#             value: ${__service}
+#           - key: span.kind
+#             value: ${__spanKind}
+#         mappedTags:
+#           - key: traceID
+#             value: ${__traceId}
+#         spanStartTimeShift: "1h"
+#         spanEndTimeShift: "1h"
+
+#   - name: Zipkin
+#     uid: zipkin
+#     type: zipkin
+#     access: proxy
+#     url: http://zipkin:9411
 

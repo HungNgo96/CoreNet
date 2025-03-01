@@ -6,17 +6,22 @@ using Domain.Core.Extensions;
 using Infrastructure.MessageBroker;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.Identity.Client;
 using OpenTelemetry;
 using OpenTelemetry.Exporter;
+using OpenTelemetry.Instrumentation.SqlClient;
 using OpenTelemetry.Logs;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
+using ZiggyCreatures.Caching.Fusion;
+using ZiggyCreatures.Caching.Fusion.Backplane.StackExchangeRedis;
 
 namespace Infrastructure.Extensions
 {
@@ -26,7 +31,7 @@ namespace Infrastructure.Extensions
         {
             services
                 .AddCacheService(builder.Configuration)
-                .AddInfasOpenTelemetry(builder)
+                .AddSetupOpenTelemetry(builder)
                 .AddConfigureMassTransit();
 
             return services;
@@ -34,9 +39,9 @@ namespace Infrastructure.Extensions
 
         private static IServiceCollection AddCacheService(this IServiceCollection services, IConfiguration configuration)
         {
-            var options = configuration.GetOptions<ConnectionOptions>() ?? new();
-
-            if (options.CacheConnectionInMemory())
+            var connectionOptions = configuration.GetOptions<ConnectionOptions>() ?? new();
+            string? redisConnection = connectionOptions.CacheConnection;
+            if (connectionOptions.CacheConnectionInMemory())
             {
                 //services.AddMemoryCacheService();
                 services.AddMemoryCache(memoryOptions => memoryOptions.TrackStatistics = true);
@@ -44,19 +49,33 @@ namespace Infrastructure.Extensions
             else
             {
                 //services.AddDistributedCacheService();
-                services.AddStackExchangeRedisCache(redisOptions =>
+                //services.AddStackExchangeRedisCache(redisOptions =>
+                //{
+                //    redisOptions.InstanceName = "redis-name";
+                //    redisOptions.Configuration = connectionOptions.CacheConnection;
+                //});
+
+                IFusionCacheBuilder builder = services.AddFusionCache().WithSystemTextJsonSerializer();
+                if (!string.IsNullOrEmpty(redisConnection))
                 {
-                    redisOptions.InstanceName = "redis-name";
-                    redisOptions.Configuration = options.CacheConnection;
-                });
+                    builder.WithDistributedCache(new RedisCache(new RedisCacheOptions
+                    {
+                        Configuration = redisConnection
+                    })).WithStackExchangeRedisBackplane(options =>
+                    {
+                        options.Configuration = redisConnection;
+                    });
+                }
             }
 
             return services;
         }
 
-        private static IServiceCollection AddInfasOpenTelemetry(this IServiceCollection services, WebApplicationBuilder builder)
+        private static IServiceCollection AddSetupOpenTelemetry(this IServiceCollection services, WebApplicationBuilder builder)
         {
             var otel = builder.Services.AddOpenTelemetry();
+            using ServiceProvider provider = services.BuildServiceProvider();
+            IHostEnvironment env = provider.GetRequiredService<IHostEnvironment>();
             builder.Logging.AddOpenTelemetry(options =>
             {
                 options.IncludeFormattedMessage = true;
@@ -69,14 +88,13 @@ namespace Infrastructure.Extensions
             }))
                  .AddOtlpExporter(o =>
                     {
-                        //options.Endpoint = new Uri("http://otel-collector:4317");
-                        //options.Protocol = OtlpExportProtocol.Grpc;
+                        //connectionOptions.Endpoint = new Uri("http://otel-collector:4317");
+                        //connectionOptions.Protocol = OtlpExportProtocol.Grpc;
                         o.Endpoint = new Uri("http://otel-collector:4318/v1/logs");
                         //o.Endpoint = new Uri("http://seq:5341/ingest/otlp/v1/logs");
                         o.Protocol = OtlpExportProtocol.HttpProtobuf;
                     });
             });
-
 
             //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApi"))
             //.ConfigureResource(resource => resource.AddService("WebApi"))
@@ -87,11 +105,18 @@ namespace Infrastructure.Extensions
                    .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApiTracing"))
                    .AddAspNetCoreInstrumentation() // Capture ASP.NET Core traces
                    .AddHttpClientInstrumentation() // Capture HttpClient traces
-                   .AddSqlClientInstrumentation()
+                   .AddSqlClientInstrumentation(delegate (SqlClientTraceInstrumentationOptions o)
+                {
+                    o.RecordException = true;
+                    if (!env.IsProduction())
+                    {
+                        o.SetDbStatementForText = true;
+                    }
+                })
                    .AddOtlpExporter(options =>
                        {
-                           //options.Endpoint = new Uri("http://otel-collector:4317");
-                           //options.Protocol = OtlpExportProtocol.Grpc;
+                           //connectionOptions.Endpoint = new Uri("http://otel-collector:4317");
+                           //connectionOptions.Protocol = OtlpExportProtocol.Grpc;
                            options.Endpoint = new Uri("http://otel-collector:4318/v1/traces");
                            options.Protocol = OtlpExportProtocol.HttpProtobuf;
                        }).AddZipkinExporter(options =>
@@ -115,18 +140,17 @@ namespace Infrastructure.Extensions
 
                        .AddMeter("Microsoft.AspNetCore.Hosting")
                        .AddMeter("Microsoft.AspNetCore.Server.Kestrel");
-
            })
                //.WithLogging(loggingBuilder =>
                //{
                //    loggingBuilder
                //        //.AddConsole()                   // Log to the console
                //        //.AddDebug()                     // Log to the Debug output (useful for development)
-               //        .AddOpenTelemetry(options =>
+               //        .AddOpenTelemetry(connectionOptions =>
                //        {
-               //            options.IncludeScopes = true;    // Include scopes in logs
-               //            options.ParseStateValues = true; // Parse structured logging values
-               //            options.IncludeFormattedMessage = true; // Include formatted log messages
+               //            connectionOptions.IncludeScopes = true;    // Include scopes in logs
+               //            connectionOptions.ParseStateValues = true; // Parse structured logging values
+               //            connectionOptions.IncludeFormattedMessage = true; // Include formatted log messages
                //        });
                //})
                ;
@@ -171,17 +195,17 @@ namespace Infrastructure.Extensions
                 });
 
                 //services.AddOptions<MassTransitHostOptions>()
-                //       .Configure(options =>
+                //       .Configure(connectionOptions =>
                 //       {
-                //           options.WaitUntilStarted = true;
-                //           options.StartTimeout = TimeSpan.FromSeconds(30);
-                //           options.StopTimeout = TimeSpan.FromSeconds(60);
+                //           connectionOptions.WaitUntilStarted = true;
+                //           connectionOptions.StartTimeout = TimeSpan.FromSeconds(30);
+                //           connectionOptions.StopTimeout = TimeSpan.FromSeconds(60);
                 //       });
                 //services.AddOptions<HostOptions>()
-                //    .Configure(options =>
+                //    .Configure(connectionOptions =>
                 //    {
-                //        options.StartupTimeout = TimeSpan.FromSeconds(60);
-                //        options.ShutdownTimeout = TimeSpan.FromSeconds(60);
+                //        connectionOptions.StartupTimeout = TimeSpan.FromSeconds(60);
+                //        connectionOptions.ShutdownTimeout = TimeSpan.FromSeconds(60);
                 //    });
             });
 

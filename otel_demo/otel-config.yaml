@@ -7,9 +7,9 @@ receivers:
   otlp:
     protocols:
       grpc:
-        # endpoint: 0.0.0.0:4317
+        endpoint: 0.0.0.0:4317
       http:
-        # endpoint: 0.0.0.0:4318
+        endpoint: 0.0.0.0:4318
   zipkin:
 
 processors:
@@ -37,8 +37,13 @@ exporters:
     endpoint: "${ZIPKIN_ENDPOINT}"
     tls:
       insecure: true
-  otlphttp:  # đúng cú pháp
-    endpoint: "${SEQ_ENDPOINT}"
+  otlphttp: 
+    endpoint: "${SEQ_LOG_ENDPOINT}"
+    tls:
+      insecure: true
+
+  # otlphttptrace: 
+  #   endpoint: "${SEQ_TRACE_ENDPOINT}"
 
 service:
   pipelines:
@@ -52,7 +57,7 @@ service:
         - file/traces
         - otlp
         - zipkin
-        - otlphttp
+        #- otlphttp
     metrics:
       receivers:
         - otlp
@@ -66,10 +71,10 @@ service:
         - otlp
       processors: [batch]
       exporters:
-        # - debug 
+        - debug 
         - file/logs
         - loki
-        - otlphttp  # Đẩy logs tới Seq
+        - otlphttp
 
   extensions:
     - health_check

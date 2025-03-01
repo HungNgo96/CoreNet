@@ -69,7 +69,8 @@ services:
       JAEGER_ENDPOINT: "jaeger:4317"
       LOKI_ENDPOINT: "http://loki:3100/loki/api/v1/push"
       ZIPKIN_ENDPOINT: "http://zipkin:9411/api/v2/spans"
-      SEQ_ENDPOINT: "https://seq:5341/ingest/otlp"
+      SEQ_LOG_ENDPOINT: "http://seq:5341/ingest/otlp"
+      SEQ_TRACE_ENDPOINT: "http://seq:5341/ingest/otlp"
     ports:
       - "8889:8889"   # Prometheus metrics exporter (scrape endpoint)
       - "13133:13133" # health_check extension
@@ -95,13 +96,6 @@ services:
       - seq-data:/data
     networks:
       - otel-network
-  # prometheus:
-  #   image: prom/prometheus:latest
-  #   volumes:
-  #     - ./oltp_sample/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-  #   ports:
-  #     - "9090:9090"
-
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
