@@ -27,6 +27,7 @@
 
     <PackageReference Include="Quartz" />
     <PackageReference Include="Quartz.Extensions.Hosting" />
+    <PackageReference Include="Serilog.Extensions.Hosting" />
 
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />
 
@@ -40,6 +41,8 @@
 
     <PackageReference Include="ZiggyCreatures.FusionCache.Serialization.SystemTextJson" />
 
+    <PackageReference Include="Serilog.Sinks.Seq" />
+    <PackageReference Include="Serilog.Sinks.OpenTelemetry" />
   </ItemGroup>
 
   <ItemGroup>

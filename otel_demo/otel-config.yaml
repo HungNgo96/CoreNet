@@ -39,11 +39,6 @@ exporters:
       insecure: true
   otlphttp: 
     endpoint: "${SEQ_LOG_ENDPOINT}"
-    tls:
-      insecure: true
-
-  # otlphttptrace: 
-  #   endpoint: "${SEQ_TRACE_ENDPOINT}"
 
 service:
   pipelines:
@@ -57,7 +52,7 @@ service:
         - file/traces
         - otlp
         - zipkin
-        #- otlphttp
+        # - otlphttp
     metrics:
       receivers:
         - otlp
@@ -74,7 +69,7 @@ service:
         - debug 
         - file/logs
         - loki
-        - otlphttp
+        # - otlphttp
 
   extensions:
     - health_check
