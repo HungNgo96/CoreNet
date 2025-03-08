@@ -1,17 +1,13 @@
 ﻿using System.Reflection;
+using Application.BackgroundJobs;
 using Application.Behaviors;
-using Application.UseCases.v1.Products.Commands.CreateProduct;
-using Contract.Abstractions.Idempotency;
 using FluentValidation;
-using Infrastructure.BackgroundJobs;
 using Infrastructure.Extensions;
-using MassTransit;
 using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.DependencyInjections.Extensions;
-using Persistence.Idempotency;
 using Quartz;
 
 namespace Application.DependencyInjections.Extensions

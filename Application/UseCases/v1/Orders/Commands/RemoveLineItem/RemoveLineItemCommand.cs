@@ -7,5 +7,5 @@ using Domain.Entities.Orders;
 
 namespace Application.UseCases.v1.Orders.Commands.RemoveLineItem
 {
-    public record RemoveLineItemCommand(OrderId OrderId, LineItemId LineItemId) : ICommand<bool>;
+    public sealed record RemoveLineItemCommand(OrderId OrderId, LineItemId LineItemId) : ICommand<bool>;
 }

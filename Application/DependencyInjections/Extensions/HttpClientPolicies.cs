@@ -8,7 +8,12 @@ namespace Application.DependencyInjections.Extensions
 {
     public static class HttpClientPolicies
     {
-        // https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly#add-a-jitter-strategy-to-the-retry-policy
+        /// <summary>
+        /// https://docs.microsoft.com/en-us/dotnet/architecture/microservices/implement-resilient-applications/implement-http-call-retries-exponential-backoff-polly#add-a-jitter-strategy-to-the-retry-policy
+        /// </summary>
+        /// <param name="serviceProvider"></param>
+        /// <param name="retryCount"></param>
+        /// <returns></returns>
 
         public static IAsyncPolicy<HttpResponseMessage> GetRetryPolicy(IServiceProvider serviceProvider, int retryCount = 3) =>
             HttpPolicyExtensions

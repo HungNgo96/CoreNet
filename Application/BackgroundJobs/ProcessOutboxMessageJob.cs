@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 using Persistence.Outbox;
 using Quartz;
 
-namespace Infrastructure.BackgroundJobs
+namespace Application.BackgroundJobs
 {
     [DisallowConcurrentExecution]
     public sealed class ProcessOutboxMessageJob : IJob
@@ -28,15 +28,15 @@ namespace Infrastructure.BackgroundJobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            List<OutboxMessage> outboxMessages = await _context.Set<OutboxMessage>()
+            var outboxMessages = await _context.Set<OutboxMessage>()
                .Where(x => x.ProcessedOnUtc == null)
                .OrderBy(x => x.Id)
                .Take(20)
                .ToListAsync(context.CancellationToken);
 
-            foreach (OutboxMessage outboxMessage in outboxMessages)
+            foreach (var outboxMessage in outboxMessages)
             {
-                IDomainEvent? domainEvent = JsonConvert.DeserializeObject<IDomainEvent>(outboxMessage.Content,
+                var domainEvent = JsonConvert.DeserializeObject<IDomainEvent>(outboxMessage.Content,
                     new JsonSerializerSettings()
                     {
                         TypeNameHandling = TypeNameHandling.All,

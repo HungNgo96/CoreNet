@@ -30,19 +30,17 @@ namespace Persistence.Repositories
 
         public async Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken)
         {
-            var iqueryAble = _readDbContext.Products.Where(x => !string.IsNullOrEmpty(x.Id.ToString()));
+            var queryable = _readDbContext.Products.Where(x => !string.IsNullOrEmpty(x.Id.ToString()));
 
-            IQueryable<Product> orderBy = iqueryAble.OrderBy(x => x.Name);
-            //IQueryable<Product> iqueryAble2 = orderBy.Skip(3).Take(2);
-            //Func<Product, bool> d = (x) => !string.IsNullOrEmpty(x.Name);
-            //IReadOnlyCollection<Product> result = _readDbContext.Products.Where(d).ToList().AsReadOnly();
+            IQueryable<Product> orderBy = queryable.OrderBy(x => x.Name);
+
             return await orderBy.ToListAsync(cancellationToken).ConfigureAwait(false);
         }
 
         public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             Expression<Func<Product, bool>> condition = p => p.Id == id;
-
+           //EF.CompileAsyncQuery<WriteApplicationDbContext,Product?>(condition);
             return await _readDbContext.Products.FirstOrDefaultAsync(condition, cancellationToken).ConfigureAwait(false);
         }
 

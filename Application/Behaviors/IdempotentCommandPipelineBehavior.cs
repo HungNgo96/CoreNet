@@ -7,25 +7,18 @@ using MediatR;
 
 namespace Application.Behaviors
 {
-    public sealed class IdempotentCommandPipelineBehavior<TRequest, TResponse>
+    public sealed class IdempotentCommandPipelineBehavior<TRequest, TResponse>(IIdempotencyService idempotentService)
         : IPipelineBehavior<TRequest, TResponse>
-        where TRequest : notnull, IdempotentCommand
+        where TRequest : IdempotentCommand
     {
-        private readonly IIdempotencyService _idempotentService;
-
-        public IdempotentCommandPipelineBehavior(IIdempotencyService idempotentService)
-        {
-            _idempotentService = idempotentService;
-        }
-
         public async Task<TResponse> Handle(TRequest request, RequestHandlerDelegate<TResponse> next, CancellationToken cancellationToken)
         {
-            if (await _idempotentService.RequestExistAsync(request.RequestId, cancellationToken).ConfigureAwait(false))
+            if (await idempotentService.RequestExistAsync(request.RequestId, cancellationToken).ConfigureAwait(false))
             {
                 return default!;
             }
 
-            await _idempotentService.CreateRequestAsync(requestId: request.RequestId, typeof(TRequest).Name, cancellationToken).ConfigureAwait(false);
+            await idempotentService.CreateRequestAsync(requestId: request.RequestId, typeof(TRequest).Name, cancellationToken).ConfigureAwait(false);
 
             var response = await next();
 
