@@ -13,24 +13,26 @@ volumes:
     driver: local
   seq-data:
     driver: local
+  jaeger-data:
+    driver: local
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: WebApi/Dockerfile
-    depends_on:
-      - sqlserver
-      - rabbitmq
-      - otel-collector
-    ports:
-      - "5001:5001"
-    environment:
-      - RABBITMQ_CONNECTION=amqp://guest:guest@rabbitmq:5672
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=Demo01;User Id=sa;Password=YourStrong!Passw0rd;
-    networks:
-      - otel-network
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: WebApi/Dockerfile
+  #   depends_on:
+  #     - sqlserver
+  #     - rabbitmq
+  #     - otel-collector
+  #   ports:
+  #     - "5001:5001"
+  #   environment:
+  #     - RABBITMQ_CONNECTION=amqp://guest:guest@rabbitmq:5672
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=Demo01;User Id=sa;Password=YourStrong!Passw0rd;
+  #   networks:
+  #     - otel-network
 #RabbitMQ service
   rabbitmq:
     container_name: rabbitmq
@@ -69,8 +71,8 @@ services:
       JAEGER_ENDPOINT: "jaeger:4317"
       LOKI_ENDPOINT: "http://loki:3100/loki/api/v1/push"
       ZIPKIN_ENDPOINT: "http://zipkin:9411/api/v2/spans"
-      SEQ_LOG_ENDPOINT: "http://seq:5341/ingest/otlp"
-      SEQ_TRACE_ENDPOINT: "http://seq:5341/ingest/otlp"
+      PROMETHEUS_ENDPOINT: "0.0.0.0:8889"
+      SEQ_LOG_ENDPOINT: "https://seq:5341/ingest/otlp"
     ports:
       - "8889:8889"   # Prometheus metrics exporter (scrape endpoint)
       - "13133:13133" # health_check extension
@@ -91,9 +93,10 @@ services:
     environment:
       - ACCEPT_EULA=Y
     ports:
-      - "5341:80"  # Truy cập Seq UI qua: http://localhost:5341
-    volumes:
-      - seq-data:/data
+      - "580:80"
+      - "5341:5341"
+    # volumes:
+    #   - seq-data:/data
     networks:
       - otel-network
   jaeger:

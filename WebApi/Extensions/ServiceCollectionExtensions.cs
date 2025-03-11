@@ -8,7 +8,10 @@ using System.Threading.RateLimiting;
 using Application.Services;
 using Asp.Versioning;
 using Domain.Core.AppSettings;
+using Domain.Core.Extensions;
 using Domain.Shared;
+using Infrastructure.MessageBroker.RabbitMQ;
+using Infrastructure.Telemetry;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
@@ -150,8 +153,11 @@ namespace WebApi.Extensions
 
         internal static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddOptions()
-                .Configure<ConnectionOptions>(configuration.GetRequiredSection("ConnectionStrings"));
+            services.AddOptions();
+            configuration.GetOptions<ConnectionOptions>();
+            configuration.GetOptions<OpenTelemetryOptions>();
+            configuration.GetOptions<CacheOptions>();
+            configuration.GetOptions<RabbitMQOptions>();
 
             return services;
         }
@@ -227,7 +233,6 @@ namespace WebApi.Extensions
                         partitionKey: httpContext.Connection.RemoteIpAddress?.ToString(),
                         factory: _ => optionForPolicy));
 
-
                 config.OnRejected = async (context, token) =>
                 {
                     Result<string> responseModel = Result<string>.Fail("Too Many Requests", (int)HttpStatusCode.TooManyRequests);
@@ -253,7 +258,7 @@ namespace WebApi.Extensions
                 //// 2. Sliding Window Limiter (20 requests per 2 minutes, 4 segments)
                 //// ----------------------------------------------
                 //// | --30s-- | --30s-- | --30s-- | --30s-- |  (4 segments in 2 min)
-                //// |        <- Requests slide as segments roll over 
+                //// |        <- Requests slide as segments roll over
                 //// ----------------------------------------------
                 //// As new 30-second segments open, the oldest one expires, allowing
                 //// smoother traffic over time.
@@ -291,11 +296,9 @@ namespace WebApi.Extensions
                     opt.QueueLimit = 10; // Queue limit before rejection
                 });
 
-                #endregion
-
+                #endregion example
             });
             return services;
         }
-
     }
 }

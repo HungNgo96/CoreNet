@@ -2,18 +2,14 @@
 using Application.DependencyInjections.Extensions;
 using Domain.Core;
 using FluentValidation.AspNetCore;
-using MassTransit;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+
 using WebApi.Commons;
 using WebApi.ConfigOptions;
 using WebApi.Extensions;
 using WebApi.Middlewares;
-//IConfiguration config = new ConfigurationBuilder()
-//    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-//    .AddJsonFile($"appsettings.{Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")}.json", optional: true)
-//    .AddEnvironmentVariables()
-//    .Build();
+
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
@@ -57,8 +53,6 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
-
-
 var app = builder.Build();
 
 app.UseForwardedHeaders();

@@ -17,18 +17,19 @@ processors:
 
 exporters:
   debug:
+    verbosity: detailed
   file/traces:
     path: /log/otel/traces.log
   file/metrics:
     path: /log/otel/metrics.log
   file/logs:
     path: /log/otel/logs.log
-  otlp:
+  otlp/jaeger:
     endpoint: "${JAEGER_ENDPOINT}"
     tls:
       insecure: true
   prometheus:
-    endpoint: "0.0.0.0:8889"
+    endpoint: "${PROMETHEUS_ENDPOINT}"
   loki:
     endpoint: "${LOKI_ENDPOINT}"
     tls:
@@ -37,39 +38,26 @@ exporters:
     endpoint: "${ZIPKIN_ENDPOINT}"
     tls:
       insecure: true
-  otlphttp: 
-    endpoint: "${SEQ_LOG_ENDPOINT}"
+  # otlphttp:
+  #   endpoint: "http://seq:5341/ingest/otlp"
+  #   tls:
+  #     insecure: true
 
 service:
   pipelines:
     traces:
-      receivers:
-        - otlp
-        - zipkin
+      receivers: [otlp, zipkin]
       processors: [batch]
-      exporters:
-        # - debug 
-        - file/traces
-        - otlp
-        - zipkin
-        # - otlphttp
+      exporters: [debug, file/traces, otlp/jaeger, zipkin]
+
     metrics:
-      receivers:
-        - otlp
+      receivers: [otlp]
       processors: [batch]
-      exporters:
-        # - debug
-        - file/metrics
-        - prometheus
+      exporters: [debug, file/metrics, prometheus]
     logs:
-      receivers:
-        - otlp
+      receivers: [otlp]
       processors: [batch]
-      exporters:
-        - debug 
-        - file/logs
-        - loki
-        # - otlphttp
+      exporters: [debug, file/logs, loki]
 
   extensions:
     - health_check

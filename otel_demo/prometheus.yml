@@ -2,26 +2,30 @@
   evaluation_interval: 30s
   scrape_interval: 5s
 
+# - job_name: 'otel-collector'
+#   static_configs:
+#   - targets: ['otel-collector:8889']   # Collector Prometheus Exporter
 scrape_configs:
 - job_name: 'otel-collector'
+  scrape_interval: 10s
   static_configs:
-  - targets: ['otel-collector:8889']   # Collector Prometheus Exporter
-
+  - targets: ['otel-collector:8889']
+  - targets: ['otel-collector:8888']
 - job_name: 'app'
   static_configs:
   - targets: ['app:5001']   # App expose metrics (nếu có)
 
-- job_name: 'jaeger'
-  static_configs:
-  - targets: ['jaeger:14269']   # Jaeger internal metrics
+# - job_name: 'jaeger'
+#   static_configs:
+#   - targets: ['jaeger:14269']   # Jaeger internal metrics
 
-- job_name: 'loki'
-  static_configs:
-  - targets: ['loki:3100']   # Loki metrics (nếu bật)
+# - job_name: 'loki'
+#   static_configs:
+#   - targets: ['loki:3100']   # Loki metrics (nếu bật)
 
-- job_name: 'grafana'
-  static_configs:
-  - targets: ['grafana:3000']   # Grafana metrics (nếu bật)
+# - job_name: 'grafana'
+#   static_configs:
+#   - targets: ['grafana:3000']   # Grafana metrics (nếu bật)
 
 # Optional: nếu SQL Server có Prometheus Exporter riêng (không mặc định)
 # - job_name: 'sqlserver'
