@@ -38,10 +38,10 @@ exporters:
     endpoint: "${ZIPKIN_ENDPOINT}"
     tls:
       insecure: true
-  # otlphttp:
-  #   endpoint: "http://seq:5341/ingest/otlp"
-  #   tls:
-  #     insecure: true
+  otlphttp:
+    endpoint: "http://seq:5341/ingest/otlp"
+    tls:
+      insecure: true
 
 service:
   pipelines:
@@ -54,10 +54,11 @@ service:
       receivers: [otlp]
       processors: [batch]
       exporters: [debug, file/metrics, prometheus]
+
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, file/logs, loki]
+      exporters: [debug, file/logs, loki, otlphttp]
 
   extensions:
     - health_check

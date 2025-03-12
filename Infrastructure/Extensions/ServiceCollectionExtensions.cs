@@ -3,6 +3,7 @@
 using Contract.Abstractions.EventBus;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
+using Google.Protobuf.WellKnownTypes;
 using Infrastructure.Constants;
 using Infrastructure.MessageBroker;
 using Infrastructure.MessageBroker.RabbitMQ;
@@ -21,6 +22,8 @@ using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 using Serilog;
+using Serilog.Events;
+using Serilog.Sinks.SystemConsole.Themes;
 using ZiggyCreatures.Caching.Fusion;
 
 namespace Infrastructure.Extensions
@@ -73,77 +76,87 @@ namespace Infrastructure.Extensions
 
         private static IServiceCollection AddSetupOpenTelemetry(this IServiceCollection services, WebApplicationBuilder builder, IConfiguration configuration)
         {
-            var otel = builder.Services.AddOpenTelemetry();
-            using ServiceProvider provider = services.BuildServiceProvider();
-            IHostEnvironment env = provider.GetRequiredService<IHostEnvironment>();
+            var openTel = builder.Services.AddOpenTelemetry();
+            using var provider = services.BuildServiceProvider();
+            var env = provider.GetRequiredService<IHostEnvironment>();
             var openTelemetryOptions = configuration.GetOptions<OpenTelemetryOptions>() ?? new();
 
             if (openTelemetryOptions.Logging.Enabled)
             {
-                //     builder.Logging.AddOpenTelemetry(options =>
-                //{
-                //    options.IncludeFormattedMessage = true;
-                //    options.IncludeScopes = true;
-                //    options.ParseStateValues = true;
-                //    options.SetResourceBuilder(ResourceBuilder.CreateDefault()
-                //    .AddService($"{openTelemetryOptions.ServiceName}_logging"))
-                //    .AddOtlpExporter(o =>
-                //            {
-                //                //connectionOptions.Endpoint = new Uri("http://otel-collector:4317");
-                //                //connectionOptions.Protocol = OtlpExportProtocol.Grpc;
-                //                o.Endpoint = new Uri(openTelemetryOptions.Logging.Otlp.Endpoint);
-                //                //o.Endpoint = new Uri("https://seq:5341/ingest/otlp/v1/logs ");
-
-                //                o.Protocol = openTelemetryOptions.Logging.Otlp.Protocol == OtlpConst.Protocols.Grpc
-                //                    ? OtlpExportProtocol.Grpc
-                //                    : OtlpExportProtocol.HttpProtobuf;
-                //                // Optional `X-Seq-ApiKey` header for authentication, if required
-                //                //o.Headers = "X-Seq-ApiKey=abcde12345";
-                //                o.Headers = "X-Seq-ApiKey=deqOsxAGzIqY5gpoMrke";
-                //            });
-                //});
-
-                otel.WithLogging(delegate (LoggerProviderBuilder b)
+                if (openTelemetryOptions.Logging.Exporter == OpenTelConst.Exporters.Oltp)
                 {
-                    b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService($"{openTelemetryOptions.ServiceName}_logging"));
-                    b.AddOtlpExporter(delegate (OtlpExporterOptions o)
+                    openTel.WithLogging(delegate (LoggerProviderBuilder b)
+                                  {
+                                      b.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService($"{openTelemetryOptions.ServiceName}_logging"));
+                                      b.AddOtlpExporter(delegate (OtlpExporterOptions o)
+                                      {
+                                          o.Endpoint = new Uri(openTelemetryOptions.Logging.Otlp.Endpoint);
+                                          o.Protocol = openTelemetryOptions.Logging.Otlp.Protocol == OpenTelConst.Protocols.Grpc
+                                              ? OtlpExportProtocol.Grpc
+                                              : OtlpExportProtocol.HttpProtobuf;
+                                      });
+                                  }, delegate (OpenTelemetryLoggerOptions o)
+                                  {
+                                      o.IncludeScopes = true;
+                                      o.IncludeFormattedMessage = true;
+                                      o.ParseStateValues = true;
+                                  });
+                }
+                else
+                {
+                    builder.Logging.ClearProviders();
+                    builder.Host.UseSerilog((_, config) =>
                     {
-                        o.Endpoint = new Uri(openTelemetryOptions.Logging.Otlp.Endpoint);
-                        o.Protocol = openTelemetryOptions.Logging.Otlp.Protocol == OtlpConst.Protocols.Grpc
-                            ? OtlpExportProtocol.Grpc
-                            : OtlpExportProtocol.HttpProtobuf;
+                        config
+                            .MinimumLevel.Information()
+                            .Enrich.FromLogContext()
+                            //.Enrich.With<RequestContextEnricher>()
+                            //.Enrich.WithThreadId()//{ThreadId}
+                            //.Enrich.WithThreadName()//{ThreadName}
+                            //.Enrich.WithEnvironmentName()
+                            //.Enrich.WithMachineName()//{ThreadName}
+                            //.Enrich.WithClientIp()
+                            //.Enrich.WithClientAgent()
+                            .WriteTo.Logger(
+                                lc => lc.WriteTo.Console(
+                                    outputTemplate:
+                                    "[{Timestamp:dd-MM-yyyy HH:mm:ss.fff}] [{MachineName} - {EnvironmentName}] | [{EventType:x8}{Level:u3}] [{SourceContext}] [ThreadId:{ThreadId}] [EventId:{EventId}] {CorrelationId} {UserInfo} {ConnectionId} {ClientAgent}{NewLine} {Message:lj}{NewLine} {Exception}{NewLine}",
+                                    theme: AnsiConsoleTheme.Code)
+                            .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
+                            .MinimumLevel.Override("System", LogEventLevel.Error)
+                            );
+                        //.WriteTo.Logger(lc => lc
+                        //    .Filter.ByExcluding(e => Matching.FromSource("System")(e) && e.Level <= LogEventLevel.Information)
+                        //    .Filter.ByExcluding(e => Matching.FromSource("Microsoft")(e) && e.Level <= LogEventLevel.Information)
+                        //    .WriteTo.Kafka(bootstrapServers: serilogConfig!.Brokers,
+                        //        batchSizeLimit: serilogConfig.BatchSizeLimit,
+                        //        period: serilogConfig.Period,
+                        //        saslMechanism: SaslMechanism.Plain,
+                        //        topic: serilogConfig.TopicRequest,
+                        //        formatter: new KafkaLogFormatter())
+                        //)
+
+                        config
+                            .WriteTo.OpenTelemetry(options =>
+                            {
+                                options.Endpoint = openTelemetryOptions.Logging.Otlp.Endpoint;
+                                options.Protocol = openTelemetryOptions.Logging.Otlp.Protocol == OpenTelConst.Protocols.Grpc
+                                    ? Serilog.Sinks.OpenTelemetry.OtlpProtocol.Grpc
+                                    : Serilog.Sinks.OpenTelemetry.OtlpProtocol.HttpProtobuf;
+
+                                options.ResourceAttributes = new Dictionary<string, object>
+                                {
+                                    ["service.name"] = openTelemetryOptions.ServiceName,
+                                    ["service.version"] = "1.0.0"
+                                };
+                            });
                     });
-                }, delegate (OpenTelemetryLoggerOptions o)
-                {
-                    o.IncludeScopes = true;
-                    o.IncludeFormattedMessage = true;
-                    o.ParseStateValues = true;
-                });
+                }
             }
 
-            //builder.Host.UseSerilog((context, config) =>
-            //{
-            //    config
-            //        .WriteTo.Seq("http://localhost:5341") // Gửi log về Seq
-            //        .WriteTo.OpenTelemetry(options =>
-            //        {
-            //            options.Endpoint = "http://otel-collector:4318/v1/logs";
-            //            options.Protocol = Serilog.Sinks.OpenTelemetry.OtlpProtocol.HttpProtobuf;
-
-            //            options.Endpoint = openTelemetryOptions.Logging.Otlp.Endpoint;
-            //            //o.Endpoint = new Uri("https://seq:5341/ingest/otlp/v1/logs ");
-
-            //            options.Protocol = openTelemetryOptions.Logging.Otlp.Protocol == OtlpConst.Protocols.Grpc
-            //                ? Serilog.Sinks.OpenTelemetry.OtlpProtocol.Grpc
-            //                : Serilog.Sinks.OpenTelemetry.OtlpProtocol.HttpProtobuf;
-            //        });
-            //});
-
-            //.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService("WebApi"))
-            //.ConfigureResource(resource => resource.AddService("WebApi"))
             if (openTelemetryOptions.Tracing.Enabled)
             {
-                otel.WithTracing(tracerProviderBuilder =>
+                openTel.WithTracing(tracerProviderBuilder =>
                 {
                     tracerProviderBuilder
                         .SetResourceBuilder(ResourceBuilder.CreateDefault()
@@ -161,12 +174,12 @@ namespace Infrastructure.Extensions
                         })
                         .AddOtlpExporter(options =>
                         {
-                            //connectionOptions.Endpoint = new Uri("http://otel-collector:4317");
+                            //connectionOptions.Endpoint = new Uri("http://openTel-collector:4317");
                             //connectionOptions.Protocol = OtlpExportProtocol.Grpc;
-                            //options.Endpoint = new Uri("http://otel-collector:4318/v1/traces");
+                            //options.Endpoint = new Uri("http://openTel-collector:4318/v1/traces");
                             //options.Protocol = OtlpExportProtocol.HttpProtobuf;
                             options.Endpoint = new Uri(openTelemetryOptions.Tracing.Otlp.Endpoint);
-                            options.Protocol = openTelemetryOptions.Tracing.Otlp.Protocol == OtlpConst.Protocols.Grpc
+                            options.Protocol = openTelemetryOptions.Tracing.Otlp.Protocol == OpenTelConst.Protocols.Grpc
                                 ? OtlpExportProtocol.Grpc
                                 : OtlpExportProtocol.HttpProtobuf;
                         })
@@ -179,31 +192,33 @@ namespace Infrastructure.Extensions
 
             if (openTelemetryOptions.Metrics.Enabled)
             {
-                otel.WithMetrics(metricsProviderBuilder =>
+                openTel.WithMetrics(metricsProviderBuilder =>
                {
                    metricsProviderBuilder
                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService($"{openTelemetryOptions.ServiceName}_metrics"))
                        .AddAspNetCoreInstrumentation() // Capture ASP.NET Core metrics
-                                                       //.AddRuntimeInstrumentation()    // Capture runtime (GC, CPU, etc.) metrics
+                       .AddRuntimeInstrumentation()    // Capture runtime (GC, CPU, etc.) metrics
                        .AddPrometheusExporter() // Export metrics to Prometheus
                        .AddOtlpExporter(options =>
                        {
-                           //options.Endpoint = new Uri("http://otel-collector:4318/v1/metrics");
-                           //////http://otel-collector:4318/v1/metrics
+                           //options.Endpoint = new Uri("http://openTel-collector:4318/v1/metrics");
+                           //////http://openTel-collector:4318/v1/metrics
                            //options.Protocol = OtlpExportProtocol.HttpProtobuf;
                            options.Endpoint = new Uri(openTelemetryOptions.Metrics.Otlp.Endpoint);
-                           options.Protocol = openTelemetryOptions.Metrics.Otlp.Protocol == OtlpConst.Protocols.Grpc
+                           options.Protocol = openTelemetryOptions.Metrics.Otlp.Protocol == OpenTelConst.Protocols.Grpc
                            ? OtlpExportProtocol.Grpc
                            : OtlpExportProtocol.HttpProtobuf;
                        })
                        // Metrics provides by ASP.NET Core in .NET 8
-
                        .AddMeter("Microsoft.AspNetCore.Hosting")
-                       .AddMeter("Microsoft.AspNetCore.Server.Kestrel");
+                       .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
+                           // demo
+                        .AddMeter("MyApp.Metrics")
+                       ;
                });
             }
 
-            //otel.UseOtlpExporter();//set default or detail above
+            //openTel.UseOtlpExporter();//set default or detail above
             return services;
         }
 

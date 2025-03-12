@@ -5,49 +5,12 @@
 using Asp.Versioning.ApiExplorer;
 using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
-using Serilog;
-using Serilog.Events;
-using Serilog.Sinks.SystemConsole.Themes;
 using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace WebApi.Extensions
 {
     internal static class WebApplicationBuilderExtensions
     {
-        internal static void UseSerilog(this WebApplicationBuilder app)
-        {
-            app.Logging.ClearProviders();
-            //var serilogConfig = app.Configuration.GetRequiredSection("Kafka:Serilog").Get<KafkaOptions>();
-            app.Host.UseSerilog((_, __, configuration) =>
-                configuration
-                .MinimumLevel.Information()
-                .Enrich.FromLogContext()
-                //.Enrich.With<RequestContextEnricher>()
-                //.Enrich.WithThreadId()//{ThreadId}
-                //.Enrich.WithThreadName()//{ThreadName}
-                //.Enrich.WithEnvironmentName()
-                //.Enrich.WithMachineName()//{ThreadName}
-                //.Enrich.WithClientIp()
-                //.Enrich.WithClientAgent()
-                .WriteTo.Logger(
-                    lc => lc.WriteTo.Console(
-                    outputTemplate: "[{Timestamp:dd-MM-yyyy HH:mm:ss.fff}] [{MachineName} - {EnvironmentName}] | [{EventType:x8}{Level:u3}] [{SourceContext}] [ThreadId:{ThreadId}] [EventId:{EventId}] {CorrelationId} {UserInfo} {ConnectionId} {ClientAgent}{NewLine} {Message:lj}{NewLine} {Exception}{NewLine}",
-                    theme: AnsiConsoleTheme.Code)
-                    .MinimumLevel.Override("Microsoft", LogEventLevel.Error)
-                    .MinimumLevel.Override("System", LogEventLevel.Error))
-                //.WriteTo.Logger(lc => lc
-                //    .Filter.ByExcluding(e => Matching.FromSource("System")(e) && e.Level <= LogEventLevel.Information)
-                //    .Filter.ByExcluding(e => Matching.FromSource("Microsoft")(e) && e.Level <= LogEventLevel.Information)
-                //    .WriteTo.Kafka(bootstrapServers: serilogConfig!.Brokers,
-                //        batchSizeLimit: serilogConfig.BatchSizeLimit,
-                //        period: serilogConfig.Period,
-                //        saslMechanism: SaslMechanism.Plain,
-                //        topic: serilogConfig.TopicRequest,
-                //        formatter: new KafkaLogFormatter())
-                //)
-                );
-        }
-
         internal static void UseConfigureSwagger(this WebApplication app)
         {
             bool isEnvProduct = app.Environment.IsProduction();

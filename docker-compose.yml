@@ -55,10 +55,18 @@ services:
       - SA_PASSWORD=YourStrong!Passw0rd
     ports:
       - "1433:1433"  # Expose SQL Server port to the host (local/Docker container)
+      - "4000"  # Expose SQL Server port to the host (local/Docker container)
     networks:
       - otel-network
     volumes:
       - sql_data:/var/opt/mssql  # Persist data between container restarts
+  # sqlserver-exporter:
+  #   image: mssql_exporter
+  #   container_name: sqlserver-exporter
+  #   ports:
+  #     - "4000:4000"
+  #   environment:
+  #     DATA_SOURCE_NAME: "sqlserver://sa:YourStrong!Passw0rd@sqlserver:1433"
 
  #OpenTelemetry Collector
   otel-collector:

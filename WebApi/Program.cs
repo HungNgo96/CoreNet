@@ -10,7 +10,7 @@ using WebApi.ConfigOptions;
 using WebApi.Extensions;
 using WebApi.Middlewares;
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+var builder = WebApplication.CreateBuilder(args);
 
 var services = builder.Services;
 var env = builder.Environment;
@@ -18,7 +18,6 @@ var configuration = builder.Configuration;
 
 builder.AddJsonFiles();
 // Add services to the container.
-builder.UseSerilog();
 services.AddControllers((options) =>
 {
     options.Conventions.Add(new RouteTokenTransformerConvention(new KebabParameterTransformer()));

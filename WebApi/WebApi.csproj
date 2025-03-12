@@ -26,7 +26,7 @@
 
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"  />
 
-    <PackageReference Include="Serilog.AspNetCore" />
+
     <PackageReference Include="Swashbuckle.AspNetCore"  />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"  />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">

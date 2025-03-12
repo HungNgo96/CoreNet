@@ -6,14 +6,16 @@
 #   static_configs:
 #   - targets: ['otel-collector:8889']   # Collector Prometheus Exporter
 scrape_configs:
-- job_name: 'otel-collector'
-  scrape_interval: 10s
-  static_configs:
-  - targets: ['otel-collector:8889']
-  - targets: ['otel-collector:8888']
+# - job_name: 'otel-collector'
+#   scrape_interval: 10s
+#   static_configs:
+#   - targets: ['otel-collector:8889']
+#   - targets: ['otel-collector:8888']
+  
 - job_name: 'app'
   static_configs:
-  - targets: ['app:5001']   # App expose metrics (nếu có)
+  # - targets: ['app:5001']   # App expose metrics in docker container
+  - targets: ['host.docker.internal:5147']   #setup when App machine local
 
 # - job_name: 'jaeger'
 #   static_configs:
@@ -27,7 +29,7 @@ scrape_configs:
 #   static_configs:
 #   - targets: ['grafana:3000']   # Grafana metrics (nếu bật)
 
-# Optional: nếu SQL Server có Prometheus Exporter riêng (không mặc định)
+#Optional: nếu SQL Server có Prometheus Exporter riêng (không mặc định)
 # - job_name: 'sqlserver'
 #   static_configs:
-#   - targets: ['sqlserver:9182']
+#   - targets: ['sqlserver-exporter:4000']

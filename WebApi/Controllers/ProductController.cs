@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics.Metrics;
 using Application.UseCases.v1.Products.Commands.CreateProduct;
 using Application.UseCases.v1.Products.Commands.DeleteProduct;
 using Application.UseCases.v1.Products.Commands.UpdateProduct;
@@ -17,15 +18,25 @@ namespace WebApi.Controllers
     /// Product controller
     /// </summary>
     [ApiController]
-    public class ProductController(ILogger<ProductController> logger) : BaseController
+    public class ProductController : BaseController
     {
-        [SwaggerOperation(Summary = "Get all produc")]
+        private readonly ILogger<ProductController> _logger;
+        private static readonly Meter s_meter = new("MyApp.Metrics");
+        private static readonly Counter<long> s_requestCounter = s_meter.CreateCounter<long>("app_get_production");
+
+        /// <summary>
+        /// Product controller
+        /// </summary>
+        public ProductController(ILogger<ProductController> logger)
+        {
+               _logger = logger;
+        }
+
+        [SwaggerOperation(Summary = "Get all product")]
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] GetAllProduct.Query request, CancellationToken cancellationToken)
         {
-            logger.LogInformation("LogInfo" + DateTime.Now.Date);
-            logger.LogError("LogError" + DateTime.Now.Date);
-            logger.LogWarning("Warning" + DateTime.Now.Date);
+            s_requestCounter.Add(1);  // Ghi nhận metric
             return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
