@@ -8,7 +8,7 @@ namespace Domain.Entities.Products
     {
         private const int DefaultLength = 15;
         private Sku(string value) => Value = value;
-        private Sku() { }
+        public Sku() { }
 
         public string? Value { get; init; }
 

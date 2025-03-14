@@ -3,10 +3,12 @@
 using Contract.Abstractions.EventBus;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
+using Domain.Core.SharedKernel;
 using Google.Protobuf.WellKnownTypes;
 using Infrastructure.Constants;
 using Infrastructure.MessageBroker;
 using Infrastructure.MessageBroker.RabbitMQ;
+using Infrastructure.Services;
 using Infrastructure.Telemetry;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -36,6 +38,8 @@ namespace Infrastructure.Extensions
                 .AddCacheService(builder.Configuration)
                 .AddSetupOpenTelemetry(builder, builder.Configuration)
                 .AddConfigureMassTransit(builder.Configuration);
+
+            services.AddScoped<ICacheService, FusionCacheService>();
 
             return services;
         }
@@ -81,6 +85,9 @@ namespace Infrastructure.Extensions
             var env = provider.GetRequiredService<IHostEnvironment>();
             var openTelemetryOptions = configuration.GetOptions<OpenTelemetryOptions>() ?? new();
 
+            builder.Services.Configure<OtlpExporterOptions>(
+                o => o.Headers = "X-Api-Key=your_secure_api_key");
+
             if (openTelemetryOptions.Logging.Enabled)
             {
                 if (openTelemetryOptions.Logging.Exporter == OpenTelConst.Exporters.Oltp)
@@ -94,6 +101,7 @@ namespace Infrastructure.Extensions
                                           o.Protocol = openTelemetryOptions.Logging.Otlp.Protocol == OpenTelConst.Protocols.Grpc
                                               ? OtlpExportProtocol.Grpc
                                               : OtlpExportProtocol.HttpProtobuf;
+                                          //o.Headers = "x-otlp-api-key={ApiKeyAbc}";
                                       });
                                   }, delegate (OpenTelemetryLoggerOptions o)
                                   {
@@ -212,8 +220,8 @@ namespace Infrastructure.Extensions
                        // Metrics provides by ASP.NET Core in .NET 8
                        .AddMeter("Microsoft.AspNetCore.Hosting")
                        .AddMeter("Microsoft.AspNetCore.Server.Kestrel")
-                           // demo
-                        .AddMeter("MyApp.Metrics")
+                        // demo
+                        .AddMeter(OpenTelConst.MetricNames.Products.OpenTelScopeName)
                        ;
                });
             }

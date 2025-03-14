@@ -38,27 +38,40 @@ exporters:
     endpoint: "${ZIPKIN_ENDPOINT}"
     tls:
       insecure: true
-  otlphttp:
-    endpoint: "http://seq:5341/ingest/otlp"
+  otlp/aspire:
+    endpoint: "${ASPIRE_ENDPOINT}"
+    # compression: none
     tls:
       insecure: true
+  otlphttp/seq:
+    endpoint: "${SEQ_ENDPOINT}"
+    compression: gzip
+    tls:
+      insecure: true
+  ## otlphttp/seq:
+  #   endpoint: "${SEQ_ENDPOINT}"
+  #   tls:
+  #     insecure: true
+
+
+
 
 service:
   pipelines:
     traces:
       receivers: [otlp, zipkin]
       processors: [batch]
-      exporters: [debug, file/traces, otlp/jaeger, zipkin]
+      exporters: [debug, file/traces, otlp/jaeger, zipkin, otlp/aspire]
 
     metrics:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, file/metrics, prometheus]
+      exporters: [debug, file/metrics, prometheus, otlp/aspire]
 
     logs:
       receivers: [otlp]
       processors: [batch]
-      exporters: [debug, file/logs, loki, otlphttp]
+      exporters: [debug, file/logs, loki, otlphttp/seq, otlp/aspire]
 
   extensions:
     - health_check

@@ -22,13 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="FluentValidation.DependencyInjectionExtensions"  />
-    <PackageReference Include="MassTransit"  />
-    <PackageReference Include="MediatR"  />
-    <PackageReference Include="Microsoft.EntityFrameworkCore"  />
-    <PackageReference Include="Polly.Extensions.Http"  />
-    <PackageReference Include="Serilog"  />
-    <PackageReference Include="Mapster"  />
+    <PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="MassTransit" />
+    <PackageReference Include="MediatR" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" />
+    <PackageReference Include="Polly.Extensions.Http" />
+    <PackageReference Include="Serilog" />
+    <PackageReference Include="Mapster" />
 
   </ItemGroup>
 

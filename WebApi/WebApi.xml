@@ -27,11 +27,6 @@
             Product controller
             </summary>
         </member>
-        <member name="M:WebApi.Controllers.ProductController.#ctor(Microsoft.Extensions.Logging.ILogger{WebApi.Controllers.ProductController})">
-            <summary>
-            Product controller
-            </summary>
-        </member>
         <member name="M:WebApi.Middlewares.ErrorHandlerMiddleware.#ctor(Microsoft.AspNetCore.Http.RequestDelegate,Microsoft.Extensions.Logging.ILogger{WebApi.Middlewares.ErrorHandlerMiddleware})">
             <summary>
             This is handler middleware

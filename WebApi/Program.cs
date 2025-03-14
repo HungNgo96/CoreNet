@@ -4,7 +4,6 @@ using Domain.Core;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
-
 using WebApi.Commons;
 using WebApi.ConfigOptions;
 using WebApi.Extensions;
@@ -62,9 +61,6 @@ app.UseErrorHandler();
 
 app.UseRouting();
 
-// Kích hoạt Prometheus metrics endpoint
-app.UseOpenTelemetryPrometheusScrapingEndpoint();
-
 app.UseAuthorization();
 
 app.UseRequestDecompression();
@@ -76,6 +72,9 @@ app.UseStaticFiles();
 app.UseHealthCheckCustom();
 
 app.UseConfigureSwagger();
+
+// Kích hoạt Prometheus metrics endpoint
+app.UseOpenTelemetryPrometheusScrapingEndpoint();
 
 app.MapControllers();
 

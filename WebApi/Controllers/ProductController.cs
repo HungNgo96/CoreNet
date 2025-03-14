@@ -8,7 +8,9 @@ using Application.UseCases.v1.Products.Commands.DeleteProduct;
 using Application.UseCases.v1.Products.Commands.UpdateProduct;
 using Application.UseCases.v1.Products.Queries.GetAllProduct;
 using Application.UseCases.v1.Products.Queries.GetProductById;
+using Domain.Core.Abstractions;
 using Domain.Shared;
+using Infrastructure.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
@@ -20,23 +22,14 @@ namespace WebApi.Controllers
     [ApiController]
     public class ProductController : BaseController
     {
-        private readonly ILogger<ProductController> _logger;
-        private static readonly Meter s_meter = new("MyApp.Metrics");
-        private static readonly Counter<long> s_requestCounter = s_meter.CreateCounter<long>("app_get_production");
-
-        /// <summary>
-        /// Product controller
-        /// </summary>
-        public ProductController(ILogger<ProductController> logger)
-        {
-               _logger = logger;
-        }
+        private static readonly Meter s_meter = new(OpenTelConst.MetricNames.Products.OpenTelScopeName);
+        private static readonly Counter<long> s_requestCounterGet = s_meter.CreateCounter<long>(OpenTelConst.MetricNames.Products.Get);
 
         [SwaggerOperation(Summary = "Get all product")]
         [HttpGet]
         public async Task<IActionResult> GetAsync([FromQuery] GetAllProduct.Query request, CancellationToken cancellationToken)
         {
-            s_requestCounter.Add(1);  // Ghi nhận metric
+            s_requestCounterGet.Add(1);  // Ghi nhận metric
             return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
@@ -44,6 +37,8 @@ namespace WebApi.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
         {
+            Counter<long> requestCounterGetBy = s_meter.CreateCounter<long>(OpenTelConst.MetricNames.Products.GetById);
+            requestCounterGetBy.Add(1, new KeyValuePair<string, object>("id", id)!);
             return Ok(await Mediator.Send(new GetProductById.Query(id), cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 

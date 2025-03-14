@@ -33,6 +33,22 @@ services:
   #     - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=Demo01;User Id=sa;Password=YourStrong!Passw0rd;
   #   networks:
   #     - otel-network
+  # Aspire Dashboard
+  dashboard:
+    image: mcr.microsoft.com/dotnet/aspire-dashboard:latest
+    container_name: aspire-dashboard
+    ports:
+      - "18888:18888"
+    environment:
+    #   - DASHBOARD__OTLP__AUTHMODE=ApiKey
+    #   - DASHBOARD__OTLP__PRIMARYAPIKEY=ApiKeyAbc
+    #   - ASPNETCORE_ENVIRONMENT=Development
+     - DOTNET_DASHBOARD_UNSECURED_ALLOW_ANONYMOUS=true
+     - Dashboard__Otlp__AuthMode=Unsecured ##ApiKey, Certificate 
+     - DOTNET_Aspire_Dashboard__Authentication__EnableFrontendConnections=true
+     # - DOTNET_DASHBOARD_OTLP_HTTP_ENDPOINT_URL = http://localhost:18890
+    networks:
+      - otel-network
 #RabbitMQ service
   rabbitmq:
     container_name: rabbitmq
@@ -55,7 +71,7 @@ services:
       - SA_PASSWORD=YourStrong!Passw0rd
     ports:
       - "1433:1433"  # Expose SQL Server port to the host (local/Docker container)
-      - "4000"  # Expose SQL Server port to the host (local/Docker container)
+      # - "4000"  # Expose SQL Server port to the host (local/Docker container)
     networks:
       - otel-network
     volumes:
@@ -80,7 +96,8 @@ services:
       LOKI_ENDPOINT: "http://loki:3100/loki/api/v1/push"
       ZIPKIN_ENDPOINT: "http://zipkin:9411/api/v2/spans"
       PROMETHEUS_ENDPOINT: "0.0.0.0:8889"
-      SEQ_LOG_ENDPOINT: "https://seq:5341/ingest/otlp"
+      SEQ_ENDPOINT: "http://seq:5341/ingest/otlp"
+      ASPIRE_ENDPOINT: "dashboard:18889"
     ports:
       - "8889:8889"   # Prometheus metrics exporter (scrape endpoint)
       - "13133:13133" # health_check extension
@@ -93,6 +110,7 @@ services:
       - prometheus
       - loki
       - seq
+      - dashboard 
     networks:
       - otel-network
 

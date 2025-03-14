@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using Application.BackgroundJobs;
 using Application.Behaviors;
+using Application.DependencyInjections.Configurations;
 using FluentValidation;
 using Infrastructure.Extensions;
 using MediatR.NotificationPublishers;
@@ -38,8 +39,9 @@ namespace Application.DependencyInjections.Extensions
 
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            var assembly = typeof(DependencyInjectionExtension).Assembly;
+            //var assembly = typeof(DependencyInjectionExtension).Assembly;
             _ = services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+
             services.AddMediatR(configuration =>
             {
                 configuration.NotificationPublisher = new TaskWhenAllPublisher();
@@ -47,8 +49,9 @@ namespace Application.DependencyInjections.Extensions
                 //configuration.AddOpenBehavior(typeof(UnitOfWorkBehavior<,>));
                 configuration.AddOpenBehavior(typeof(ValidationPipelineBehavior<,>));
                 configuration.AddOpenBehavior(typeof(IdempotentCommandPipelineBehavior<,>));
-            })
-                .AddConfigQuartz();
+            }).AddConfigQuartz();
+
+            MapsterConfiguration.RegisterMappings();
 
             return services;
         }
