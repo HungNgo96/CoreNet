@@ -2,7 +2,7 @@
 
 namespace Infrastructure.MessageBroker.RabbitMQ
 {
-    public class RabbitMQOptions: IAppOptions
+    public class RabbitMQOptions : IAppOptions
     {
         static string IAppOptions.ConfigSectionPath => nameof(RabbitMQOptions);
         public string HostName { get; set; } = "localhost";
@@ -38,5 +38,4 @@ namespace Infrastructure.MessageBroker.RabbitMQ
         public int MaxInterval { get; set; } = 5000; // milliseconds
         public double Multiplier { get; set; } = 2.0;
     }
-
 }

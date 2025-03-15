@@ -4,7 +4,6 @@ using Contract.Abstractions.EventBus;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
-using Google.Protobuf.WellKnownTypes;
 using Infrastructure.Constants;
 using Infrastructure.MessageBroker;
 using Infrastructure.MessageBroker.RabbitMQ;

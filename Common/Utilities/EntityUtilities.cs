@@ -22,6 +22,5 @@
                 .Where(x => typeof(T).IsAssignableFrom(x) && x is { IsInterface: false, IsAbstract: false }) // IEnumerable<Type>
                 .ToList(); // List<Type>
         }
-
     }
 }

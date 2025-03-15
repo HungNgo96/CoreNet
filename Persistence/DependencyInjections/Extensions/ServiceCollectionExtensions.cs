@@ -36,7 +36,6 @@ namespace Persistence.DependencyInjections.Extensions
             {
                 op.UseSqlServer(optionsConfig.ReadSqlServer!, x =>
                 {
-
                     x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
                 });
 

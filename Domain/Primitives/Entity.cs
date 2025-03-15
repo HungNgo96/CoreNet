@@ -10,13 +10,18 @@ namespace Domain.Primitives
     public abstract class BaseEntity : IEntity<Guid>
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// Initializes a new instance of the <see>
+        ///     <cref>Entity</cref>
+        /// </see>
+        /// class.
         /// </summary>
-        /// <param name="id">The entity identifier.</param>
         protected BaseEntity() => Id = Guid.NewGuid();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Entity"/> class.
+        /// Initializes a new instance of the <see>
+        ///     <cref>Entity</cref>
+        /// </see>
+        /// class.
         /// </summary>
         /// <remarks>
         /// Required by EF Core.
@@ -36,12 +41,18 @@ namespace Domain.Primitives
         public IReadOnlyCollection<IDomainEvent> GetDomainEvents => _domainEvents.AsReadOnly();
 
         /// <summary>
-        /// Clears all the domain events from the <see cref="AggregateRoot"/>.
+        /// Clears all the domain events from the <see>
+        ///     <cref>AggregateRoot</cref>
+        /// </see>
+        /// .
         /// </summary>
         public void ClearDomainEvents() => _domainEvents.Clear();
 
         /// <summary>
-        /// Adds the specified <see cref="IDomainEvent"/> to the <see cref="AggregateRoot"/>.
+        /// Adds the specified <see cref="IDomainEvent"/> to the <see>
+        ///     <cref>AggregateRoot</cref>
+        /// </see>
+        /// .
         /// </summary>
         /// <param name="domainEvent">The domain event.</param>
         protected void AddDomainEvent(IDomainEvent domainEvent)

@@ -37,7 +37,6 @@
 //            return false;
 //        }
 
-
 //        private SendGridMessage BuildMessage(EmailPayload payload)
 //        {
 //            SendGridMessage message = new SendGridMessage

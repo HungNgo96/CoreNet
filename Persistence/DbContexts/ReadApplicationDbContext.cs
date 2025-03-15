@@ -1,5 +1,4 @@
-﻿using System.Reflection.Metadata;
-using Domain.Core.SharedKernel;
+﻿using Domain.Core.SharedKernel;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;
@@ -35,6 +34,5 @@ namespace Persistence.DbContexts
         {
             modelBuilder.ApplyConfigurationsFromAssembly(typeof(AssemlyReference).Assembly);
         }
-
     }
 }

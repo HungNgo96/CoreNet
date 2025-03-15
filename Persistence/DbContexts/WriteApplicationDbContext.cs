@@ -157,11 +157,11 @@ namespace Persistence.DbContexts
                 return;
             }
 
-            foreach (var referenceEntry in entityEntry.References.Where(r => r.TargetEntry!.State == EntityState.Deleted))
+            foreach (var targetEntry in entityEntry.References.Where(r => r.TargetEntry!.State == EntityState.Deleted).Select(x => x.TargetEntry))
             {
-                referenceEntry.TargetEntry!.State = EntityState.Unchanged;
+                targetEntry!.State = EntityState.Unchanged;
 
-                UpdateDeletedEntityEntryReferencesToUnchanged(referenceEntry.TargetEntry);
+                UpdateDeletedEntityEntryReferencesToUnchanged(targetEntry);
             }
         }
 
