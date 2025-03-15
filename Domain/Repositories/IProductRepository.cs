@@ -11,7 +11,7 @@ namespace Domain.Repositories
     {
         public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
 
-        public Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken);
+        public Task<List<Product>> GetAsync(CancellationToken cancellationToken);
 
         public Task InsertAsync(Product product, CancellationToken cancellationToken);
     }

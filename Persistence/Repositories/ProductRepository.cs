@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Linq.Expressions;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
 using Domain.Repositories;
@@ -12,41 +11,30 @@ using Persistence.Repositories.Commons;
 
 namespace Persistence.Repositories
 {
-    public sealed class ProductRepository : RepositoryBase<WriteApplicationDbContext, Product>, IProductRepository
+    public sealed class ProductRepository(
+        IReadApplicationDbContext readDbContext,
+        IWriteApplicationDbContext writeDbContext,
+        IRepository<Product> productRepository,
+        WriteApplicationDbContext writeApplicationDbContext)
+        : RepositoryBase<WriteApplicationDbContext, Product>(writeApplicationDbContext), IProductRepository
     {
-        private readonly IReadApplicationDbContext _readDbContext;
-        private readonly IWriteApplicationDbContext _writeDbContext;
-        private readonly IRepository<Product> _productRepository;
-
-        public ProductRepository(IReadApplicationDbContext readDbContext,
-                                 IWriteApplicationDbContext writeDbContext,
-                                 IRepository<Product> productRepository,
-                                 WriteApplicationDbContext writeApplicationDbContext) : base(writeApplicationDbContext)
+        public Task<List<Product>> GetAsync(CancellationToken cancellationToken)
         {
-            _readDbContext = readDbContext;
-            _writeDbContext = writeDbContext;
-            _productRepository = productRepository;
-        }
-
-        public async Task<IReadOnlyCollection<Product>> GetAllAsync(CancellationToken cancellationToken)
-        {
-            var queryable = _readDbContext.Products.Where(x => !string.IsNullOrEmpty(x.Id.ToString()));
+            var queryable = readDbContext.Products.Where(x => !string.IsNullOrEmpty(x.Id.ToString()));
 
             IQueryable<Product> orderBy = queryable.OrderBy(x => x.Name);
 
-            return await orderBy.ToListAsync(cancellationToken).ConfigureAwait(false);
+            return orderBy.ToListAsync(cancellationToken);
         }
 
-        public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            Expression<Func<Product, bool>> condition = p => p.Id == id;
-           //EF.CompileAsyncQuery<WriteApplicationDbContext,Product?>(condition);
-            return await _readDbContext.Products.FirstOrDefaultAsync(condition, cancellationToken).ConfigureAwait(false);
+            return readDbContext.Products.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }
 
-        public async Task InsertAsync(Product product, CancellationToken cancellationToken)
+        public Task InsertAsync(Product product, CancellationToken cancellationToken)
         {
-            _ = await _productRepository.AddAsync(product, cancellationToken);
+            return productRepository.AddAsync(product, cancellationToken);
         }
     }
 }

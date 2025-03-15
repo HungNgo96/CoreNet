@@ -40,7 +40,7 @@ namespace Application.UseCases.v1.Products.Queries.GetAllProduct
 
             public async Task<IResult<IReadOnlyCollection<GetProductResponse>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                var result = await _productRepository.GetAllAsync(cancellationToken).ConfigureAwait(false);
+                var result = await _productRepository.GetAsync(cancellationToken).ConfigureAwait(false);
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
                 return result.Count != 0
                     ? Result<IReadOnlyCollection<GetProductResponse>>.Success(data: result.AsQueryable().ProjectToType<GetProductResponse>().ToList())
