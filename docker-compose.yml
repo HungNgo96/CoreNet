@@ -26,7 +26,7 @@ services:
       - rabbitmq
       - otel-collector
     ports:
-      - "5001:5001"
+      - "5001:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ConnectionStrings__ReadSqlServer=Server=sqlserver,1433;Database=CoreNet01;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
