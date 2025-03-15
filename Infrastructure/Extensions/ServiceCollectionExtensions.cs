@@ -153,7 +153,7 @@ namespace Infrastructure.Extensions
 
                                 options.ResourceAttributes = new Dictionary<string, object>
                                 {
-                                    ["service.name"] = openTelemetryOptions.ServiceName,
+                                    ["service.name"] = $"{openTelemetryOptions.ServiceName}_logs",
                                     ["service.version"] = "1.0.0"
                                 };
                             });
@@ -167,7 +167,7 @@ namespace Infrastructure.Extensions
                 {
                     tracerProviderBuilder
                         .SetResourceBuilder(ResourceBuilder.CreateDefault()
-                            .AddService($"{openTelemetryOptions.ServiceName}_tracing"))
+                            .AddService($"{openTelemetryOptions.ServiceName}_traces"))
                         .AddAspNetCoreInstrumentation() // Capture ASP.NET Core traces
                         .AddHttpClientInstrumentation() // Capture HttpClient traces
                         .AddSqlClientInstrumentation(delegate (SqlClientTraceInstrumentationOptions o)
@@ -176,7 +176,6 @@ namespace Infrastructure.Extensions
                             if (!env.IsProduction())
                             {
                                 o.SetDbStatementForText = true;
-                                o.RecordException = true;
                             }
                         })
                         .AddOtlpExporter(options =>
