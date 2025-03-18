@@ -43,7 +43,7 @@ namespace Application.UseCases.v1.Products.Queries.GetAllProduct
                 var result = await _productRepository.GetAsync(cancellationToken).ConfigureAwait(false);
 #pragma warning disable CS8619 // Nullability of reference types in value doesn't match target type.
                 return result.Count != 0
-                    ? Result<IReadOnlyCollection<GetProductResponse>>.Success(data: result.AsQueryable().ProjectToType<GetProductResponse>().ToList())
+                    ? Result<IReadOnlyCollection<GetProductResponse>>.Success(data: result.Adapt<List<GetProductResponse>>())
                     : Result<IReadOnlyCollection<GetProductResponse>>.Fail("data not found");
 #pragma warning restore CS8619 // Nullability of reference types in value doesn't match target type.
             }

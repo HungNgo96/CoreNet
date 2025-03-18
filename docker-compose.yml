@@ -17,59 +17,59 @@ volumes:
     driver: local
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: WebApi/Dockerfile
-    depends_on:
-      - sqlserver
-      - rabbitmq
-      - otel-collector
-    ports:
-      - "5001:8080"
-    environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-      - ConnectionStrings__ReadSqlServer=Server=sqlserver,1433;Database=CoreNet01;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
-      - ConnectionStrings__WriteSqlServer=Server=sqlserver,1433;Database=CoreNet01;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
-      - ConnectionStrings__NoSqlConnection=
-      - ConnectionStrings__CacheConnection=
-      - CacheOptions__AbsoluteExpirationInHours=1
-      - CacheOptions__SlidingExpirationInSeconds=300
-      - OpenTelemetryOptions__ServiceName=OpenTelemetry_DEV
-      - OpenTelemetryOptions__Tracing__Enabled=true
-      - OpenTelemetryOptions__Tracing__Exporter=Otlp
-      - OpenTelemetryOptions__Tracing__Otlp__Endpoint=http://otel-collector:4317
-      - OpenTelemetryOptions__Tracing__Otlp__Protocol=Grpc
-      - OpenTelemetryOptions__Tracing__Otlp__SampleRate=1.0
-      - OpenTelemetryOptions__Metrics__Enabled=true
-      - OpenTelemetryOptions__Metrics__Exporter=Otlp
-      - OpenTelemetryOptions__Metrics__Otlp__Endpoint=http://otel-collector:4317
-      - OpenTelemetryOptions__Metrics__Otlp__Protocol=Grpc
-      - OpenTelemetryOptions__Logging__Enabled=true
-      - OpenTelemetryOptions__Logging__LogLevel__Default=Information
-      - OpenTelemetryOptions__Logging__LogLevel__Microsoft=Warning
-      - OpenTelemetryOptions__Logging__Exporter=Serilog
-      - OpenTelemetryOptions__Logging__Otlp__Endpoint=http://otel-collector:4317
-      - OpenTelemetryOptions__Logging__Otlp__Protocol=Grpc
-      - RabbitMQOptions__HostName=rabbitmq
-      - RabbitMQOptions__Port=5672
-      - RabbitMQOptions__UserName=guest
-      - RabbitMQOptions__Password=guest
-      - RabbitMQOptions__VirtualHost=/
-      - RabbitMQOptions__Exchange__Name=my_exchange
-      - RabbitMQOptions__Exchange__Type=direct
-      - RabbitMQOptions__Exchange__Durable=true
-      - RabbitMQOptions__Exchange__AutoDelete=false
-      - RabbitMQOptions__Queue__Name=my_queue
-      - RabbitMQOptions__Queue__Durable=true
-      - RabbitMQOptions__Queue__Exclusive=false
-      - RabbitMQOptions__Queue__AutoDelete=false
-      - RabbitMQOptions__RetryPolicy__MaxRetryAttempts=5
-      - RabbitMQOptions__RetryPolicy__InitialInterval=1000
-      - RabbitMQOptions__RetryPolicy__MaxInterval=5000
-      - RabbitMQOptions__RetryPolicy__Multiplier=2.0
-    networks:
-      - otel-network
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: WebApi/Dockerfile
+  #   depends_on:
+  #     - sqlserver
+  #     - rabbitmq
+  #     - otel-collector
+  #   ports:
+  #     - "5001:8080"
+  #   environment:
+  #     - ASPNETCORE_ENVIRONMENT=Development
+  #     - ConnectionStrings__ReadSqlServer=Server=sqlserver,1433;Database=CoreNet01;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+  #     - ConnectionStrings__WriteSqlServer=Server=sqlserver,1433;Database=CoreNet01;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True;
+  #     - ConnectionStrings__NoSqlConnection=
+  #     - ConnectionStrings__CacheConnection=
+  #     - CacheOptions__AbsoluteExpirationInHours=1
+  #     - CacheOptions__SlidingExpirationInSeconds=300
+  #     - OpenTelemetryOptions__ServiceName=OpenTelemetry_DEV
+  #     - OpenTelemetryOptions__Tracing__Enabled=true
+  #     - OpenTelemetryOptions__Tracing__Exporter=Otlp
+  #     - OpenTelemetryOptions__Tracing__Otlp__Endpoint=http://otel-collector:4317
+  #     - OpenTelemetryOptions__Tracing__Otlp__Protocol=Grpc
+  #     - OpenTelemetryOptions__Tracing__Otlp__SampleRate=1.0
+  #     - OpenTelemetryOptions__Metrics__Enabled=true
+  #     - OpenTelemetryOptions__Metrics__Exporter=Otlp
+  #     - OpenTelemetryOptions__Metrics__Otlp__Endpoint=http://otel-collector:4317
+  #     - OpenTelemetryOptions__Metrics__Otlp__Protocol=Grpc
+  #     - OpenTelemetryOptions__Logging__Enabled=true
+  #     - OpenTelemetryOptions__Logging__LogLevel__Default=Information
+  #     - OpenTelemetryOptions__Logging__LogLevel__Microsoft=Warning
+  #     - OpenTelemetryOptions__Logging__Exporter=Serilog
+  #     - OpenTelemetryOptions__Logging__Otlp__Endpoint=http://otel-collector:4317
+  #     - OpenTelemetryOptions__Logging__Otlp__Protocol=Grpc
+  #     - RabbitMQOptions__HostName=rabbitmq
+  #     - RabbitMQOptions__Port=5672
+  #     - RabbitMQOptions__UserName=guest
+  #     - RabbitMQOptions__Password=guest
+  #     - RabbitMQOptions__VirtualHost=/
+  #     - RabbitMQOptions__Exchange__Name=my_exchange
+  #     - RabbitMQOptions__Exchange__Type=direct
+  #     - RabbitMQOptions__Exchange__Durable=true
+  #     - RabbitMQOptions__Exchange__AutoDelete=false
+  #     - RabbitMQOptions__Queue__Name=my_queue
+  #     - RabbitMQOptions__Queue__Durable=true
+  #     - RabbitMQOptions__Queue__Exclusive=false
+  #     - RabbitMQOptions__Queue__AutoDelete=false
+  #     - RabbitMQOptions__RetryPolicy__MaxRetryAttempts=5
+  #     - RabbitMQOptions__RetryPolicy__InitialInterval=1000
+  #     - RabbitMQOptions__RetryPolicy__MaxInterval=5000
+  #     - RabbitMQOptions__RetryPolicy__Multiplier=2.0
+  #   networks:
+  #     - otel-network
   # Aspire Dashboard
   dashboard:
     image: mcr.microsoft.com/dotnet/aspire-dashboard:latest

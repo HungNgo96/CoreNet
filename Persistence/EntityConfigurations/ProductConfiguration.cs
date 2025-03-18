@@ -17,11 +17,13 @@ namespace Persistence.EntityConfigurations
             //builder.Property(p => p.Id).HasConversion(
             //    productId => productId.Value,
             //    value => new ProductId(value));
+            builder.HasKey(e => e.Id);
 
+            builder.Property(x => x.Id).ValueGeneratedNever();
             builder.Property(p => p.Name).HasMaxLength(100);
 
             _ = builder.Property(p => p.Sku).HasConversion(
-               skuId => skuId.Value,
+               skuId => skuId!.Value,
                value => Sku.Create(value ?? string.Empty));
 
             builder.OwnsOne(p => p.Price, priceBuilder =>

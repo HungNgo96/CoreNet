@@ -13,10 +13,10 @@ public sealed class ConnectionOptions : IAppOptions
     [Required]
     public string? WriteSqlServer { get; set; }
 
-    [Required]
+    //[Required]
     public string? NoSqlConnection { get; set; }
 
-    [Required]
+    //[Required]
     public string? CacheConnection { get; set; }
 
     public bool CacheConnectionInMemory() =>

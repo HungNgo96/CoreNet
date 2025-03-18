@@ -6,7 +6,7 @@ namespace Application.UseCases.v1.Products.Commands.CreateProduct
 {
     public record ProductCreatedEvent
     {
-        public Guid Id { get; init; }
+        public long Id { get; init; }
         public required string Name { get; init; }
         public decimal Price { get; init; }
     }

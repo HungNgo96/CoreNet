@@ -6,6 +6,7 @@ using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Persistence.Extensions;
 
 namespace Persistence.EntityConfigurations
 {
@@ -13,11 +14,10 @@ namespace Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasKey(o => o.Id);
-
-            _ = builder.Property(o => o.Id).HasConversion(
-                orderId => orderId!.Value,
-                value => new OrderId(value));
+            builder.ConfigureBaseEntity();
+            //_ = builder.Property(o => o.Id).HasConversion(
+            //    orderId => orderId!.Value,
+            //    value => new OrderId(value));
 
             builder.HasOne<Customer>()
                 .WithMany()

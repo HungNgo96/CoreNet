@@ -9,7 +9,6 @@ using Domain.Core.SharedKernel;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;
-using Domain.Primitives;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
@@ -64,7 +63,7 @@ namespace Persistence.DbContexts
 
                 try
                 {
-                    var utcNow = DateTime.UtcNow;
+                    var utcNow = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
 
                     UpdateAuditableEntities(utcNow);
 
@@ -106,7 +105,7 @@ namespace Persistence.DbContexts
         /// Updates the entities implementing <see cref="IAuditableEntity"/> interface.
         /// </summary>
         /// <param name="utcNow">The current date and time in UTC format.</param>
-        private void UpdateAuditableEntities(DateTime utcNow)
+        private void UpdateAuditableEntities(long utcNow)
         {
             foreach (var entityEntry in ChangeTracker.Entries<IAuditableEntity>())
             {
@@ -126,7 +125,7 @@ namespace Persistence.DbContexts
         /// Updates the entities implementing <see cref="ISoftDeletableEntity"/> interface.
         /// </summary>
         /// <param name="utcNow">The current date and time in UTC format.</param>
-        private void UpdateSoftDeletableEntities(DateTime utcNow)
+        private void UpdateSoftDeletableEntities(long utcNow)
         {
             foreach (var entityEntry in ChangeTracker.Entries<ISoftDeletableEntity>())
             {
@@ -172,7 +171,7 @@ namespace Persistence.DbContexts
         private async Task PublishDomainEvents(CancellationToken cancellationToken)
         {
             var aggregateRoots = ChangeTracker
-                .Entries<BaseEntity>()
+                .Entries<EntityBase>()
                 .Where(entityEntry => entityEntry.Entity.GetDomainEvents.Any())
                 .ToList();
 

@@ -6,6 +6,7 @@ using Domain.Entities.Orders;
 using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Persistence.Extensions;
 
 namespace Persistence.EntityConfigurations
 {
@@ -13,11 +14,13 @@ namespace Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<LineItem> builder)
         {
-            builder.HasKey(li => li.Id);
+            builder.ConfigureBaseEntity();
 
-            builder.Property(li => li.Id).HasConversion(
-                lineItemId => lineItemId.Value,
-                value => new LineItemId(value));
+            builder.ToTable(nameof(LineItem) + "s");
+            
+            //builder.Property(li => li.Id).HasConversion(
+            //    lineItemId => lineItemId.Value,
+            //    value => new LineItemId(value));
 
             builder.HasOne<Product>()
                     .WithMany()

@@ -27,7 +27,7 @@ namespace Persistence.Repositories
             return orderBy.ToListAsync(cancellationToken);
         }
 
-        public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
+        public Task<Product?> GetByIdAsync(long id, CancellationToken cancellationToken)
         {
             return readDbContext.Products.FirstOrDefaultAsync(e => e.Id == id, cancellationToken);
         }

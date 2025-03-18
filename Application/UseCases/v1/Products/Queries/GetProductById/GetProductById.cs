@@ -12,7 +12,7 @@ namespace Application.UseCases.v1.Products.Queries.GetProductById
 {
     public sealed class GetProductById
     {
-        public record Query(Guid Id) : IQuery<IResult<GetProductResponse>>;
+        public record Query(long Id) : IQuery<IResult<GetProductResponse>>;
 
         public sealed class Handler(IProductRepository productRepository) : IQueryHandler<Query, IResult<GetProductResponse?>>
         {

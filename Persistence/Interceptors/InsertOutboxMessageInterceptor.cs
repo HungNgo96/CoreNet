@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Domain.Primitives;
+using Domain.Core.Abstractions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
@@ -35,7 +35,7 @@ namespace Persistence.Interceptors
 
             var outboxMessage = context
                 .ChangeTracker
-                .Entries<BaseEntity>()
+                .Entries<EntityBase>()
                 .Where(entityEntry => entityEntry.Entity.GetDomainEvents.Any())
                 .Select(entry => entry.Entity)
                 .SelectMany(entity =>

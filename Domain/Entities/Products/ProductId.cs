@@ -3,4 +3,4 @@
 
 namespace Domain.Entities.Products;
 
-public record ProductId(Guid Value);
+public record ProductId(long Value);

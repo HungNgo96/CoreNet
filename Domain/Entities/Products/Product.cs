@@ -4,11 +4,10 @@
 using Domain.Core.Abstractions;
 using Domain.Core.SharedKernel;
 using Domain.Events.Products;
-using Domain.Primitives;
 
 namespace Domain.Entities.Products;
 
-public class Product : BaseEntity, IAggregateRoot, IAuditableEntity
+public class Product : EntityBase, IAggregateRoot
 {
     public string Name { get; private set; } = string.Empty;
 
@@ -16,22 +15,18 @@ public class Product : BaseEntity, IAggregateRoot, IAuditableEntity
 
     public Sku? Sku { get; private set; }
 
-    public DateTime CreatedOnUtc { get; set; }
-
-    public DateTime? ModifiedOnUtc { get; set; }
-
     public Product()
     {
     }
 
-    public Product(Guid id, string name, Money? price, Sku? sku) : base(id)
+    public Product(long id, string name, Money? price, Sku? sku) : base(id)
     {
         Name = name;
         Price = price;
         Sku = sku;
     }
 
-    public static Product Create(Guid id, string name, Money? price, Sku? sku)
+    public static Product Create(long id, string name, Money? price, Sku? sku)
     {
         var product = new Product(id, name, price, sku);
 
@@ -40,7 +35,7 @@ public class Product : BaseEntity, IAggregateRoot, IAuditableEntity
         return product;
     }
 
-    public static Product Update(Product product, Guid id, string name, Money? price, Sku? sku)
+    public static Product Update(Product product, long id, string name, Money? price, Sku? sku)
     {
         product.Name = name;
         product.Price = price;
@@ -51,7 +46,7 @@ public class Product : BaseEntity, IAggregateRoot, IAuditableEntity
         return product;
     }
 
-    public static Product Delete(Product product, Guid id)
+    public static Product Delete(Product product, long id)
     {
         product.AddDomainEvent(new DeletedProductDomainEvent(id));
 

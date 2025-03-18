@@ -3,16 +3,16 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Linq.Expressions;
+using Domain.Core.Abstractions;
 using Domain.Core.Specification;
-using Domain.Primitives;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
 
 namespace Domain.Core.SharedKernel
 {
-    public interface IRepository<TEntity> where TEntity : BaseEntity, IAggregateRoot
+    public interface IRepository<TEntity> where TEntity : EntityBase, IAggregateRoot
     {
-        Task<TEntity?> FindByIdAsync(Guid id, CancellationToken cancellationToken);
+        Task<TEntity?> FindByIdAsync(long id, CancellationToken cancellationToken);
 
         Task<TEntity?> FindOneAsync(ISpecification<TEntity> spec, CancellationToken cancellationToken);
 

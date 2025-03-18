@@ -9,7 +9,7 @@ namespace Domain.Repositories
 {
     public interface IProductRepository : IRepository<Product>
     {
-        public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
+        public Task<Product?> GetByIdAsync(long id, CancellationToken cancellationToken);
 
         public Task<List<Product>> GetAsync(CancellationToken cancellationToken);
 

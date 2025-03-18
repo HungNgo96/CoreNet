@@ -1,21 +1,22 @@
-﻿using Domain.Core.Abstractions;
+﻿using Domain.Core;
+using Domain.Core.Abstractions;
 using Domain.Entities.Customers;
 using Domain.Entities.Products;
 
 namespace Domain.Entities.Orders;
 
-public class Order : IEntityBase<OrderId>
+public class Order : EntityBase
 {
     private readonly HashSet<LineItem> _lineItems = new();
-    public OrderId? Id { get; private set; }
-    public CustomerId? CustomerId { get; private set; }
+    public long Id { get; private set; }
+    public long? CustomerId { get; private set; }
     public IReadOnlyList<LineItem> LineItems => [.. _lineItems];
 
     public static Order Create(Customer customer)
     {
         var order = new Order()
         {
-            Id = new OrderId(Guid.NewGuid()),
+            Id = NumericIdGenerator.Generate(),
             CustomerId = customer.Id,
         };
 
@@ -25,14 +26,14 @@ public class Order : IEntityBase<OrderId>
     public void Add(Product product)
     {
         var lineItem = new LineItem(
-            new LineItemId(Guid.NewGuid()),
+            NumericIdGenerator.Generate(),
             Id!,
             product.Id,
             product.Price!);
         _lineItems.Add(lineItem);
     }
 
-    public bool RemoveLineItem(LineItemId lineItemId)
+    public bool RemoveLineItem(long lineItemId)
     {
         var lineItem = _lineItems.FirstOrDefault(x => x.Id == lineItemId);
 

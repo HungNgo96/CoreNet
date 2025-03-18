@@ -1,7 +1,7 @@
 ﻿using System.Linq.Expressions;
+using Domain.Core.Abstractions;
 using Domain.Core.SharedKernel;
 using Domain.Core.Specification;
-using Domain.Primitives;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Query;
@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Query;
 namespace Persistence.Repositories.Commons
 {
     public class RepositoryBase<TDbContext, TEntity> : IRepository<TEntity>
-        where TEntity : BaseEntity, IAggregateRoot
+        where TEntity : EntityBase, IAggregateRoot
         where TDbContext : DbContext
     {
         private readonly TDbContext _dbContext;
@@ -19,7 +19,7 @@ namespace Persistence.Repositories.Commons
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
         }
 
-        public async Task<TEntity?> FindByIdAsync(Guid id, CancellationToken cancellationToken)
+        public async Task<TEntity?> FindByIdAsync(long id, CancellationToken cancellationToken)
         {
             return await _dbContext.Set<TEntity>().AsNoTracking().SingleOrDefaultAsync(e => e.Id == id, cancellationToken)!;
         }

@@ -5,6 +5,7 @@
 using Domain.Entities.Orders;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Persistence.Extensions;
 
 namespace Persistence.EntityConfigurations
 {
@@ -12,9 +13,10 @@ namespace Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<OrderSummary> builder)
         {
-            builder.HasKey(o => o.Id);
+            builder.ConfigureBaseEntity();
 
             _ = builder.Property(o => o.TotalPrice).HasColumnType(nameof(Decimal));
+            _ = builder.Property(o => o.CustomerId);
         }
     }
 }

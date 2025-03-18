@@ -2,9 +2,9 @@
 
 namespace Domain.Entities.Orders;
 
-public class LineItem : IEntityBase<LineItemId>
+public class LineItem : EntityBase
 {
-    public LineItem(LineItemId id, OrderId orderId, Guid productId, Money price)
+    public LineItem(long id, long orderId, long productId, Money price)
     {
         Id = id;
         OrderId = orderId;
@@ -16,8 +16,8 @@ public class LineItem : IEntityBase<LineItemId>
     {
     }
 
-    public LineItemId Id { get; private set; }
-    public OrderId OrderId { get; private set; }
-    public Guid ProductId { get; private set; }
+    public long Id { get; private set; }
+    public long OrderId { get; private set; }
+    public long ProductId { get; private set; }
     public Money Price { get; private set; }
 }

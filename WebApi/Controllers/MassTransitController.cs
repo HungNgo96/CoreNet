@@ -1,5 +1,6 @@
 ﻿using Application.UseCases.v1.Products.Commands.CreateProduct;
 using Contract.IntegrationEvents;
+using Domain.Core;
 using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 
@@ -54,7 +55,7 @@ namespace WebApi.Controllers
         {
             await bus.Publish(new ProductCreatedEvent()
             {
-                Id = Guid.NewGuid(),
+                Id = NumericIdGenerator.Generate(),
                 Name = "Name ProductCreatedEvent",
                 Price = 0
             }, typeof(ProductCreatedEvent), cancellationToken);

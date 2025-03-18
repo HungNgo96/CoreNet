@@ -7,10 +7,10 @@ using Domain.Entities.Products;
 
 namespace Domain.Events.Products
 {
-    public sealed record CreatedProductDomainEvent(Guid Id, string Name, Money? Price, Sku? Sku)
+    public sealed record CreatedProductDomainEvent(long Id, string Name, Money? Price, Sku? Sku)
         : IDomainEvent
     {
-        public Guid Id { get; set; } = Id;
+        public long Id { get; set; } = Id;
         public string Name { get; set; } = Name;
         public Money? Price { get; set; } = Price;
 

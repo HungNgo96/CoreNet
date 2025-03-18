@@ -8,11 +8,21 @@
         /// <summary>
         /// Gets the created on date and time in UTC format.
         /// </summary>
-        DateTime CreatedOnUtc { get; }
+        long CreatedOnUtc { get; }
+
+        /// <summary>
+        /// Gets the user who created this entity.
+        /// </summary>
+        string CreatedBy { get; }
 
         /// <summary>
         /// Gets the modified on date and time in UTC format.
         /// </summary>
-        DateTime? ModifiedOnUtc { get; }
+        long? ModifiedOnUtc { get; }
+
+        /// <summary>
+        /// Gets the user who last modified this entity.
+        /// </summary>
+        string? ModifiedBy { get; }
     }
 }

@@ -5,6 +5,7 @@
 using Domain.Entities.Customers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Persistence.Extensions;
 
 namespace Persistence.EntityConfigurations
 {
@@ -12,11 +13,11 @@ namespace Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<Customer> builder)
         {
-            builder.HasKey(c => c.Id);
-
-            builder.Property(c => c.Id).HasConversion(
-                customerId => customerId.Value,
-                value => new CustomerId(value));
+            builder.ToTable(nameof(Customer) + "s");
+            builder.ConfigureBaseEntity();
+            //builder.Property(c => c.Id).HasConversion(
+            //    customerId => customerId.Value,
+            //    value => new CustomerId(value));
 
             builder.Property(c => c.Name).HasMaxLength(100);
             builder.Property(c => c.Email).HasMaxLength(255);

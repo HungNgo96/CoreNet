@@ -7,6 +7,7 @@ using System.Net;
 using System.Threading.RateLimiting;
 using Application.Services;
 using Asp.Versioning;
+using Domain.Core;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Shared;
@@ -153,11 +154,11 @@ namespace WebApi.Extensions
 
         internal static IServiceCollection AddConfigOptions(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddOptions();
-            configuration.GetOptions<ConnectionOptions>();
-            configuration.GetOptions<OpenTelemetryOptions>();
-            configuration.GetOptions<CacheOptions>();
-            configuration.GetOptions<RabbitMQOptions>();
+            services.AddOptions()
+              .AddOptionsWithValidation<ConnectionOptions>()
+              .AddOptionsWithValidation<OpenTelemetryOptions>()
+              .AddOptionsWithValidation<CacheOptions>()
+              .AddOptionsWithValidation<RabbitMQOptions>();
 
             return services;
         }

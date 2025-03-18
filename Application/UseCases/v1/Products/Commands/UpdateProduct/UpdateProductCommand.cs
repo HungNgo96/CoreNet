@@ -14,13 +14,13 @@ namespace Application.UseCases.v1.Products.Commands.UpdateProduct
     {
         public sealed record Command : ICommand<IResult<bool>>
         {
-            public Guid Id { get; private set; }
+            public long Id { get; private set; }
             public string Name { get; init; } = string.Empty;
             public Money? Price { get; init; }
 
             public string Sku { get; init; } = string.Empty;
 
-            public void SetId(Guid id) => Id = id;
+            public void SetId(long id) => Id = id;
         }
 
         public sealed class Validator : AbstractValidator<Command>

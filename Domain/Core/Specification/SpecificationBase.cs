@@ -62,7 +62,7 @@ namespace Domain.Core.Specification
             this.ApplySorting(sort, nameof(ApplyOrderBy), nameof(ApplyOrderByDescending));
         }
 
-        private Func<T, bool> _compiledExpression;
+        private Func<T, bool>? _compiledExpression;
 
         private Func<T, bool> CompiledExpression
         {

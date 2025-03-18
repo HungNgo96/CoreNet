@@ -10,7 +10,7 @@ namespace Application.UseCases.v1.Products.Commands.DeleteProduct
 {
     public sealed class DeleteProductCommand
     {
-        public sealed record Command(Guid Id) : ICommand<IResult<bool>>;
+        public sealed record Command(long Id) : ICommand<IResult<bool>>;
 
         public sealed class Validator : AbstractValidator<Command>
         {

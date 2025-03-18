@@ -5,6 +5,7 @@
 using Contract.Abstractions.EventBus;
 using Contract.Abstractions.Idempotency;
 using Contract.Abstractions.Messaging;
+using Domain.Core;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
 using Domain.Repositories;
@@ -42,7 +43,7 @@ namespace Application.UseCases.v1.Products.Commands.CreateProduct
         {
             public async Task<IResult<bool>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var product = Product.Create(Guid.NewGuid(), request.Name, request.Price, Sku.Create(request.Sku));
+                var product = Product.Create(NumericIdGenerator.Generate(), request.Name, request.Price, Sku.Create(request.Sku));
 
                 await productRepository.InsertAsync(product, cancellationToken).ConfigureAwait(false);
 
@@ -62,7 +63,7 @@ namespace Application.UseCases.v1.Products.Commands.CreateProduct
                         Id = product.Id,
                         Name = product.Name + "-" + i,
                         Price = product.Price?.Amount ?? 0
-                    }));
+                    }, cancellationToken));
                 }
 
                 await Task.WhenAll(tasks);

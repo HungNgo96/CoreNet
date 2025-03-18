@@ -33,8 +33,8 @@ namespace WebApi.Controllers
         }
 
         [SwaggerOperation(Summary = "Get product by id.")]
-        [HttpGet("{id:guid}")]
-        public async Task<IActionResult> GetByIdAsync([FromRoute] Guid id, CancellationToken cancellationToken)
+        [HttpGet("{id:long}")]
+        public async Task<IActionResult> GetByIdAsync([FromRoute] long id, CancellationToken cancellationToken)
         {
             Counter<long> requestCounterGetBy = s_meter.CreateCounter<long>(OpenTelConst.MetricNames.Products.GetById);
             requestCounterGetBy.Add(1, new KeyValuePair<string, object>("id", id)!);
@@ -58,8 +58,8 @@ namespace WebApi.Controllers
         }
 
         [SwaggerOperation(Summary = "Update product.")]
-        [HttpPut("{id:guid}")]
-        public async Task<IActionResult> UpdateAsync([FromRoute] Guid id,
+        [HttpPut("{id:long}")]
+        public async Task<IActionResult> UpdateAsync([FromRoute] long id,
                                                      [FromBody] UpdateProductCommand.Command request,
                                                      CancellationToken cancellationToken)
         {
@@ -69,8 +69,8 @@ namespace WebApi.Controllers
         }
 
         [SwaggerOperation(Summary = "Delete product.")]
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteAsync([FromRoute] Guid id,
+        [HttpDelete("{id:long}")]
+        public async Task<IActionResult> DeleteAsync([FromRoute] long id,
                                                      CancellationToken cancellationToken)
         {
             return Ok(await Mediator.Send(new DeleteProductCommand.Command(id), cancellationToken: cancellationToken).ConfigureAwait(false));

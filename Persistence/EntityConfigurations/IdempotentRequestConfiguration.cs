@@ -12,7 +12,7 @@ namespace Persistence.EntityConfigurations
     {
         public void Configure(EntityTypeBuilder<IdempotentRequest> builder)
         {
-            builder.ToTable(nameof(IdempotentRequest));
+            builder.ToTable(nameof(IdempotentRequest) + "s");
             builder.HasKey(x => x.Id);
             builder.Property(x => x.Name).IsRequired();
         }

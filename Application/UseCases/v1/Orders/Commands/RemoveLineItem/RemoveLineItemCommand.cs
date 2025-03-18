@@ -3,9 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using Contract.Abstractions.Messaging;
-using Domain.Entities.Orders;
 
 namespace Application.UseCases.v1.Orders.Commands.RemoveLineItem
 {
-    public sealed record RemoveLineItemCommand(OrderId OrderId, LineItemId LineItemId) : ICommand<bool>;
+    public sealed record RemoveLineItemCommand(long OrderId, long LineItemId) : ICommand<bool>;
 }
