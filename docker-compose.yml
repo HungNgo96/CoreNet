@@ -7,13 +7,15 @@ networks:
 volumes:
   prometheus-data:
     driver: local
-  grafana-data:
+  grafana_data:
     driver: local
   sql_data:
     driver: local
   seq-data:
     driver: local
   jaeger-data:
+    driver: local
+  grafana-plugins:
     driver: local
 
 services:
@@ -186,16 +188,23 @@ services:
       - otel-network
 
   grafana:
-    image: grafana/grafana:9.4.3
+    image: grafana/grafana:latest
+    container_name: grafana
     volumes:
+      - grafana_data:/var/lib/grafana
       - ./otel_demo/grafana-datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      # - ./grafana-plugins:/var/lib/grafana/plugins
     environment:
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      # GF_AUTH_ANONYMOUS_ENABLED: "true"
+      # GF_AUTH_ANONYMOUS_ORG_ROLE: "Admin"
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      # GF_INSTALL_PLUGINS: grafana-mssql-datasource
     ports:
       - "3000:3000"
     networks:
       - otel-network
+    restart: always
 
   zipkin:
     image: openzipkin/zipkin:latest

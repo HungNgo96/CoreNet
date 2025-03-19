@@ -25,6 +25,26 @@ datasources:
     access: proxy
     url: http://zipkin:9411
 
+  - name: MSSQL
+    type: mssql
+    uid: mssql
+    access: proxy
+    url: "sqlserver:1433"
+    user: "sa"
+    database: "CoreNet01"
+    jsonData:
+      # authenticationType: "sqlserver"   # Loại xác thực
+      #encrypt: "false"                     # Tắt SSL nếu không dùng
+      trustServerCertificate: true
+      maxOpenConns: 100
+      maxIdleConns: 100
+      maxIdleConnsAuto: true
+      connMaxLifetime: 14400
+      connectionTimeout: 0
+    secureJsonData:
+      password: "YourStrong!Passw0rd"
+    isDefault: true
+
 # apiVersion: 1
 
 # datasources:

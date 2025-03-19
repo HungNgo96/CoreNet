@@ -203,7 +203,9 @@ namespace Infrastructure.Extensions
                    metricsProviderBuilder
                        .SetResourceBuilder(ResourceBuilder.CreateDefault().AddService($"{openTelemetryOptions.ServiceName}_metrics"))
                        .AddAspNetCoreInstrumentation() // Capture ASP.NET Core metrics
+                       .AddHttpClientInstrumentation()
                        .AddRuntimeInstrumentation()    // Capture runtime (GC, CPU, etc.) metrics
+                       .AddProcessInstrumentation()
                        .AddPrometheusExporter() // Export metrics to Prometheus
                        .AddOtlpExporter(options =>
                        {
