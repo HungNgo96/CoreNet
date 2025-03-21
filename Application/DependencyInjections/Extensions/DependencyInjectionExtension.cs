@@ -4,6 +4,7 @@ using Application.Behaviors;
 using Application.DependencyInjections.Configurations;
 using FluentValidation;
 using Infrastructure.Extensions;
+using Infrastructure.Services.Caching;
 using MediatR.NotificationPublishers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -41,6 +42,7 @@ namespace Application.DependencyInjections.Extensions
         {
             //var assembly = typeof(DependencyInjectionExtension).Assembly;
             _ = services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+            
 
             services.AddMediatR(configuration =>
             {

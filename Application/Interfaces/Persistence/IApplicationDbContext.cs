@@ -7,7 +7,7 @@ using Domain.Entities.Orders;
 using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 
-namespace Domain.Core.SharedKernel
+namespace Application.Interfaces.Persistence
 {
     public interface IApplicationDbContext
     {

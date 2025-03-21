@@ -17,6 +17,8 @@
   <ItemGroup>
     <Folder Include="Contracts\" />
     <Folder Include="DependencyInjections\Options\" />
+    <Folder Include="Interfaces\Caching\" />
+    <Folder Include="Interfaces\LifeTimeServices\" />
     <Folder Include="UseCases\v1\Orders\Events\" />
     <Folder Include="UseCases\v1\Orders\Queries\" />
   </ItemGroup>

@@ -1,6 +1,6 @@
 ﻿// HungNgo96
 
-using Domain.Core.SharedKernel;
+using Application.Interfaces.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

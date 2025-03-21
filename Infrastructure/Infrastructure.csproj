@@ -25,7 +25,7 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Runtime" />
     <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" />
-    <PackageReference Include="OpenTelemetry.Instrumentation.Process"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.Process" />
 
     <PackageReference Include="Quartz" />
     <PackageReference Include="Quartz.Extensions.Hosting" />

@@ -1,8 +1,10 @@
 ﻿// HungNgo96
 
+using Application.Interfaces;
+
 namespace Application.Services
 {
-    public interface ICurrentUserService
+    public interface ICurrentUserService : IScopedService
     {
     }
 

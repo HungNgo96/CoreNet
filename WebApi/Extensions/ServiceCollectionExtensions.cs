@@ -11,6 +11,7 @@ using Domain.Core;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Shared;
+using Infrastructure.Extensions;
 using Infrastructure.MessageBroker.RabbitMQ;
 using Infrastructure.Telemetry;
 using Microsoft.AspNetCore.RateLimiting;

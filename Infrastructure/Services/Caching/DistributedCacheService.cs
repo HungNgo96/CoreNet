@@ -1,10 +1,10 @@
 ﻿using Domain.Core.AppSettings;
-using Domain.Core.SharedKernel;
+using Domain.Interfaces;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using ZiggyCreatures.Caching.Fusion;
 
-namespace Infrastructure.Services;
+namespace Infrastructure.Services.Caching;
 
 public class FusionCacheService(
     IFusionCache fusionCache,

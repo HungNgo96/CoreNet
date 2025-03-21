@@ -21,20 +21,22 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer"  />
-    <PackageReference Include="AspNetCore.HealthChecks.UI.Client"  />
+    <PackageReference Include="Asp.Versioning.Mvc.ApiExplorer" />
+    <PackageReference Include="AspNetCore.HealthChecks.UI.Client" />
 
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"  />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+
+    <PackageReference Include="Scrutor" />
 
 
-    <PackageReference Include="Swashbuckle.AspNetCore"  />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer"  />
+    <PackageReference Include="Swashbuckle.AspNetCore" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
     </PackageReference>
     <PackageReference Include="FluentValidation.AspNetCore" />
-    <PackageReference Include="Swashbuckle.AspNetCore.Annotations"  />
+    <PackageReference Include="Swashbuckle.AspNetCore.Annotations" />
 
   </ItemGroup>
 

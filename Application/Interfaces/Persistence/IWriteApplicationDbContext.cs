@@ -4,7 +4,7 @@
 
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Domain.Core.SharedKernel
+namespace Application.Interfaces.Persistence
 {
     public interface IWriteApplicationDbContext : IApplicationDbContext
     {

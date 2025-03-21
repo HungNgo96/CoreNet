@@ -1,7 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 using Application.DependencyInjections.Extensions;
+using Application.Interfaces;
 using Domain.Core;
+using Domain.Interfaces;
 using FluentValidation.AspNetCore;
+using Infrastructure.Extensions;
+using Infrastructure.Services.Caching;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using WebApi.Commons;
@@ -45,12 +49,26 @@ services.AddApplication()
 services.AddFluentValidationAutoValidation();//fluent API
 
 services.AddCorrelationGenerator();
-
+ 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders =
         ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
 });
+
+builder.Services.Scan(scan => scan
+    .FromAssemblies(AppDomain.CurrentDomain.GetAssemblies()) // hoặc typeof(Program).Assembly
+    .AddClasses(classes => classes.AssignableTo<IScopedService>())
+        .AsImplementedInterfaces()
+        .WithScopedLifetime()
+    .AddClasses(classes => classes.AssignableTo<ISingletonService>())
+        .AsImplementedInterfaces()
+        .WithSingletonLifetime()
+    .AddClasses(classes => classes.AssignableTo<ITransientService>())
+        .AsImplementedInterfaces()
+        .WithTransientLifetime()
+);
+
 var app = builder.Build();
 
 app.UseForwardedHeaders();

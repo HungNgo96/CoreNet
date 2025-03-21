@@ -1,13 +1,16 @@
 ﻿// HungNgo96
 
 using Contract.Abstractions.EventBus;
+using Domain.Core;
 using Domain.Core.AppSettings;
 using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
+using Domain.Core.SharedKernel.Correlation;
+using Domain.Interfaces;
 using Infrastructure.Constants;
 using Infrastructure.MessageBroker;
 using Infrastructure.MessageBroker.RabbitMQ;
-using Infrastructure.Services;
+using Infrastructure.Services.Caching;
 using Infrastructure.Telemetry;
 using MassTransit;
 using Microsoft.AspNetCore.Builder;
@@ -31,13 +34,34 @@ namespace Infrastructure.Extensions
 {
     public static class ServiceCollectionExtensions
     {
+        public static IServiceCollection AddCorrelationGenerator(this IServiceCollection services)
+        {
+            NumericIdGenerator.Init();
+            return services.AddScoped<ICorrelationIdGenerator, CorrelationIdGenerator>();
+        }
+
+        /// <summary>
+        /// Adds options with validation to the service collection.
+        /// </summary>
+        /// <typeparam name="TOptions">The type of options to add.</typeparam>
+        /// <param name="services">The service collection.</param>
+        public static IServiceCollection AddOptionsWithValidation<TOptions>(this IServiceCollection services)
+            where TOptions : class, IAppOptions
+        {
+            return services
+                .AddOptions<TOptions>()
+                .BindConfiguration(TOptions.ConfigSectionPath, binderOptions => binderOptions.BindNonPublicProperties = true)
+                .ValidateDataAnnotations()
+                .ValidateOnStart()
+                .Services;
+        }
+
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, WebApplicationBuilder builder)
         {
             services
                 .AddCacheService(builder.Configuration)
                 .AddSetupOpenTelemetry(builder, builder.Configuration)
                 .AddConfigureMassTransit(builder.Configuration);
-
             services.AddScoped<ICacheService, FusionCacheService>();
 
             return services;

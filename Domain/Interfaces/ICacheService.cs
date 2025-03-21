@@ -1,4 +1,4 @@
-﻿namespace Domain.Core.SharedKernel;
+﻿namespace Domain.Interfaces;
 
 public interface ICacheService
 {

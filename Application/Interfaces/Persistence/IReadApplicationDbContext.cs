@@ -1,4 +1,4 @@
-﻿namespace Domain.Core.SharedKernel
+﻿namespace Application.Interfaces.Persistence
 {
     public interface IReadApplicationDbContext : IApplicationDbContext
     {
