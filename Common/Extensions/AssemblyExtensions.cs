@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 
-namespace Domain.Core.Extensions;
+namespace Common.Extensions;
 
 public static class AssemblyExtensions
 {

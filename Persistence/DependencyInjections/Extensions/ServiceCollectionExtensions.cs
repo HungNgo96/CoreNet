@@ -1,9 +1,10 @@
 ﻿// HungNgo96
 
 using Contract.Abstractions.Idempotency;
+using Contract.Interfaces.Persistence;
 using Domain.Core.AppSettings;
-using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
+using Domain.Extensions;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -37,7 +38,6 @@ namespace Persistence.DependencyInjections.Extensions
                 op.UseSqlServer(optionsConfig.ReadSqlServer!, x =>
                 {
                     x.EnableRetryOnFailure(5, TimeSpan.FromSeconds(10), null);
-
                 });
 
                 op.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);

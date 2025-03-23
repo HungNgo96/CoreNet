@@ -1,7 +1,7 @@
 ﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace Common.Serialization
+namespace Common.Serializations
 {
     public class JsonLongConverter : JsonConverter<long>
     {

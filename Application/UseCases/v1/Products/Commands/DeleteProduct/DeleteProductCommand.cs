@@ -1,9 +1,9 @@
 ﻿// HungNgo96
 
+using Common.Shared;
 using Contract.Abstractions.Messaging;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Products;
-using Domain.Shared;
 using FluentValidation;
 
 namespace Application.UseCases.v1.Products.Commands.DeleteProduct

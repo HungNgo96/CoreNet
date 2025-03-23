@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Globalization;
-using Domain.Core.Extensions;
-using Domain.Shared;
+using Common.Extensions;
+using Common.Shared;
 using MediatR;
 using Microsoft.Extensions.Logging;
 using Serilog.Context;

@@ -17,7 +17,7 @@ namespace Persistence.EntityConfigurations
             builder.ConfigureBaseEntity();
 
             builder.ToTable(nameof(LineItem) + "s");
-            
+
             //builder.Property(li => li.Id).HasConversion(
             //    lineItemId => lineItemId.Value,
             //    value => new LineItemId(value));

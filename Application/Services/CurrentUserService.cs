@@ -1,6 +1,6 @@
 ﻿// HungNgo96
 
-using Application.Interfaces;
+using Contract.Interfaces;
 
 namespace Application.Services
 {

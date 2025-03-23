@@ -3,8 +3,8 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using Domain.Core.Extensions;
-using Domain.Shared;
+using Common.Extensions;
+using Common.Shared;
 
 namespace WebApi.Middlewares
 {
@@ -105,7 +105,9 @@ namespace WebApi.Middlewares
         /// <returns></returns>
         internal static IApplicationBuilder UseErrorHandler(this IApplicationBuilder service)
         {
-            return service.UseMiddleware<ErrorHandlerMiddleware>();
+            service.UseMiddleware<ErrorHandlerMiddleware>();
+            service.UseExceptionHandler();
+            return service;
         }
     }
 }

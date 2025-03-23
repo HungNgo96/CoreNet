@@ -7,21 +7,30 @@ using System.Net;
 using System.Threading.RateLimiting;
 using Application.Services;
 using Asp.Versioning;
-using Domain.Core;
+using Common.Shared;
 using Domain.Core.AppSettings;
-using Domain.Core.Extensions;
-using Domain.Shared;
 using Infrastructure.Extensions;
 using Infrastructure.MessageBroker.RabbitMQ;
 using Infrastructure.Telemetry;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
+using Persistence.DependencyInjections.Extensions;
 
 namespace WebApi.Extensions
 {
     internal static class ServiceCollectionExtensions
     {
+        internal static IServiceCollection AddPersistenceLayer(this IServiceCollection services, IConfiguration configuration)
+        {
+            return services.AddPersistence(configuration);
+        }
+
+        internal static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, WebApplicationBuilder builder)
+        {
+            return services.AddInfrastructure(builder);
+        }
+
         internal static void AddRegisterSwagger(this IServiceCollection services, IWebHostEnvironment env)
         {
             if (!env.IsProduction())

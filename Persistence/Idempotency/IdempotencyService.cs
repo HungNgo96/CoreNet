@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Contract.Abstractions.Idempotency;
+using Contract.Interfaces.Persistence;
 using Domain.Core.SharedKernel;
 using Microsoft.EntityFrameworkCore;
 

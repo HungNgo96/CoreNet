@@ -14,7 +14,7 @@
 
   <ItemGroup>
     <PackageReference Include="MassTransit" />
-    <PackageReference Include="Newtonsoft.Json" />
+
 
     <PackageReference Include="OpenTelemetry.Exporter.Console" />
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
@@ -27,8 +27,7 @@
     <PackageReference Include="OpenTelemetry.Instrumentation.SqlClient" />
     <PackageReference Include="OpenTelemetry.Instrumentation.Process" />
 
-    <PackageReference Include="Quartz" />
-    <PackageReference Include="Quartz.Extensions.Hosting" />
+
     <PackageReference Include="Serilog.Extensions.Hosting" />
 
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerGen" />

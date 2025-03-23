@@ -3,7 +3,7 @@
 using Domain.Core.SharedKernel;
 using Microsoft.Extensions.Configuration;
 
-namespace Domain.Core.Extensions
+namespace Domain.Extensions
 {
     public static class ConfigurationExtensions
     {

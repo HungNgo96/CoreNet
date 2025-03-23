@@ -3,9 +3,9 @@
 // See the LICENSE file in the project root for more information.
 
 using Application.Responses.Products;
+using Common.Shared;
 using Contract.Abstractions.Messaging;
 using Domain.Repositories;
-using Domain.Shared;
 using Mapster;
 
 namespace Application.UseCases.v1.Products.Queries.GetProductById

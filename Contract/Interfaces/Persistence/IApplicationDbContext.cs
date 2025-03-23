@@ -7,7 +7,7 @@ using Domain.Entities.Orders;
 using Domain.Entities.Products;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Interfaces.Persistence
+namespace Contract.Interfaces.Persistence
 {
     public interface IApplicationDbContext
     {

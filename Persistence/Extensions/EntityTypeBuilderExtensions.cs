@@ -30,7 +30,6 @@ internal static class EntityTypeBuilderExtensions
 
         builder.Property(entity => entity.ModifiedBy).HasMaxLength(36).IsUnicode(false);
 
-
         // Ignores the DomainEvents property for the entity.
         _ = builder
             .Ignore(entity => entity.GetDomainEvents);

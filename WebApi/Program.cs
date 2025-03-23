@@ -1,11 +1,8 @@
 ﻿using System.Text.Json.Serialization;
 using Application.DependencyInjections.Extensions;
-using Application.Interfaces;
-using Domain.Core;
-using Domain.Interfaces;
+using Contract.Interfaces;
 using FluentValidation.AspNetCore;
 using Infrastructure.Extensions;
-using Infrastructure.Services.Caching;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using WebApi.Commons;
@@ -30,6 +27,8 @@ services.AddControllers((options) =>
 
 services.AddRequestDecompression()
         .AddConfigResponseCompression();
+
+services.AddExceptionHandler<GlobalExceptionHandler>();
 
 services.AddHealthCheck(configuration);
 

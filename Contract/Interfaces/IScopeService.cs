@@ -1,6 +1,6 @@
 ﻿// HungNgo96
 
-namespace Application.Interfaces
+namespace Contract.Interfaces
 {
     public interface IScopedService
     { }

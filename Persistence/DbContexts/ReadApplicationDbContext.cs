@@ -1,4 +1,4 @@
-﻿using Domain.Core.SharedKernel;
+﻿using Contract.Interfaces.Persistence;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;

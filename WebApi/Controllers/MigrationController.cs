@@ -1,6 +1,6 @@
 ﻿// HungNgo96
 
-using Application.Interfaces.Persistence;
+using Contract.Interfaces.Persistence;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

@@ -3,19 +3,20 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Data;
+using Common.Extensions;
+using Contract.Interfaces.Persistence;
 using Domain.Core.Abstractions;
-using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
 using Domain.Entities.Customers;
 using Domain.Entities.Orders;
 using Domain.Entities.Products;
+using Domain.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
 using Persistence.Idempotency;
-using Persistence.Outbox;
 
 namespace Persistence.DbContexts
 {

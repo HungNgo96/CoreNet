@@ -3,7 +3,7 @@
 
 using System.Net;
 
-namespace Domain.Shared
+namespace Common.Shared
 {
     public class Result : IResult
     {

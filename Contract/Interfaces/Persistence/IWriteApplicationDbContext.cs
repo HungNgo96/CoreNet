@@ -4,7 +4,7 @@
 
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
-namespace Application.Interfaces.Persistence
+namespace Contract.Interfaces.Persistence
 {
     public interface IWriteApplicationDbContext : IApplicationDbContext
     {

@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Application.Interfaces.Persistence;
+using Contract.Interfaces.Persistence;
 using Domain.Core.Events;
 using Domain.Core.SharedKernel;
+using Domain.Outbox;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
-using Persistence.Outbox;
 using Quartz;
 
 namespace Application.BackgroundJobs

@@ -3,13 +3,8 @@ using Application.BackgroundJobs;
 using Application.Behaviors;
 using Application.DependencyInjections.Configurations;
 using FluentValidation;
-using Infrastructure.Extensions;
-using Infrastructure.Services.Caching;
 using MediatR.NotificationPublishers;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.DependencyInjections.Extensions;
 using Quartz;
 
 namespace Application.DependencyInjections.Extensions
@@ -42,7 +37,6 @@ namespace Application.DependencyInjections.Extensions
         {
             //var assembly = typeof(DependencyInjectionExtension).Assembly;
             _ = services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-            
 
             services.AddMediatR(configuration =>
             {
@@ -56,16 +50,6 @@ namespace Application.DependencyInjections.Extensions
             MapsterConfiguration.RegisterMappings();
 
             return services;
-        }
-
-        public static IServiceCollection AddPersistenceLayer(this IServiceCollection services, IConfiguration configuration)
-        {
-            return services.AddPersistence(configuration);
-        }
-
-        public static IServiceCollection AddInfrastructureLayer(this IServiceCollection services, WebApplicationBuilder builder)
-        {
-            return services.AddInfrastructure(builder);
         }
     }
 }

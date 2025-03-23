@@ -3,9 +3,9 @@
 using Contract.Abstractions.EventBus;
 using Domain.Core;
 using Domain.Core.AppSettings;
-using Domain.Core.Extensions;
 using Domain.Core.SharedKernel;
 using Domain.Core.SharedKernel.Correlation;
+using Domain.Extensions;
 using Domain.Interfaces;
 using Infrastructure.Constants;
 using Infrastructure.MessageBroker;

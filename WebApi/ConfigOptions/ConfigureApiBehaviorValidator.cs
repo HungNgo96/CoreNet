@@ -1,7 +1,7 @@
 ﻿using System.Net;
 using System.Text.Json;
-using Domain.Core.Extensions;
-using Domain.Shared;
+using Common.Extensions;
+using Common.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace WebApi.ConfigOptions

@@ -3,10 +3,10 @@
 // See the LICENSE file in the project root for more information.
 
 using Domain.Core.Abstractions;
+using Domain.Outbox;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Newtonsoft.Json;
-using Persistence.Outbox;
 
 namespace Persistence.Interceptors
 {

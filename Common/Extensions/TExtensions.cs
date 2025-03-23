@@ -1,4 +1,4 @@
-﻿namespace Domain.Core.Extensions;
+﻿namespace Common.Extensions;
 
 public static class TExtensions
 {

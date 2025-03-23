@@ -8,7 +8,7 @@ using Application.UseCases.v1.Products.Commands.DeleteProduct;
 using Application.UseCases.v1.Products.Commands.UpdateProduct;
 using Application.UseCases.v1.Products.Queries.GetAllProduct;
 using Application.UseCases.v1.Products.Queries.GetProductById;
-using Domain.Shared;
+using Common.Shared;
 using Infrastructure.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

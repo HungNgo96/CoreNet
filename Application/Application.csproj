@@ -17,8 +17,6 @@
   <ItemGroup>
     <Folder Include="Contracts\" />
     <Folder Include="DependencyInjections\Options\" />
-    <Folder Include="Interfaces\Caching\" />
-    <Folder Include="Interfaces\LifeTimeServices\" />
     <Folder Include="UseCases\v1\Orders\Events\" />
     <Folder Include="UseCases\v1\Orders\Queries\" />
   </ItemGroup>
@@ -31,13 +29,15 @@
     <PackageReference Include="Polly.Extensions.Http" />
     <PackageReference Include="Serilog" />
     <PackageReference Include="Mapster" />
+        <PackageReference Include="Quartz" />
+    <PackageReference Include="Quartz.Extensions.Hosting" />
 
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj" />
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
-    <ProjectReference Include="..\Persistence\Persistence.csproj" />
+    <ProjectReference Include="..\Contract\Contract.csproj" />
+    <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
 </Project>

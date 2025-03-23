@@ -1,7 +1,7 @@
 ﻿// HungNgo96
 
 using System.Text.Json.Serialization;
-using Common.Serialization;
+using Common.Serializations;
 using Domain.Entities.Products;
 
 namespace Application.Responses.Products
@@ -10,6 +10,7 @@ namespace Application.Responses.Products
     {
         [JsonConverter(typeof(JsonLongConverter))]
         public long Id { get; set; }
+
         public string Name { get; set; } = string.Empty;
         public Money? Price { get; set; }
 
