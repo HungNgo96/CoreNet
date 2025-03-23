@@ -14,7 +14,7 @@ using FluentValidation;
 
 namespace Application.UseCases.v1.Products.Commands.CreateProduct
 {
-    public static class CreateProduct
+    public static class CreateProductCommand
     {
         public sealed record Command : IdempotentCommand, ICommand<IResult<bool>>
         {

@@ -1,4 +1,5 @@
 ﻿using Domain.Core.Abstractions;
+using Domain.Entities.Products;
 
 namespace Domain.Entities.Orders;
 

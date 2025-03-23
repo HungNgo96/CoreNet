@@ -11,7 +11,7 @@ using Mapster;
 
 namespace Application.UseCases.v1.Products.Queries.GetAllProduct
 {
-    public sealed class GetAllProduct
+    public static class GetAllProductQuery
     {
         public record Query : IQuery<IResult<IReadOnlyCollection<GetProductResponse>>>
         {

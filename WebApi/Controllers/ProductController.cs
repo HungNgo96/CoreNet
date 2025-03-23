@@ -26,7 +26,7 @@ namespace WebApi.Controllers
 
         [SwaggerOperation(Summary = "Get all product")]
         [HttpGet]
-        public async Task<IActionResult> GetAsync([FromQuery] GetAllProduct.Query request, CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAsync([FromQuery] GetAllProductQuery.Query request, CancellationToken cancellationToken)
         {
             s_requestCounterGet.Add(1);  // Ghi nhận metric
             return Ok(await Mediator.Send(request, cancellationToken: cancellationToken).ConfigureAwait(false));
@@ -38,12 +38,12 @@ namespace WebApi.Controllers
         {
             Counter<long> requestCounterGetBy = s_meter.CreateCounter<long>(OpenTelConst.MetricNames.Products.GetById);
             requestCounterGetBy.Add(1, new KeyValuePair<string, object>("id", id)!);
-            return Ok(await Mediator.Send(new GetProductById.Query(id), cancellationToken: cancellationToken).ConfigureAwait(false));
+            return Ok(await Mediator.Send(new GetProductByIdQuery.Query(id), cancellationToken: cancellationToken).ConfigureAwait(false));
         }
 
         [SwaggerOperation(Summary = "Create product.")]
         [HttpPost]
-        public async Task<IActionResult> CreateAsync([FromBody] CreateProduct.Command request,
+        public async Task<IActionResult> CreateAsync([FromBody] CreateProductCommand.Command request,
                                                      [FromHeader(Name = "X-Idempotency-Key")] string requestId,
                                                      CancellationToken cancellationToken)
         {

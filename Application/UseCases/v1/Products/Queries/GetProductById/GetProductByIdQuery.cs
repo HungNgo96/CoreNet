@@ -10,7 +10,7 @@ using Mapster;
 
 namespace Application.UseCases.v1.Products.Queries.GetProductById
 {
-    public sealed class GetProductById
+    public static class GetProductByIdQuery
     {
         public record Query(long Id) : IQuery<IResult<GetProductResponse>>;
 
@@ -20,12 +20,9 @@ namespace Application.UseCases.v1.Products.Queries.GetProductById
             {
                 var product = await productRepository.GetByIdAsync(request.Id, cancellationToken).ConfigureAwait(false);
 
-                if (product is null)
-                {
-                    return Result<GetProductResponse?>.Fail("Data not found");
-                }
-
-                return Result<GetProductResponse?>.Success(data: product.Adapt<GetProductResponse>());
+                return product is null 
+                    ? Result<GetProductResponse?>.Fail("Data not found") 
+                    : Result<GetProductResponse?>.Success(data: product.Adapt<GetProductResponse>());
             }
         }
     }

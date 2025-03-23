@@ -10,7 +10,7 @@ using FluentValidation;
 
 namespace Application.UseCases.v1.Products.Commands.UpdateProduct
 {
-    public sealed class UpdateProductCommand
+    public static class UpdateProductCommand
     {
         public sealed record Command : ICommand<IResult<bool>>
         {
@@ -27,15 +27,16 @@ namespace Application.UseCases.v1.Products.Commands.UpdateProduct
         {
             public Validator()
             {
-                _ = RuleFor(x => x.Id).Must(x => !string.IsNullOrEmpty(x.ToString())).WithMessage("Id invalid");
+                _ = RuleFor(x => x.Id).NotEmpty().WithMessage("Id invalid");
 
                 _ = RuleFor(x => x.Name).Must(x => !string.IsNullOrEmpty(x.ToString())).WithMessage("Name invalid");
 
                 _ = RuleFor(x => x.Sku).Must(x => int.TryParse(x, out var _)).WithMessage("Sku invalid");
 
                 _ = RuleFor(x => x.Price)
+                    .NotNull()
                     .Must(x => x?.Amount != 0).WithMessage("Amount of Sku invalid")
-                    .Must(x => !string.IsNullOrEmpty(x!.Currency)).WithMessage("Currency of Sku invalid");
+                    .Must(x => !string.IsNullOrEmpty(x?.Currency)).WithMessage("Currency of Sku invalid");
             }
         }
 

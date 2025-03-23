@@ -8,7 +8,7 @@ using FluentValidation;
 
 namespace Application.UseCases.v1.Products.Commands.DeleteProduct
 {
-    public sealed class DeleteProductCommand
+    public static class DeleteProductCommand
     {
         public sealed record Command(long Id) : ICommand<IResult<bool>>;
 
@@ -16,7 +16,7 @@ namespace Application.UseCases.v1.Products.Commands.DeleteProduct
         {
             public Validator()
             {
-                //_ = RuleFor(x => x.id is Guid);
+                _ = RuleFor(x => x.Id).NotEmpty();
             }
         }
 
