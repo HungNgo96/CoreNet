@@ -13,11 +13,11 @@ public class LineItem : EntityBase
         Price = price;
     }
 
-    public LineItem()
+    public LineItem(Money price)
     {
+        Price = price;
     }
 
-    public long Id { get; private set; }
     public long OrderId { get; private set; }
     public long ProductId { get; private set; }
     public Money Price { get; private set; }

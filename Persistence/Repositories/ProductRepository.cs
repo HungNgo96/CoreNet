@@ -14,7 +14,6 @@ namespace Persistence.Repositories
 {
     public sealed class ProductRepository(
         IReadApplicationDbContext readDbContext,
-        IWriteApplicationDbContext writeDbContext,
         IRepository<Product> productRepository,
         WriteApplicationDbContext writeApplicationDbContext)
         : RepositoryBase<WriteApplicationDbContext, Product>(writeApplicationDbContext), IProductRepository

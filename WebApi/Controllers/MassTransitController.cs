@@ -9,7 +9,6 @@ namespace WebApi.Controllers
     [ApiController]
     [Route("[controller]/[action]")]
     public class MassTransitController(
-        ILogger<MassTransitController> logger,
         IPublishEndpoint publishEndpoint,
         IBus bus)
         : ControllerBase

@@ -20,7 +20,7 @@ namespace Domain.Core.Specification
         {
             var p = a.Parameters[0];
 
-            var visitor = new SubstExpressionVisitor { subst = { [b.Parameters[0]] = p } };
+            var visitor = new SubstExpressionVisitor { Subst = { [b.Parameters[0]] = p } };
 
             Expression body = Expression.And(a.Body, visitor.Visit(b.Body));
             return Expression.Lambda<Func<T, bool>>(body, p);
@@ -30,7 +30,7 @@ namespace Domain.Core.Specification
         {
             var p = a.Parameters[0];
 
-            var visitor = new SubstExpressionVisitor { subst = { [b.Parameters[0]] = p } };
+            var visitor = new SubstExpressionVisitor { Subst = { [b.Parameters[0]] = p } };
 
             Expression body = Expression.Or(a.Body, visitor.Visit(b.Body));
             return Expression.Lambda<Func<T, bool>>(body, p);
@@ -57,8 +57,9 @@ namespace Domain.Core.Specification
         {
             var objValues = codes.Cast<object>().ToList();
             var type = typeof(List<object>);
-            var methodInfo = type.GetMethod("Contains", new Type[] { typeof(object) });
+            var methodInfo = type.GetMethod("Contains", [typeof(object)]);
             var list = Expression.Constant(objValues);
+            ArgumentNullException.ThrowIfNull(methodInfo);
             var body = Expression.Call(list, methodInfo, left);
             return body;
         }
@@ -82,9 +83,14 @@ namespace Domain.Core.Specification
                 else
                 {
                     var valueType = Nullable.GetUnderlyingType(left.Type) ?? left.Type;
-                    typedValue = valueType.IsEnum ? Enum.Parse(valueType, value) :
-                        valueType == typeof(Guid) ? Guid.Parse(value) :
-                        Convert.ChangeType(value, valueType);
+
+                    typedValue = valueType.IsEnum switch
+                    {
+                        true => Enum.Parse(valueType, value),
+                        _ => valueType == typeof(Guid)
+                            ? Guid.Parse(value)
+                            : Convert.ChangeType(value, valueType)
+                    };
                 }
             }
 
@@ -92,13 +98,13 @@ namespace Domain.Core.Specification
             return Expression.MakeBinary(type, left, right);
         }
 
-        private class SubstExpressionVisitor : ExpressionVisitor
+        private sealed class SubstExpressionVisitor : ExpressionVisitor
         {
-            public readonly Dictionary<Expression, Expression> subst = new();
+            public readonly Dictionary<Expression, Expression> Subst = new();
 
             protected override Expression VisitParameter(ParameterExpression node)
             {
-                return subst.GetValueOrDefault(node, node);
+                return Subst.GetValueOrDefault(node, node);
             }
         }
     }

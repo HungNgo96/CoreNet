@@ -46,7 +46,7 @@ namespace Application.DependencyInjections.Extensions
                 (res, ctx) =>
                 {
                     var logger = serviceProvider.GetService<ILogger<HttpResponseMessage>>();
-                    logger.LogWarning($"returning fallback value...");
+                    logger?.LogWarning($"returning fallback value...");
                     return Task.CompletedTask;
                 });
 

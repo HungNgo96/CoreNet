@@ -8,7 +8,6 @@ namespace Domain.Entities.Orders;
 public class Order : EntityBase
 {
     private readonly HashSet<LineItem> _lineItems = new();
-    public long Id { get; private set; }
     public long? CustomerId { get; private set; }
     public IReadOnlyList<LineItem> LineItems => [.. _lineItems];
 

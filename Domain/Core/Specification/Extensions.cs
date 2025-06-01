@@ -31,17 +31,17 @@ namespace Domain.Core.Specification
         {
             if (string.IsNullOrEmpty(sort)) return;
 
-            const string descendingSuffix = "Desc";
+            const string DescendingSuffix = "Desc";
 
-            var descending = sort.EndsWith(descendingSuffix, StringComparison.Ordinal);
+            var descending = sort.EndsWith(DescendingSuffix, StringComparison.Ordinal);
             var propertyName = sort.Substring(0, 1).ToUpperInvariant() +
-                               sort.Substring(1, sort.Length - 1 - (descending ? descendingSuffix.Length : 0));
+                               sort.Substring(1, sort.Length - 1 - (descending ? DescendingSuffix.Length : 0));
 
             var specificationType = gridSpec.GetType().BaseType;
             var targetType = specificationType?.GenericTypeArguments[0];
             var property = targetType!.GetRuntimeProperty(propertyName) ??
                            throw new InvalidOperationException($"Because the property {propertyName} does not exist it cannot be sorted.");
-
+            ArgumentNullException.ThrowIfNull(targetType);
             var lambdaParamX = Expression.Parameter(targetType, "x");
 
             var propertyReturningExpression = Expression.Lambda(
@@ -50,19 +50,23 @@ namespace Domain.Core.Specification
                     typeof(object)),
                 lambdaParamX);
 
+            // S3011: Make sure that this accessibility bypass is safe here.
+            // Only allow public instance methods to be invoked via reflection.
+            const BindingFlags BindingFlags = BindingFlags.Instance | BindingFlags.Public;
+
             if (descending)
             {
                 specificationType?.GetMethod(
                         orderByDescendingMethodName,
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                    ?.Invoke(gridSpec, new object[] { propertyReturningExpression });
+                        BindingFlags)
+                    ?.Invoke(gridSpec, [propertyReturningExpression]);
             }
             else
             {
                 specificationType?.GetMethod(
                         groupByMethodName,
-                        BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                    ?.Invoke(gridSpec, new object[] { propertyReturningExpression });
+                        BindingFlags)
+                    ?.Invoke(gridSpec, [propertyReturningExpression]);
             }
         }
     }
